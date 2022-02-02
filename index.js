@@ -127,7 +127,7 @@ const newItem = {
        */
   
   
-   
+      // Updating preexisting item
        const { resource: updatedItem2 } = await container
          .item("3", "3")
          .replace(newnewItem);
