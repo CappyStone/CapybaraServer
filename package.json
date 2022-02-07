@@ -12,6 +12,7 @@
   "dependencies": {
     "@azure/cosmos": "3.5.2",
     "@azure/keyvault-secrets": "^4.3.0",
+    "config": "^3.3.7",
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "firebase-admin": "^10.0.2"
