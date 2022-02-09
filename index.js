@@ -1,5 +1,9 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
-const config = require("config");
+const config = {
+  databaseId: "stormTest",
+  containerId: "UserTest",
+  partitionKey: { kind: "Hash", paths: ["/userId"] }
+};
 
 const express = require('express')
 const cors = require('cors');
@@ -58,7 +62,7 @@ const newItemValue = {
 async function main() {
 
   // <CreateClientObjectDatabaseContainer>
-  const { endpoint2, key2, databaseId, containerId } = config;
+  const { databaseId, containerId } = config;
 
   const client = new CosmosClient({ endpoint, key });
   console.log(client);
