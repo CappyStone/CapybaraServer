@@ -1,5 +1,4 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
-//const config = require("./config");
 const config = {
   databaseId: "stormTest",
   containerId: "UserTest",
