@@ -112,12 +112,12 @@ app.get('/getCompanyData', async (req, res) => {
 
 })
 
-async function getEquipmentData() {
+async function getEquipmentData(equipmentId) {
   console.log("Querying container: Equipment");
 
   // query to return all items
   const querrySpec = {
-    query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = 1"
+    query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId + '"'
   };
 
   // read all items in the Items container
@@ -128,17 +128,17 @@ async function getEquipmentData() {
 
   return items[0];
 
-  //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
+  //api URI is http://localhost:3001/getEquipmentData?equipmentId=ENTERID
 }
 
 app.get('/getEquipmentData', async (req, res) => {
-  //const userEmail = req.query.userEmail;
+  const equipmentId = req.query.equipmentId;
   //response type
   res.contentType('application/json');
 
   //change this to info from the db
 
-  var items = await getEquipmentData();
+  var items = await getEquipmentData(equipmentId);
 
   console.log(items);
   //send the response
