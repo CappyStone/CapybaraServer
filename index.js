@@ -8,8 +8,8 @@ const companyConfig = {
   partitionKey: { kind: "Hash", paths: ["/companyId","/equipmentId"] }
 };
 
-const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
-const key = "bGk6iGvgK3BPFUUPDwDXY337yC9N0H1ysiCbE8iXqavd0uy6ZbRv2WaeJKspT9YCGansEGzEUdzhFuoJo5yppA==";
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 // <CreateClientObjectDatabaseContainer>
 const { databaseId, containerId } = companyConfig;
