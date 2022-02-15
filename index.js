@@ -1,9 +1,35 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
-const config = {
-  databaseId: "stormTest",
-  containerId: "UserTest",
-  partitionKey: { kind: "Hash", paths: ["/userId"] }
+//Cosmos connection for the company container
+//Company database configuration
+const companyConfig = {
+  databaseId: "greenStormDB",
+  containerId: "Company",
+  equipmentContainerId: "Equipment",
+  partitionKey: { kind: "Hash", paths: ["/companyId","/equipmentId"] }
 };
+
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+
+// <CreateClientObjectDatabaseContainer>
+const { databaseId, containerId } = companyConfig;
+
+const client = new CosmosClient({ endpoint, key });
+console.log(client);
+const database = client.database(databaseId);
+const container = database.container(containerId);
+
+
+//Equipment database configuration
+
+// <CreateClientObjectDatabaseContainer>
+const { equipmentContainerId } = companyConfig;
+
+const equipmentClient = new CosmosClient({ endpoint, key });
+console.log("equipment config");
+console.log(equipmentClient);
+const equipmentDatabase = equipmentClient.database(databaseId);
+const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
 
 const express = require('express')
 const cors = require('cors');
@@ -43,13 +69,89 @@ app.post('/testVerify', (req, res) => {
     });
 })
 
+async function getCompanyData(userEmail) {
+  console.log(`Querying container: Items`);
+
+  // query to return all items
+  const querySpec = {
+    query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+  };
+
+  // read all items in the Items container
+  const { resources: items } = await container.items
+    .query(querySpec)
+    .fetchAll();
+
+
+  return items[0];
+
+  //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
+}
+
+app.get('/getCompanyData', async (req, res) => {
+
+  const userEmail = req.query.userEmail;
+
+  //response type
+
+  res.contentType('application/json');
+
+
+
+  //change this to info from the db
+
+  var items = await getCompanyData(userEmail);
+
+
+
+  console.log(items);
+
+  //send the response
+
+  res.json(items);
+
+})
+
+async function getEquipmentData() {
+  console.log("Querying container: Equipment");
+
+  // query to return all items
+  const querrySpec = {
+    query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = 1"
+  };
+
+  // read all items in the Items container
+  const { resources: items } = await equipmentContainer.items
+    .query(querrySpec)
+    .fetchAll();
+
+
+  return items[0];
+
+  //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
+}
+
+app.get('/getEquipmentData', async (req, res) => {
+  //const userEmail = req.query.userEmail;
+  //response type
+  res.contentType('application/json');
+
+  //change this to info from the db
+
+  var items = await getEquipmentData();
+
+  console.log(items);
+  //send the response
+  res.json(items);
+})
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+
 //Variable for updating/replacing existing item in container
 const newItemValue = {
   "id": "3",
@@ -61,50 +163,44 @@ const newItemValue = {
 
 async function main() {
 
-  // <CreateClientObjectDatabaseContainer>
-  const { databaseId, containerId } = config;
-
-  const client = new CosmosClient({ endpoint, key });
-  console.log(client);
-  const database = client.database(databaseId);
-  const container = database.container(containerId);
 
 
-  try {
-    // <QueryItems>
-    console.log(`Querying container: UserTest`);
 
-    // query to return all items
-    const querySpec = {
-      query: "SELECT * from c"
-    };
+  // try {
+  //   // <QueryItems>
+  //   console.log(`Querying container: Company`);
 
-    // read all items in the Items container
-    const { resources: items } = await container.items
-      .query(querySpec)
-      .fetchAll();
+  //   // query to return all items
+  //   const querySpec = {
+  //     query: "SELECT * from c"
+  //   };
 
-    items.forEach(item => {
-      console.log(`${item.id} - ${item.name}`);
-    });
-    // </QueryItems>
+  //   // read all items in the Items container
+  //   const { resources: items } = await container.items
+  //     .query(querySpec)
+  //     .fetchAll();
 
-    // <UpdateItem>
-    /** Update item
-     * Pull the id and partition key value from the newly created item.
-     * Update the isAdmin field to true.
-     */
+  //   items.forEach(item => {
+  //     console.log(`${item.id} - ${item.companyName}`);
+  //   });
+  // </QueryItems>
 
-
-    // Updating preexisting item
-    await container.item("3", "3").replace(newItemValue);
-
-    // </UpdateItem>
+  // <UpdateItem>
+  /** Update item
+   * Pull the id and partition key value from the newly created item.
+   * Update the isAdmin field to true.
+   */
 
 
-  } catch (err) {
-    console.log(err.message);
-  }
+  // Updating preexisting item
+  // await container.item("1", "1").replace(newItemValue);
+
+  // </UpdateItem>
+
+
+  // } catch (err) {
+  //   console.log(err.message);
+  // }
 }
 
 main();
