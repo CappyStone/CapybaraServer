@@ -1,8 +1,9 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
-const config = {
-  databaseId: "stormTest",
-  containerId: "UserTest",
-  partitionKey: { kind: "Hash", paths: ["/userId"] }
+//Cosmos connection for the company container
+const companyConfig = {
+  databaseId: "greenStormDB",
+  containerId: "Company",
+  partitionKey: { kind: "Hash", paths: ["/companyId"] }
 };
 
 const express = require('express')
@@ -43,6 +44,10 @@ app.post('/testVerify', (req, res) => {
     });
 })
 
+app.get('/getCompanyData', (req,res) =>{
+  res.json({ company: "yay"});
+} )
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
@@ -62,7 +67,7 @@ const newItemValue = {
 async function main() {
 
   // <CreateClientObjectDatabaseContainer>
-  const { databaseId, containerId } = config;
+  const { databaseId, containerId } = companyConfig;
 
   const client = new CosmosClient({ endpoint, key });
   console.log(client);
@@ -72,7 +77,7 @@ async function main() {
 
   try {
     // <QueryItems>
-    console.log(`Querying container: UserTest`);
+    console.log(`Querying container: Company`);
 
     // query to return all items
     const querySpec = {
@@ -85,7 +90,7 @@ async function main() {
       .fetchAll();
 
     items.forEach(item => {
-      console.log(`${item.id} - ${item.name}`);
+      console.log(`${item.id} - ${item.companyName}`);
     });
     // </QueryItems>
 
@@ -97,7 +102,7 @@ async function main() {
 
 
     // Updating preexisting item
-    await container.item("3", "3").replace(newItemValue);
+    await container.item("1", "1").replace(newItemValue);
 
     // </UpdateItem>
 
