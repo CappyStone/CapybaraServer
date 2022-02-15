@@ -4,11 +4,12 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 const companyConfig = {
   databaseId: "greenStormDB",
   containerId: "Company",
-  partitionKey: { kind: "Hash", paths: ["/companyId"] }
+  equipmentContainerId: "Equipment",
+  partitionKey: { kind: "Hash", paths: ["/companyId","/equipmentId"] }
 };
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
+const key = "bGk6iGvgK3BPFUUPDwDXY337yC9N0H1ysiCbE8iXqavd0uy6ZbRv2WaeJKspT9YCGansEGzEUdzhFuoJo5yppA==";
 
 // <CreateClientObjectDatabaseContainer>
 const { databaseId, containerId } = companyConfig;
@@ -18,19 +19,16 @@ console.log(client);
 const database = client.database(databaseId);
 const container = database.container(containerId);
 
+
 //Equipment database configuration
-const equipmentConfig = {
-  databaseId: "greenStormDB",
-  containerId: "Equipment",
-  partitionKey: { kind: "Hash", paths: ["/equipmentId"] }
-};
 
 // <CreateClientObjectDatabaseContainer>
-const { equipmentDatabaseId, equipmentContainerId } = equipmentConfig;
+const { equipmentContainerId } = companyConfig;
 
 const equipmentClient = new CosmosClient({ endpoint, key });
+console.log("equipment config");
 console.log(equipmentClient);
-const equipmentDatabase = equipmentClient.database(equipmentDatabaseId);
+const equipmentDatabase = equipmentClient.database(databaseId);
 const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
 
 const express = require('express')
@@ -118,13 +116,13 @@ async function getEquipmentData() {
   console.log("Querying container: Equipment");
 
   // query to return all items
-  const querySpec = {
+  const querrySpec = {
     query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = 1"
   };
 
   // read all items in the Items container
   const { resources: items } = await equipmentContainer.items
-    .query(querySpec)
+    .query(querrySpec)
     .fetchAll();
 
 
