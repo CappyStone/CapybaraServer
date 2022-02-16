@@ -16,18 +16,13 @@ const companyConfig = {
 const { databaseId, containerId } = companyConfig;
 
 const client = new CosmosClient({ endpoint, key });
-// console.log(client);
 const database = client.database(databaseId);
 const container = database.container(containerId);
 
 //Equipment database configuration
-
-// <CreateClientObjectDatabaseContainer>
 const { equipmentContainerId } = companyConfig;
 
 const equipmentClient = new CosmosClient({ endpoint, key });
-// console.log("equipment config");
-// console.log(equipmentClient);
 const equipmentDatabase = equipmentClient.database(databaseId);
 const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
 
@@ -45,8 +40,6 @@ async function getCompanyData(userEmail) {
         .fetchAll();
 
     return items[0];
-
-    //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
 }
 
 async function getEquipmentData(equipmentId) {
@@ -64,8 +57,6 @@ async function getEquipmentData(equipmentId) {
 
 
     return items[0];
-
-    //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
 }
 
 module.exports = { getCompanyData, getEquipmentData }; // Add any new database access functions to the export or they won't be usable
