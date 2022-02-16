@@ -1,36 +1,4 @@
-const CosmosClient = require("@azure/cosmos").CosmosClient;
-//Cosmos connection for the company container
-//Company database configuration
-const companyConfig = {
-  databaseId: "greenStormDB",
-  containerId: "Company",
-  equipmentContainerId: "Equipment",
-  partitionKey: { kind: "Hash", paths: ["/companyId","/equipmentId"] }
-};
-
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-
-// <CreateClientObjectDatabaseContainer>
-const { databaseId, containerId } = companyConfig;
-
-const client = new CosmosClient({ endpoint, key });
-console.log(client);
-const database = client.database(databaseId);
-const container = database.container(containerId);
-
-
-//Equipment database configuration
-
-// <CreateClientObjectDatabaseContainer>
-const { equipmentContainerId } = companyConfig;
-
-const equipmentClient = new CosmosClient({ endpoint, key });
-console.log("equipment config");
-console.log(equipmentClient);
-const equipmentDatabase = equipmentClient.database(databaseId);
-const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
-
+var fs = require('fs');
 const express = require('express')
 const cors = require('cors');
 const firebaseAdmin = require('firebase-admin');
@@ -38,7 +6,7 @@ const firebaseAdmin = require('firebase-admin');
 const app = express()
 const port = process.env.port || 3001
 
-var defaultApp = firebaseAdmin.initializeApp({
+firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.applicationDefault(),
   projectId: "capstoneprojectcapybara"
 });
@@ -52,155 +20,15 @@ app.use(cors({
 // JSON parsing for the body
 app.use(express.json())
 
-app.get('/test', (req, res) => {
-  res.json({ test: "SUCCESSED" });
-})
-
-app.post('/testVerify', (req, res) => {
-  defaultAuth.verifyIdToken(req.body.token)
-    .then((decodedToken) => {
-      // const uid = decodedToken.uid;
-      res.json({ accountVerify: "SUCCESSED" });
-    })
-    .catch((error) => {
-      // Handle error
-      console.log(error)
-      res.json({ accountVerify: "BAD TOKEN" });
-    });
-})
-
-async function getCompanyData(userEmail) {
-  console.log(`Querying container: Items`);
-
-  // query to return all items
-  const querySpec = {
-    query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
-  };
-
-  // read all items in the Items container
-  const { resources: items } = await container.items
-    .query(querySpec)
-    .fetchAll();
-
-
-  return items[0];
-
-  //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
-}
-
-app.get('/getCompanyData', async (req, res) => {
-
-  const userEmail = req.query.userEmail;
-
-  //response type
-
-  res.contentType('application/json');
-
-
-
-  //change this to info from the db
-
-  var items = await getCompanyData(userEmail);
-
-
-
-  console.log(items);
-
-  //send the response
-
-  res.json(items);
-
-})
-
-async function getEquipmentData(equipmentId) {
-  console.log("Querying container: Equipment");
-
-  // query to return all items
-  const querrySpec = {
-    query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
-  };
-
-  // read all items in the Items container
-  const { resources: items } = await equipmentContainer.items
-    .query(querrySpec)
-    .fetchAll();
-
-
-  return items[0];
-
-  //api URI is http://localhost:3001/getEquipmentData?equipmentId=ENTERID
-}
-
-app.get('/getEquipmentData', async (req, res) => {
-  const equipmentId = req.query.equipmentId;
-  //response type
-  res.contentType('application/json');
-
-  //change this to info from the db
-
-  var items = await getEquipmentData(equipmentId);
-
-  console.log(items);
-  //send the response
-  res.json(items);
-})
-
-
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-
-
-//Variable for updating/replacing existing item in container
-const newItemValue = {
-  "id": "3",
-  "userId": "3",
-  "name": "test3",
-  "isAdmin": true,
-};
-//  </DefineNewItem>
-
-async function main() {
-
-
-
-
-  // try {
-  //   // <QueryItems>
-  //   console.log(`Querying container: Company`);
-
-  //   // query to return all items
-  //   const querySpec = {
-  //     query: "SELECT * from c"
-  //   };
-
-  //   // read all items in the Items container
-  //   const { resources: items } = await container.items
-  //     .query(querySpec)
-  //     .fetchAll();
-
-  //   items.forEach(item => {
-  //     console.log(`${item.id} - ${item.companyName}`);
-  //   });
-  // </QueryItems>
-
-  // <UpdateItem>
-  /** Update item
-   * Pull the id and partition key value from the newly created item.
-   * Update the isAdmin field to true.
-   */
-
-
-  // Updating preexisting item
-  // await container.item("1", "1").replace(newItemValue);
-
-  // </UpdateItem>
-
-
-  // } catch (err) {
-  //   console.log(err.message);
-  // }
-}
-
-main();
+// load routes
+const directory = __dirname + '/routes/'
+fs.readdirSync(directory).forEach(function (file) {
+  if (file === "index.js" || file.substr(file.lastIndexOf('.') + 1) !== 'js')
+    return;
+  var name = file.substr(0, file.indexOf('.'));
+  require(directory + name)(app);
+});
