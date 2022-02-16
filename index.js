@@ -12,15 +12,6 @@ firebaseAdmin.initializeApp({
 });
 var defaultAuth = firebaseAdmin.auth()
 
-// load routes
-const directory = __dirname + '/routes/'
-fs.readdirSync(directory).forEach(function (file) {
-  if (file === "index.js" || file.substr(file.lastIndexOf('.') + 1) !== 'js')
-    return;
-  var name = file.substr(0, file.indexOf('.'));
-  require(directory + name)(app);
-});
-
 // CORS for local development
 app.use(cors({
   origin: ['http://localhost:3000']
@@ -32,3 +23,12 @@ app.use(express.json())
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+// load routes
+const directory = __dirname + '/routes/'
+fs.readdirSync(directory).forEach(function (file) {
+  if (file === "index.js" || file.substr(file.lastIndexOf('.') + 1) !== 'js')
+    return;
+  var name = file.substr(0, file.indexOf('.'));
+  require(directory + name)(app);
+});
