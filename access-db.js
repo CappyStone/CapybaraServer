@@ -49,12 +49,12 @@ async function getCompanyData(userEmail) {
     //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
 }
 
-async function getEquipmentData() {
+async function getEquipmentData(equipmentId) {
     console.log("Querying container: Equipment");
 
     // query to return all items
     const querrySpec = {
-        query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = 1"
+        query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
     };
 
     // read all items in the Items container
