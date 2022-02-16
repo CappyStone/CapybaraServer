@@ -117,7 +117,7 @@ async function getEquipmentData(equipmentId) {
 
   // query to return all items
   const querrySpec = {
-    query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId + '"'
+    query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
   };
 
   // read all items in the Items container
