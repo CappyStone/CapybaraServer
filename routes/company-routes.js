@@ -11,7 +11,7 @@ module.exports = function (app) {
         //change this to info from the db
         var items = await db.getCompanyData(userEmail);
 
-        console.log(items);
+        // console.log(items);
 
         //send the response
         res.json(items);
@@ -26,7 +26,7 @@ module.exports = function (app) {
 
         var items = await db.getEquipmentData();
 
-        console.log(items);
+        // console.log(items);
 
         //send the response
         res.json(items);

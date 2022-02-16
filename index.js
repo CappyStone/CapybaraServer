@@ -6,7 +6,7 @@ const firebaseAdmin = require('firebase-admin');
 const app = express()
 const port = process.env.port || 3001
 
-var defaultApp = firebaseAdmin.initializeApp({
+firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.applicationDefault(),
   projectId: "capstoneprojectcapybara"
 });

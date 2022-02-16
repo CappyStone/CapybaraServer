@@ -16,7 +16,7 @@ const companyConfig = {
 const { databaseId, containerId } = companyConfig;
 
 const client = new CosmosClient({ endpoint, key });
-console.log(client);
+// console.log(client);
 const database = client.database(databaseId);
 const container = database.container(containerId);
 
@@ -26,8 +26,8 @@ const container = database.container(containerId);
 const { equipmentContainerId } = companyConfig;
 
 const equipmentClient = new CosmosClient({ endpoint, key });
-console.log("equipment config");
-console.log(equipmentClient);
+// console.log("equipment config");
+// console.log(equipmentClient);
 const equipmentDatabase = equipmentClient.database(databaseId);
 const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
 
