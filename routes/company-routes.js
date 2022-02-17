@@ -2,7 +2,6 @@ const db = require('../access-db');
 
 module.exports = function (app) {
     app.post('/getCompanyData', async (req, res) => {
-        //api URI is http://localhost:3001/getCompanyData?userEmail=ENTERUSEREMAILHERE
         const userEmail = req.body.userEmail;
 
         //response type
@@ -21,7 +20,6 @@ module.exports = function (app) {
     })
 
     app.post('/getEquipmentData', async (req, res) => {
-        //api URI is http://localhost:3001/getEquipmentId?equipmentId=ENTERID
         const equipmentId = req.body.equipmentId;
         //response type
         res.contentType('application/json');
