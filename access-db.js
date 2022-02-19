@@ -9,7 +9,8 @@ const companyConfig = {
     databaseId: "greenStormDB",
     containerId: "Company",
     equipmentContainerId: "Equipment",
-    partitionKey: { kind: "Hash", paths: ["/companyId", "/equipmentId"] }
+    diagnosticsContainerId: "Diagnostics",
+    partitionKey: { kind: "Hash", paths: ["/companyId", "/equipmentId", "/diagnosticsId"] }
 };
 
 // <CreateClientObjectDatabaseContainer>
@@ -25,6 +26,14 @@ const { equipmentContainerId } = companyConfig;
 const equipmentClient = new CosmosClient({ endpoint, key });
 const equipmentDatabase = equipmentClient.database(databaseId);
 const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
+
+//Diagnostics database configuration
+const { diagnosticsContainerId } = companyConfig;
+
+const diagnosticsClient = new CosmosClient({ endpoint, key });
+const diagnosticsDatabase = diagnosticsClient.database(databaseId);
+const diagnosticsContainer = diagnosticsDatabase.container(diagnosticsContainerId);
+
 
 async function getCompanyData(userEmail) {
     console.log(`Querying container: Items`);
@@ -46,17 +55,33 @@ async function getEquipmentData(equipmentId) {
     console.log("Querying container: Equipment");
 
     // query to return all items
-    const querrySpec = {
+    const querySpec = {
         query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
     };
 
     // read all items in the Items container
     const { resources: items } = await equipmentContainer.items
-        .query(querrySpec)
+        .query(querySpec)
         .fetchAll();
 
 
     return items[0];
 }
 
-module.exports = { getCompanyData, getEquipmentData }; // Add any new database access functions to the export or they won't be usable
+async function getTestData() {
+    console.log("Querying container: Diagnostics");
+
+    // query to return all items
+    const querySpec = {
+        query: "SELECT * FROM Diagnostics d"
+    };
+
+    // read all items in the Items container
+    const { resources: items } = await diagnosticsContainer.items.query(querySpec).fetchAll();
+
+    console.log(items);
+
+    return items[0];
+}
+
+module.exports = { getCompanyData, getEquipmentData, getTestData }; // Add any new database access functions to the export or they won't be usable
