@@ -10,7 +10,7 @@ const companyConfig = {
     containerId: "Company",
     equipmentContainerId: "Equipment",
     diagnosticsContainerId: "Diagnostics",
-    partitionKey: { kind: "Hash", paths: ["/companyId", "/equipmentId", "/diagnosticsId"] }
+    partitionKey: { kind: "Hash", paths: ["/contactEmail", "/equipmentId", "/diagnosticsId"] }
 };
 
 // <CreateClientObjectDatabaseContainer>
@@ -51,6 +51,38 @@ async function getCompanyData(userEmail) {
     return items[0];
 }
 
+async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, email) {
+    console.log(`Creating new company`);
+
+    const newCompany = {
+        id: "",
+        companyName: companyName,
+        contactEmail: email,
+        companyAddress: {
+            street: companyStreet,
+            city: companyCity,
+            provinceState: companyProvinceState,
+            country: companyCountry,
+            postalZipcode: companyPostalZipCode
+            },
+        employees: [
+        {
+            email: email,
+            isAdmin: true
+        },
+        
+        ],
+        ownedEquipment: [
+        ],
+    };
+
+      /** Create new item
+    * newItem is defined at the top of this file
+    */
+    const { resource: createdItem } = await container.items.create(newCompany);
+
+}
+
 async function getEquipmentData(equipmentId) {
     console.log("Querying container: Equipment");
 
@@ -84,4 +116,4 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getEquipmentData, getTestData }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany }; // Add any new database access functions to the export or they won't be usable
