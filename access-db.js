@@ -4,35 +4,31 @@ const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 //Cosmos connection for the company container
+
 //Company database configuration
-const companyConfig = {
+const databaseConfig = {
     databaseId: "greenStormDB",
-    containerId: "Company",
+    companyContainerId: "Company",
     equipmentContainerId: "Equipment",
     diagnosticsContainerId: "Diagnostics",
     partitionKey: { kind: "Hash", paths: ["/contactEmail", "/equipmentId", "/diagnosticsId"] }
 };
 
-// <CreateClientObjectDatabaseContainer>
-const { databaseId, containerId } = companyConfig;
+const { databaseId, companyContainerId, equipmentContainerId, diagnosticsContainerId } = databaseConfig;
+
+// Company Container Config
 
 const client = new CosmosClient({ endpoint, key });
 const database = client.database(databaseId);
-const container = database.container(containerId);
+const companyContainer = database.container(companyContainerId);
 
-//Equipment database configuration
-const { equipmentContainerId } = companyConfig;
+//Equipment Container configuration
 
-const equipmentClient = new CosmosClient({ endpoint, key });
-const equipmentDatabase = equipmentClient.database(databaseId);
-const equipmentContainer = equipmentDatabase.container(equipmentContainerId);
+const equipmentContainer = database.container(equipmentContainerId);
 
-//Diagnostics database configuration
-const { diagnosticsContainerId } = companyConfig;
+//Diagnostics Container configuration
 
-const diagnosticsClient = new CosmosClient({ endpoint, key });
-const diagnosticsDatabase = diagnosticsClient.database(databaseId);
-const diagnosticsContainer = diagnosticsDatabase.container(diagnosticsContainerId);
+const diagnosticsContainer = database.container(diagnosticsContainerId);
 
 
 async function getCompanyData(userEmail) {
@@ -44,7 +40,7 @@ async function getCompanyData(userEmail) {
     };
 
     // read all items in the Items container
-    const { resources: items } = await container.items
+    const { resources: items } = await companyContainer.items
         .query(querySpec)
         .fetchAll();
 
@@ -82,7 +78,7 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
     */
 
       //push json to database to make company
-    const { resource: createdItem } = await container.items.create(newCompany);
+    const { resource: createdItem } = await companyContainer.items.create(newCompany);
 
 }
 
