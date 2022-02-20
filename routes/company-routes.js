@@ -22,6 +22,8 @@ module.exports = function (app) {
     })
 
     app.post('/createCompany', async (req, res) => {
+
+        //parameters needed to make a new company
         const companyName = req.body.companyName;
         const companyStreet = req.body.companyStreet;
         const companyCity = req.body.companyCity;
@@ -29,11 +31,13 @@ module.exports = function (app) {
         const companyProvinceState = req.body.companyProvinceState;
         const companyPostalZipCode = req.body.companyPostalZipCode;
         const email = req.body.email;
+        
         //response type
         res.contentType('application/json');
 
-        //change this to info from the db
-        var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, email)); // combine the result with an empty object to ensure items is not undefined
+        //create a new company
+        var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, email)); 
+        //query for newly created company
         var items = Object.assign({}, await db.getCompanyData(email)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
         

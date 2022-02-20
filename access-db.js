@@ -54,6 +54,7 @@ async function getCompanyData(userEmail) {
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, email) {
     console.log(`Creating new company`);
 
+    //new json file for company
     const newCompany = {
         id: "",
         companyName: companyName,
@@ -79,6 +80,8 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
       /** Create new item
     * newItem is defined at the top of this file
     */
+
+      //push json to database to make company
     const { resource: createdItem } = await container.items.create(newCompany);
 
 }
