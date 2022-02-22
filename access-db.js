@@ -47,14 +47,15 @@ async function getCompanyData(userEmail) {
     return items[0];
 }
 
-async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, email) {
+
+async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
     console.log(`Creating new company`);
 
     //new json file for company
     const newCompany = {
         id: "",
         companyName: companyName,
-        contactEmail: email,
+        contactEmail: companyEmail,
         companyAddress: {
             street: companyStreet,
             city: companyCity,
@@ -64,7 +65,7 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
             },
         employees: [
         {
-            email: email,
+            email: adminEmail,
             isAdmin: true
         },
         
