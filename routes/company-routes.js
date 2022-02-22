@@ -30,15 +30,16 @@ module.exports = function (app) {
         const companyCountry = req.body.companyCountry;
         const companyProvinceState = req.body.companyProvinceState;
         const companyPostalZipCode = req.body.companyPostalZipCode;
-        const email = req.body.email;
+        const companyEmail = req.body.companyEmail;
+        const adminEmail = req.body.adminEmail;
         
         //response type
         res.contentType('application/json');
 
         //create a new company
-        var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, email)); 
+        var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail)); 
         //query for newly created company
-        var items = Object.assign({}, await db.getCompanyData(email)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.getCompanyData(adminEmail)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
         
         //send the response
