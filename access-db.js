@@ -1,7 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
+const key = "GNUKYB70Q5KN4EwMdtpSlwbXNm6HcMB5KOsradxnUTF9ZbGituM8F73REDzdsoIyA7orsLl1Mj0ajn6aEZpLrQ==";
 
 //Cosmos connection for the company container
 
@@ -82,6 +82,37 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
 
 }
 
+async function createNewEquipment(equipmentId, category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
+    console.log(`Creating new equiment`);
+
+    //new json file for equipment
+    const newEquipment = {
+        id: "",
+        equipmentId: equipmentId,
+        category: category,
+        productName: productName,
+        description: description,
+        manufacturer: manufacturer,
+        serialNumber: serialNumber,
+        greenScore: greenScore,
+        efficiencyRating: efficiencyRating,
+        estimatedPrice: estimatedPrice,
+        verified: verified,
+        tags: [
+        ],
+    };
+
+      /** Create new item
+    * newItem is defined at the top of this file
+    */
+
+      //push json to database to create piece of equipment in equipment DB
+    const { resource: createdItem } = await equipmentContainer.items.create(newEquipment);
+
+}
+
+
+
 async function getEquipmentData(equipmentId) {
     console.log("Querying container: Equipment");
 
@@ -115,4 +146,4 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, createNewEquipment }; // Add any new database access functions to the export or they won't be usable
