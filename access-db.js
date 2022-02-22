@@ -47,21 +47,6 @@ async function getCompanyData(userEmail) {
     return items[0];
 }
 
-async function addEmployeeToCompany(userEmail, adminEmail, companyId, contactEmail) {
-    console.log(`Querying container: Items`);
-
-    // query to return all items
-    const querySpec = {
-        query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
-    };
-
-    // read all items in the Items container
-    const { resources: items } = await companyContainer.items
-        .query(querySpec)
-        .fetchAll();
-
-    return items[0];
-}
 
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
     console.log(`Creating new company`);
