@@ -117,13 +117,26 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
 
 }
 
-async function createNewEquipment(equipmentId, category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
+async function createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
+    
+    const querySpec = {
+        query: "SELECT top 1 c.equipmentId FROM c ORDER BY c.equipmentId DESC"
+    };
+
+    const { resources: items } = await equipmentContainer.items
+        .query(querySpec)
+        .fetchAll();
+    
     console.log(`Creating new equiment`);
+
+    var latestId = items[0].equipmentId;
+
+    latestId = latestId + 1;
 
     //new json file for equipment
     const newEquipment = {
         id: "",
-        equipmentId: equipmentId,
+        equipmentId: latestId,
         category: category,
         productName: productName,
         description: description,
@@ -144,6 +157,7 @@ async function createNewEquipment(equipmentId, category, productName, descriptio
       //push json to database to create piece of equipment in equipment DB
     const { resource: createdItem } = await equipmentContainer.items.create(newEquipment);
 
+    return createdItem;
 }
 
 
