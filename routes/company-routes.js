@@ -76,7 +76,6 @@ module.exports = function (app) {
     app.post('/createNewEquipment', async (req, res) => {
 
         //parameters needed to make a new company
-        const equipmentId = req.body.equipmentId;
         const category = req.body.category;
         const productName = req.body.productName;
         const description = req.body.description;
@@ -91,14 +90,14 @@ module.exports = function (app) {
         res.contentType('application/json');
 
         //create new equipment
-        var newEquipment = Object.assign({}, await db.createNewEquipment(equipmentId, category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified)); 
+        var newEquipment = Object.assign({}, await db.createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified)); 
         //query for newly created equiment
-        var items = Object.assign({}, await db.getEquipmentData(equipmentId)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
+        //var items = Object.assign({}, await db.getEquipmentData(equipmentId)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(newEquipment).length; // get the number of keys in the object
         
         //send the response
         if (size > 0) {
-            res.json(items);
+            res.json(newEquipment);
         } else {
             res.json({})
         }
