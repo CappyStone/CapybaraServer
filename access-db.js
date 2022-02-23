@@ -47,6 +47,40 @@ async function getCompanyData(userEmail) {
     return items[0];
 }
 
+async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin){
+
+     console.log(`creating new employee entry`);
+
+    // query for company 
+    const querySpec = {
+        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + adminEmail + "'"
+    };
+
+    // read all items in the Items container
+    const { resources: items } = await companyContainer.items
+        .query(querySpec)
+        .fetchAll();
+
+     //grab current list of employees
+    var employees = items[0].employees;
+
+    //add new employee
+    employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
+
+    //add new employee list to company
+    items[0].employees = employees;
+
+    //send to database
+    const { resource: updatedItem } = await companyContainer
+        //id and partition key 
+        .item(items[0].id, items[0].contactEmail)
+        // new json object to replace the one in the database
+        .replace(items[0]);
+
+    //return updated item
+    return updatedItem;
+}
+
 
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
     console.log(`Creating new company`);
@@ -147,4 +181,6 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, createNewEquipment }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany }; // Add any new database access functions to the export or they won't be usable
+
+
