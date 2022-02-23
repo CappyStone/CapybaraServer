@@ -181,6 +181,6 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, addEmployeeToCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany }; // Add any new database access functions to the export or they won't be usable
 
 
