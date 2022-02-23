@@ -179,6 +179,20 @@ async function getEquipmentData(equipmentId) {
     return items[0];
 }
 
+async function isEmployeeAdmin(userEmail) {
+
+    const querySpec = {
+        query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+    };
+
+    const { resources: items } = await companyContainer.items
+        .query(querySpec)
+        .fetchAll();
+
+    return items[0];
+
+}
+
 async function getTestData() {
     console.log("Querying container: Diagnostics");
 
@@ -195,6 +209,6 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin }; // Add any new database access functions to the export or they won't be usable
 
 
