@@ -51,6 +51,7 @@ describe('DB Connections', function () {
         
             assert.notEqual(items.length, 0);
         });
+
         it('Adding item to Company Container', async function () {
             const querySpec = {
                 query: "SELECT * FROM Company c"
@@ -64,6 +65,7 @@ describe('DB Connections', function () {
             var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
             assert.equal(items.length, oldLength + 1)
         });
+
         it('Update item in Company Container', async function () {
             const querySpec = {
                 query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com'"
@@ -76,6 +78,25 @@ describe('DB Connections', function () {
             await companyContainer.item(items[0].id, items[0].contactEmail).replace(items[0]);
             var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
             assert.equal(items[0].companyName, "modifiedTestSuite");
+        });
+
+        it('Delete item in Company Container', async function () {
+            const querySpec = {
+                query: "SELECT * FROM Company c"
+            };
+            
+    
+            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+            var oldLength = items.length;
+            
+            const addedItemQuery = {
+                query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com' AND c.companyName = 'modifiedTestSuite'"
+            };
+            var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
+            await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
+            
+            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+            assert.equal(items.length, oldLength - 1);
         });
     });
 
