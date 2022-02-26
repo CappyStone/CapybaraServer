@@ -18,6 +18,27 @@ const database = client.database(databaseId);
 const companyContainer = database.container(companyContainerId);
 const equipmentContainer = database.container(equipmentContainerId);
 
+const newEquipmentEntry = {
+    "id": "",
+    "equipmentId": 7,
+    "category": "vehicle",
+    "productName": "Model 3.5",
+    "description": "3 but more",
+    "manufacturer": "Teslo",
+    "serialNumber": "5YJ3E1EAXHF",
+    "greenScore": "10",
+    "efficiencyRating": "26kWh/100mi",
+    "estimatedPrice": 66130.73,
+    "verified": true,
+    "tags": [
+        {
+            "tag": "teslo"
+        },
+        {
+            "tag": "electric vehicle"
+        }
+    ]
+}
 const newCompanyEntry = {
     id: "",
     companyName: "connectionTestSuite",
@@ -110,6 +131,49 @@ describe('DB Connections', function () {
         
             assert.notEqual(items.length, 0);
         });
-        
+        it('Adding item to Equipment Container', async function () {
+            const querySpec = {
+                query: "SELECT * FROM Equipment e"
+            };
+    
+            var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
+            var oldLength = items.length;
+
+            await equipmentContainer.items.create(newEquipmentEntry);
+
+            var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
+            assert.equal(items.length, oldLength + 1)
+        });
+        it('Update item in Equipment Container', async function () {
+            const querySpec = {
+                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.serialNumber = '5YJ3E1EAXHF'"
+            };
+    
+            var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
+            assert.equal(items[0].productName, newEquipmentEntry.productName);
+            items[0].productName = "Model 3.7";
+            //send to database
+            await equipmentContainer.item(items[0].id, items[0].equipmentId).replace(items[0]);
+            var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
+            assert.equal(items[0].productName, "Model 3.7");
+        });
+        it('Delete item in Equipment Container', async function () {
+            const querySpec = {
+                query: "SELECT * FROM Equipment e"
+            };
+            
+    
+            var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
+            var oldLength = items.length;
+            
+            const addedItemQuery = {
+                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.serialNumber = '5YJ3E1EAXHF' AND e.productName = 'Model 3.7'"
+            };
+            var { resources: addedItem } = await equipmentContainer.items.query(addedItemQuery).fetchAll();
+            await equipmentContainer.item(addedItem[0].id, addedItem[0].equipmentId).delete()
+            
+            var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
+            assert.equal(items.length, oldLength - 1);
+        });
     });
 });
