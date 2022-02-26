@@ -131,6 +131,7 @@ describe('DB Connections', function () {
         
             assert.notEqual(items.length, 0);
         });
+
         it('Adding item to Equipment Container', async function () {
             const querySpec = {
                 query: "SELECT * FROM Equipment e"
@@ -144,9 +145,10 @@ describe('DB Connections', function () {
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
             assert.equal(items.length, oldLength + 1)
         });
+
         it('Update item in Equipment Container', async function () {
             const querySpec = {
-                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.serialNumber = '5YJ3E1EAXHF'"
+                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'Teslo'"
             };
     
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
@@ -157,6 +159,7 @@ describe('DB Connections', function () {
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
             assert.equal(items[0].productName, "Model 3.7");
         });
+
         it('Delete item in Equipment Container', async function () {
             const querySpec = {
                 query: "SELECT * FROM Equipment e"
@@ -167,7 +170,7 @@ describe('DB Connections', function () {
             var oldLength = items.length;
             
             const addedItemQuery = {
-                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.serialNumber = '5YJ3E1EAXHF' AND e.productName = 'Model 3.7'"
+                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'Teslo' AND e.productName = 'Model 3.7'"
             };
             var { resources: addedItem } = await equipmentContainer.items.query(addedItemQuery).fetchAll();
             await equipmentContainer.item(addedItem[0].id, addedItem[0].equipmentId).delete()
