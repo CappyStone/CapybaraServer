@@ -47,7 +47,6 @@ describe('DB Connections', function () {
                 query: "SELECT * FROM Company c Where c.id = '1'"
             };
     
-            // read all items in the Items container
             const { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
         
             assert.notEqual(items.length, 0);
@@ -57,7 +56,6 @@ describe('DB Connections', function () {
                 query: "SELECT * FROM Company c"
             };
     
-            // read all items in the Items container
             var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
             var oldLength = items.length;
 
@@ -65,6 +63,19 @@ describe('DB Connections', function () {
 
             var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
             assert.equal(items.length, oldLength + 1)
+        });
+        it('Update item in Company Container', async function () {
+            const querySpec = {
+                query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com'"
+            };
+    
+            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+            assert.equal(items[0].companyName, newCompanyEntry.companyName);
+            items[0].companyName = "modifiedTestSuite";
+            //send to database
+            await companyContainer.item(items[0].id, items[0].contactEmail).replace(items[0]);
+            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+            assert.equal(items[0].companyName, "modifiedTestSuite");
         });
     });
 
@@ -74,7 +85,6 @@ describe('DB Connections', function () {
                 query: "SELECT * FROM Equipment e Where e.id = '1'"
             };
     
-            // read all items in the Items container
             const { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
         
             assert.notEqual(items.length, 0);
