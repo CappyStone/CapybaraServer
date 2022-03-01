@@ -10,7 +10,7 @@ module.exports = function (app) {
         //change this to info from the db
         var items = Object.assign({}, await db.getCompanyData(userEmail)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
-        
+
         //send the response
         if (size > 0) {
             res.json(items);
@@ -18,7 +18,7 @@ module.exports = function (app) {
             res.json({})
         }
 
-       
+
     })
 
     app.post('/addEmployeeToCompany', async (req, res) => {
@@ -33,7 +33,7 @@ module.exports = function (app) {
         //change this to info from the db
         var items = Object.assign({}, await db.addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
-        
+
         //send the response
         if (size > 0) {
             res.json(items);
@@ -41,7 +41,7 @@ module.exports = function (app) {
             res.json({})
         }
 
-       
+
     })
 
     app.post('/createCompany', async (req, res) => {
@@ -55,18 +55,22 @@ module.exports = function (app) {
         const companyPostalZipCode = req.body.companyPostalZipCode;
         const companyEmail = req.body.companyEmail;
         const adminEmail = req.body.adminEmail;
-        
+
         //response type
         res.contentType('application/json');
 
-        //create a new company
-        var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail)); 
-        //query for newly created company
+        // try to find existing company
         var items = Object.assign({}, await db.getCompanyData(adminEmail)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
-        
+        if (Object.keys(items).length == 0) {
+            //create a new company
+            var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail));
+        }
+
+        //query for newly created company
+        items = Object.assign({}, await db.getCompanyData(adminEmail)); // combine the result with an empty object to ensure items is not undefined
+
         //send the response
-        if (size > 0) {
+        if (Object.keys(items).length > 0) {
             res.json(items);
         } else {
             res.json({})
@@ -85,16 +89,16 @@ module.exports = function (app) {
         const efficiencyRating = req.body.efficiencyRating;
         const estimatedPrice = req.body.estimatedPrice;
         const verified = req.body.verified;
-        
+
         //response type
         res.contentType('application/json');
 
         //create new equipment
-        var newEquipment = Object.assign({}, await db.createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified)); 
+        var newEquipment = Object.assign({}, await db.createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified));
         //query for newly created equiment
         //var items = Object.assign({}, await db.getEquipmentData(equipmentId)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(newEquipment).length; // get the number of keys in the object
-        
+
         //send the response
         if (size > 0) {
             res.json(newEquipment);
@@ -129,7 +133,7 @@ module.exports = function (app) {
         //change this to info from the db
         var items = Object.assign({}, await db.isEmployeeAdmin(userEmail)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
-        
+
         //send the response
         if (size > 0) {
             res.json(items);
@@ -137,6 +141,6 @@ module.exports = function (app) {
             res.json({})
         }
 
-       
+
     })
 }
