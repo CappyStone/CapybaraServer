@@ -20,16 +20,15 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '16.x'
-          
+
+      - name: npm install, build, and test
       - env:
           COSMOSADDRESS: ${{ secrets.COSMOSADDRESS }}
           COSMOSDBSTRING: ${{ secrets.COSMOSDBSTRING }}
           run: export 
       - run: env
           
-
-      - name: npm install, build, and test
-        run: |
+      - run: |
           npm install
           npm run build --if-present
           npm run test --if-present
