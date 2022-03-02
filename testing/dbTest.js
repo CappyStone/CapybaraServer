@@ -2,8 +2,8 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
 //const config = require("../config");
 
-const endpoint = secrets.COSMOSADDRESS;
-const key = secrets.COSMOSDBSTRING;
+const endpoint = process.env.COSMOSADDRESS;
+const key = process.env.COSMOSDBSTRING;
 
 const databaseConfig = {
     databaseId: "greenStormTestDB",
