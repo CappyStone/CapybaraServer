@@ -1,9 +1,9 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
-//const config = require("../config");
+const config = require("../config");
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const endpoint = config.endpoint;
+const key = config.key;
 
 const databaseConfig = {
     databaseId: "greenStormTestDB",
@@ -18,24 +18,26 @@ const database = client.database(databaseId);
 const companyContainer = database.container(companyContainerId);
 const equipmentContainer = database.container(equipmentContainerId);
 
+const timeout = 8000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
+
 const newEquipmentEntry = {
-    "id": "",
-    "equipmentId": 7,
-    "category": "vehicle",
-    "productName": "Model 3.5",
-    "description": "3 but more",
-    "manufacturer": "Teslo",
-    "serialNumber": "5YJ3E1EAXHF",
-    "greenScore": "10",
-    "efficiencyRating": "26kWh/100mi",
-    "estimatedPrice": 66130.73,
-    "verified": true,
-    "tags": [
+    id: "",
+    equipmentId: 7,
+    category: "vehicle",
+    productName: "Model 3.5",
+    description: "3 but more",
+    manufacturer: "Teslo",
+    serialNumber: "5YJ3E1EAXHF",
+    greenScore: "10",
+    efficiencyRating: "26kWh/100mi",
+    estimatedPrice: 66130.73,
+    verified: true,
+    tags: [
         {
-            "tag": "teslo"
+            tag: "teslo"
         },
         {
-            "tag": "electric vehicle"
+            tag: "electric vehicle"
         }
     ]
 }
@@ -62,10 +64,11 @@ const newCompanyEntry = {
 };
 
 describe('DB Connections', function () {
+    this.timeout(timeout);
     describe('Company Container', function () {
         it('Querying Company Container', async function () {
             const querySpec = {
-                query: "SELECT * FROM Company c Where c.id = '1'"
+                query: "SELECT * FROM Company c"
             };
     
             const { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
@@ -124,7 +127,7 @@ describe('DB Connections', function () {
     describe('Equipment Container', function () {
         it('Querying Equipment Container', async function () {
             const querySpec = {
-                query: "SELECT * FROM Equipment e Where e.id = '1'"
+                query: "SELECT * FROM Equipment e"
             };
     
             const { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
