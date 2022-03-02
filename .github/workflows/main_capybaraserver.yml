@@ -23,8 +23,8 @@ jobs:
 
       - name: npm install, build, and test
         env:
-          COSMOSADDRESS: ${{ secrets.COSMOSADDRESS }}
-          COSMOSDBSTRING: ${{ secrets.COSMOSDBSTRING }}
+          CUSTOMCONNSTR_CosmosAddress: ${{ secrets.COSMOSADDRESS }}
+          CUSTOMCONNSTR_CosmosDBString: ${{ secrets.COSMOSDBSTRING }}
           
         run: |
           npm install
