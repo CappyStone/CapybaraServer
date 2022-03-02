@@ -20,8 +20,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '16.x'
+          cosmosAddress: ${{secrets.COSMOSADDRESS}}
+          cosmosString: ${{secrets.COSMOSDBSTRING}}
 
       - name: npm install, build, and test
+        
         run: |
           npm install
           npm run build --if-present
