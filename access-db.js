@@ -1,8 +1,9 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-
+// const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+// const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
+const key = "taHQguhQFCF9TKCBBKT1As9kchW6D2dASQWhpHfeULKm23p7jpmbCmuaRvCvt7iMCbvajidwqJVC1QaC07WnmA==";
 //Cosmos connection for the company container
 
 //Company database configuration
@@ -183,7 +184,7 @@ async function getEquipmentData(equipmentId) {
 
     // query to return all items
     const querySpec = {
-        query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
+        query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description, e.equipmentId FROM Equipment e WHERE e.equipmentId = " + equipmentId
     };
 
     // read all items in the Items container
@@ -193,6 +194,96 @@ async function getEquipmentData(equipmentId) {
 
 
     return items[0];
+}
+
+async function addEquipmentToCompany(equipmentIdentifier,userEmail,amountOfEquipment) {
+    console.log("Adding equipment to company in container: Company");
+
+    // query to return all items
+    const companyUpdating = await this.getCompanyByContactEmail(userEmail);
+    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
+    
+    if( companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1){
+        return {error : 'couldnt find equipment or company' } ;
+    }
+
+    console.log('wellness check');
+
+    if(companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null){
+        return {}; 
+    }
+    const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment}
+    console.log('wellness check');
+    var equipmentHolder = companyUpdating.ownedEquipment;
+    equipmentHolder.push(newEquipmentItem);
+    companyUpdating.ownedEquipment = equipmentHolder;
+
+     // read all items in the Items container
+     const { resources: updatedItem } = await companyContainer
+        .item(companyUpdating.id, companyUpdating.contactEmail)
+        // new json object to replace the one in the database
+        .replace(companyUpdating);
+
+    return updatedItem;
+}
+
+async function removeEquipmentFromCompany(equipmentIdentifier,userEmail) {
+    console.log("Adding equipment to company in container: Company");
+
+    // query to return all items
+    const companyUpdating = await this.getCompanyByContactEmail(userEmail);
+    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
+    
+    if( companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1){
+        return {};
+    }
+
+    // const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment};
+
+    var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentIdentifier !== equipmentIdentifier);
+
+    // var equipmentHolder = companyUpdating.ownedEquipment;
+    // equipmentHolder.push(newEquipmentItem);
+    companyUpdating.ownedEquipment = newEquipmentHolder;
+
+     // read all items in the Items container
+     const { resources: updatedItem } = await companyContainer
+        .item(companyUpdating.id, companyUpdating.contactEmail)
+        // new json object to replace the one in the database
+        .replace(companyUpdating);
+
+    return updatedItem;
+}
+
+async function updateEquipmentAmountInCompany(equipmentIdentifier,userEmail,amountOfEquipment) {
+    console.log("Adding equipment to company in container: Company");
+
+    // query to return all items
+    const companyUpdating = await this.getCompanyByContactEmail(userEmail);
+    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
+    
+    if( companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1){
+        throw 'One of these entries does not exist';
+    }
+    console.log('wellness check');
+    // const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment};
+
+    var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentIdentifier == equipmentIdentifier);
+    // var equipmentHolder = companyUpdating.ownedEquipment;
+    // equipmentHolder.push(newEquipmentItem);
+    var equipmentHolder = companyUpdating.ownedEquipment;
+    console.log('wellness check');
+    console.log(equipmentAdding)
+    equipmentHolder[indexOfItem] = {equipmentId: equipmentIdentifier, amount: amountOfEquipment}
+    companyUpdating.ownedEquipment = equipmentHolder;
+
+     // read all items in the Items container
+     const { resources: updatedItem } = await companyContainer
+        .item(companyUpdating.id, companyUpdating.contactEmail)
+        // new json object to replace the one in the database
+        .replace(companyUpdating);
+
+    return updatedItem;
 }
 
 async function isEmployeeAdmin(userEmail) {
@@ -225,6 +316,6 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, addEquipmentToCompany, updateEquipmentAmountInCompany, removeEquipmentFromCompany }; // Add any new database access functions to the export or they won't be usable
 
 

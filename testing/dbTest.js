@@ -1,5 +1,6 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
+const { addEquipmentToCompany } = require("../access-db");
 //const config = require("../config");
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
@@ -90,7 +91,7 @@ describe('DB Connections', function () {
             assert.equal(items.length, oldLength + 1)
         });
 
-        it('Update item in Company Container', async function () {
+        it('Update name of item in Company Container', async function () {
             const querySpec = {
                 query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com'"
             };
@@ -104,24 +105,28 @@ describe('DB Connections', function () {
             assert.equal(items[0].companyName, "modifiedTestSuite");
         });
 
-        it('Delete item in Company Container', async function () {
-            const querySpec = {
-                query: "SELECT * FROM Company c"
-            };
+        it('Update equipment for item in Company Container', async function () {
+            addEquipmentToCompany(7,"connection@testsuite.com",25);
+        });
+
+        // it('Delete item in Company Container', async function () {
+        //     const querySpec = {
+        //         query: "SELECT * FROM Company c"
+        //     };
             
     
-            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
-            var oldLength = items.length;
+        //     var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+        //     var oldLength = items.length;
             
-            const addedItemQuery = {
-                query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com' AND c.companyName = 'modifiedTestSuite'"
-            };
-            var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
-            await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
+        //     const addedItemQuery = {
+        //         query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com' AND c.companyName = 'modifiedTestSuite'"
+        //     };
+        //     var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
+        //     await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
             
-            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
-            assert.equal(items.length, oldLength - 1);
-        });
+        //     var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+        //     assert.equal(items.length, oldLength - 1);
+        // });
     });
 
     describe('Equipment Container', function () {
