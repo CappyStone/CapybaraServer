@@ -234,16 +234,37 @@ async function incrementEquipmentId(equipmentId) {
 async function giveAdminPriviledge(userEmail) {
 
     const querySpec = {
-        query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
     };
 
     const { resources: items } = await companyContainer.items
         .query(querySpec)
         .fetchAll();
 
-        items[0].isAdmin = true;
+     //grab current list of employees
+    var employees = items[0].employees;
 
-    return items[0];
+    employees.forEach((element)=>{
+        if (element.email == userEmail) {
+            element.isAdmin = true;
+        }
+    });
+
+    //add new employee
+    //employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
+
+    //add new employee list to company
+    items[0].employees = employees;
+
+    //send to database
+    const { resource: updatedItem } = await companyContainer
+        //id and partition key 
+        .item(items[0].id, items[0].contactEmail)
+        // new json object to replace the one in the database
+        .replace(items[0]);
+
+    //return updated item
+    return updatedItem;
 
 }
 
@@ -261,6 +282,8 @@ async function getTestData() {
     console.log(items);
 
     return items[0];
+
+    
 }
 
 module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, incrementEquipmentId, giveAdminPriviledge }; // Add any new database access functions to the export or they won't be usable
