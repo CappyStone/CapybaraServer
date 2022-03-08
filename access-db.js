@@ -1,7 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
+const key = "zqlx9oL1I8WcFQKdHGdUO1eonysUV50n0CGjGmQqAgLSY3Kb7U5eWcg00tx5gTCoZiPU1nrl0SsfvWpJmDeViA==";
 
 //Cosmos connection for the company container
 
@@ -250,16 +250,37 @@ async function giveAdminPriviledge(userEmail) {
 async function takeAdminPriviledge(userEmail) {
 
     const querySpec = {
-        query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
     };
 
     const { resources: items } = await companyContainer.items
         .query(querySpec)
         .fetchAll();
 
-        items[0].isAdmin = false;
+     //grab current list of employees
+    var employees = items[0].employees;
 
-    return items[0];
+    employees.forEach((element)=>{
+        if (element.email == userEmail) {
+            element.isAdmin = false;
+        }
+    });
+
+    //add new employee
+    //employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
+
+    //add new employee list to company
+    items[0].employees = employees;
+
+    //send to database
+    const { resource: updatedItem } = await companyContainer
+        //id and partition key 
+        .item(items[0].id, items[0].contactEmail)
+        // new json object to replace the one in the database
+        .replace(items[0]);
+
+    //return updated item
+    return updatedItem;
 
 }
 
