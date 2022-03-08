@@ -1,7 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 
-const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
-const key = "zqlx9oL1I8WcFQKdHGdUO1eonysUV50n0CGjGmQqAgLSY3Kb7U5eWcg00tx5gTCoZiPU1nrl0SsfvWpJmDeViA==";
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 //Cosmos connection for the company container
 
