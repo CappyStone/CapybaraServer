@@ -209,6 +209,28 @@ async function isEmployeeAdmin(userEmail) {
 
 }
 
+async function incrementEquipmentId(equipmentId) {
+    console.log("Querying container: Equipment");
+
+    // query to return the equipmentId of an item
+    const querySpec = {
+        query: "SELECT e.equipmentId FROM Equipment e WHERE e.equipmentId = " + equipmentId
+    };
+
+    // read all items in the Items container
+    const { resources: items } = await equipmentContainer.items
+        .query(querySpec)
+        .fetchAll();
+
+        var latestId = items[0].equipmentId;
+
+        latestId = latestId + 1;
+    
+        items[0].equipmentId = latestId;
+
+    return items[0];
+}
+
 async function getTestData() {
     console.log("Querying container: Diagnostics");
 
@@ -225,6 +247,6 @@ async function getTestData() {
     return items[0];
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, incrementEquipmentId }; // Add any new database access functions to the export or they won't be usable
 
 
