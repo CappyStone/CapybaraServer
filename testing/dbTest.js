@@ -1,6 +1,8 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
-//const config = require("../config");
+// const config = require("../config");
+// const endpoint = config.endpoint;
+// const key = config.key;
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
@@ -18,7 +20,7 @@ const database = client.database(databaseId);
 const companyContainer = database.container(companyContainerId);
 const equipmentContainer = database.container(equipmentContainerId);
 
-const timeout = 8000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
+const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
 
 const newEquipmentEntry = {
     id: "",
