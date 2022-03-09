@@ -108,6 +108,53 @@ async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin){
      } 
 }
 
+async function removeEmployeeFromCompany(userEmail){
+
+    console.log(`creating removing entry`);
+
+   // query for company 
+   const querySpec = {
+       query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+   };
+
+   // read all items in the Items container
+   const { resources: items } = await companyContainer.items
+       .query(querySpec)
+       .fetchAll();
+
+    try{
+        //grab current list of employees
+        var employees = items[0].employees;
+        var newEmployeeList = [];
+
+        employees.forEach(element =>{
+            if (element.email != userEmail){
+                    newEmployeeList.push(element);
+
+            }
+         });
+    } catch (e){
+        return {error: "employee not found"};
+    }
+
+    
+
+   
+
+   //add new employee list to company
+   items[0].employees = newEmployeeList;
+
+   //send to database
+   const { resource: updatedItem } = await companyContainer
+       //id and partition key 
+       .item(items[0].id, items[0].contactEmail)
+       // new json object to replace the one in the database
+       .replace(items[0]);
+
+   //return updated item
+   return updatedItem;
+}
+
 
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
     console.log(`Creating new company`);
@@ -315,6 +362,9 @@ async function getTestData() {
     
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge }; // Add any new database access functions to the export or they won't be usable
+
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge,removeEmployeeFromCompany }; // Add any new database access functions to the export or they won't be usable
+
+
 
 
