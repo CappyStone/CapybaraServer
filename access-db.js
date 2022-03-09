@@ -3,7 +3,7 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 // const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 // const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
-const key = "taHQguhQFCF9TKCBBKT1As9kchW6D2dASQWhpHfeULKm23p7jpmbCmuaRvCvt7iMCbvajidwqJVC1QaC07WnmA==";
+const key = "0GWBengttH65zatl4T375EC2aQbTgHl3kXat0VOYRiTZYFVPesTYTCJ1DlXbu1EeofIdFihDZgN5XwOwW4MHtw==";
 //Cosmos connection for the company container
 
 //Company database configuration
@@ -240,7 +240,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier,userEmail) {
 
     // const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment};
 
-    var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentIdentifier !== equipmentIdentifier);
+    var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentId !== equipmentIdentifier);
 
     // var equipmentHolder = companyUpdating.ownedEquipment;
     // equipmentHolder.push(newEquipmentItem);
@@ -268,12 +268,12 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier,userEmail,amou
     console.log('wellness check');
     // const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment};
 
-    var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentIdentifier == equipmentIdentifier);
+    var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId == equipmentIdentifier);
     // var equipmentHolder = companyUpdating.ownedEquipment;
     // equipmentHolder.push(newEquipmentItem);
     var equipmentHolder = companyUpdating.ownedEquipment;
-    console.log('wellness check');
-    console.log(equipmentAdding)
+    console.log(indexOfItem);
+    console.log(amountOfEquipment)
     equipmentHolder[indexOfItem] = {equipmentId: equipmentIdentifier, amount: amountOfEquipment}
     companyUpdating.ownedEquipment = equipmentHolder;
 
