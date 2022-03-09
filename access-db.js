@@ -2,6 +2,9 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+// const config = require("./config");
+// const endpoint = config.endpoint;
+// const key = config.key;
 
 //Cosmos connection for the company container
 

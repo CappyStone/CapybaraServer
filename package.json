@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha testing/dbTest.js",
+    "test": "mocha testing/*.js --exit",
     "start": "node index.js"
   },
   "author": "",
@@ -13,6 +13,7 @@
     "@azure/cosmos": "3.5.2",
     "@azure/keyvault-secrets": "^4.3.0",
     "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
     "config": "^3.3.7",
     "cors": "^2.8.5",
     "express": "^4.17.2",
