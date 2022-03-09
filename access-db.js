@@ -1,9 +1,8 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 
-// const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-// const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
-const key = "0GWBengttH65zatl4T375EC2aQbTgHl3kXat0VOYRiTZYFVPesTYTCJ1DlXbu1EeofIdFihDZgN5XwOwW4MHtw==";
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+
 //Cosmos connection for the company container
 
 //Company database configuration
@@ -203,14 +202,14 @@ async function addEquipmentToCompany(equipmentIdentifier,userEmail,amountOfEquip
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
     const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
     
-    if( companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1){
+    if( companyUpdating == null || equipmentAdding == null){
         return {error : 'couldnt find equipment or company' } ;
+    }if(amountOfEquipment < 1){
+        return {error : 'equipment needs to have an amount of at least 1' } ;
     }
 
-    console.log('wellness check');
-
     if(companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null){
-        return {}; 
+        return {error : 'company already owns this equipment'}; 
     }
     const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment}
     console.log('wellness check');
@@ -235,7 +234,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier,userEmail) {
     const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
     
     if( companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1){
-        return {};
+        return {error : 'couldnt find equipment or company' } ;
     }
 
     // const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment};
@@ -262,18 +261,17 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier,userEmail,amou
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
     const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
     
-    if( companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1){
-        throw 'One of these entries does not exist';
+    if( companyUpdating == null || equipmentAdding == null){
+        return {error : 'couldnt find equipment or company' } ;
+    }if(amountOfEquipment < 1){
+        return {error : 'equipment needs to have an amount of at least 1' } ;
     }
-    console.log('wellness check');
     // const newEquipmentItem = {equipmentId: equipmentIdentifier, amount: amountOfEquipment};
 
     var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId == equipmentIdentifier);
     // var equipmentHolder = companyUpdating.ownedEquipment;
     // equipmentHolder.push(newEquipmentItem);
     var equipmentHolder = companyUpdating.ownedEquipment;
-    console.log(indexOfItem);
-    console.log(amountOfEquipment)
     equipmentHolder[indexOfItem] = {equipmentId: equipmentIdentifier, amount: amountOfEquipment}
     companyUpdating.ownedEquipment = equipmentHolder;
 
