@@ -32,3 +32,5 @@ fs.readdirSync(directory).forEach(function (file) {
   var name = file.substr(0, file.indexOf('.'));
   require(directory + name)(app);
 });
+
+module.exports = app;
