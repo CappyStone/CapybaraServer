@@ -35,9 +35,10 @@ const diagnosticsContainer = database.container(diagnosticsContainerId);
 
 
 async function getCompanyData(userEmail) {
-    console.log(`Querying container: Items`);
+   
+    try{
 
-    // query to return all items
+        // query to return all items
     const querySpec = {
         query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
     };
@@ -48,12 +49,16 @@ async function getCompanyData(userEmail) {
         .fetchAll();
 
     return items[0];
+
+    } catch (err){
+        return {error: "a query error occured, check database connection"};
+    }
+    
 }
 
 async function getCompanyByContactEmail(contactEmail) {
-    console.log(`Querying container: Items`);
-
-    // query to return all items
+    try{
+        // query to return all items
     const querySpec = {
         query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
     };
@@ -62,42 +67,45 @@ async function getCompanyByContactEmail(contactEmail) {
     const { resources: items } = await companyContainer.items
         .query(querySpec)
         .fetchAll();
-
     return items[0];
+    } catch (err){
+        return {error: "an error occured, check database connection"};
+    } 
 }
 
 async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin){
 
-     console.log(`creating new employee entry`);
+     try{
+        // query for company 
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + adminEmail + "'"
+        };
 
-    // query for company 
-    const querySpec = {
-        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + adminEmail + "'"
-    };
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
 
-    // read all items in the Items container
-    const { resources: items } = await companyContainer.items
-        .query(querySpec)
-        .fetchAll();
+        //grab current list of employees
+        var employees = items[0].employees;
 
-     //grab current list of employees
-    var employees = items[0].employees;
+        //add new employee
+        employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
 
-    //add new employee
-    employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
-
-    //add new employee list to company
-    items[0].employees = employees;
-
-    //send to database
-    const { resource: updatedItem } = await companyContainer
+        //add new employee list to company
+        items[0].employees = employees;
+        //send to database
+        const { resource: updatedItem } = await companyContainer
         //id and partition key 
         .item(items[0].id, items[0].contactEmail)
         // new json object to replace the one in the database
         .replace(items[0]);
 
-    //return updated item
-    return updatedItem;
+        //return updated item
+        return updatedItem;
+     } catch (e){
+         return {error: "issue occured while adding employee"};
+     } 
 }
 
 async function removeEmployeeFromCompany(userEmail){
@@ -151,7 +159,8 @@ async function removeEmployeeFromCompany(userEmail){
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
     console.log(`Creating new company`);
 
-    //new json file for company
+    try{
+        //new json file for company
     const newCompany = {
         id: "",
         companyName: companyName,
@@ -174,185 +183,165 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
         ],
     };
 
-      /** Create new item
-    * newItem is defined at the top of this file
-    */
-
       //push json to database to make company
     const { resource: createdItem } = await companyContainer.items.create(newCompany);
 
+    } catch (e){
+        return {error: "error occured while creating company"};
+    }
 }
 
 async function createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
+    try{
+        const querySpec = {
+            query: "SELECT top 1 c.equipmentId FROM c ORDER BY c.equipmentId DESC"
+        };
     
-    const querySpec = {
-        query: "SELECT top 1 c.equipmentId FROM c ORDER BY c.equipmentId DESC"
-    };
-
-    const { resources: items } = await equipmentContainer.items
-        .query(querySpec)
-        .fetchAll();
+        const { resources: items } = await equipmentContainer.items
+            .query(querySpec)
+            .fetchAll();
+        
+        console.log(`Creating new equiment`);
     
-    console.log(`Creating new equiment`);
-
-    var latestId = items[0].equipmentId;
-
-    latestId = latestId + 1;
-
-    //new json file for equipment
-    const newEquipment = {
-        id: "",
-        equipmentId: latestId,
-        category: category,
-        productName: productName,
-        description: description,
-        manufacturer: manufacturer,
-        serialNumber: serialNumber,
-        greenScore: greenScore,
-        efficiencyRating: efficiencyRating,
-        estimatedPrice: estimatedPrice,
-        verified: verified,
-        tags: [
-        ],
-    };
-
-      /** Create new item
-    * newItem is defined at the top of this file
-    */
-
-      //push json to database to create piece of equipment in equipment DB
-    const { resource: createdItem } = await equipmentContainer.items.create(newEquipment);
-
-    return createdItem;
+        var latestId = items[0].equipmentId;
+    
+        latestId = latestId + 1;
+    
+        //new json file for equipment
+        const newEquipment = {
+            id: "",
+            equipmentId: latestId,
+            category: category,
+            productName: productName,
+            description: description,
+            manufacturer: manufacturer,
+            serialNumber: serialNumber,
+            greenScore: greenScore,
+            efficiencyRating: efficiencyRating,
+            estimatedPrice: estimatedPrice,
+            verified: verified,
+            tags: [
+            ],
+        };
+    
+          //push json to database to create piece of equipment in equipment DB
+        const { resource: createdItem } = await equipmentContainer.items.create(newEquipment);
+        return createdItem;
+    } catch (err){
+        return {error: "erorr occured while creating equipment"};
+    }  
 }
-
-
 
 async function getEquipmentData(equipmentId) {
     console.log("Querying container: Equipment");
 
-    // query to return all items
-    const querySpec = {
-        query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
-    };
+    try{
+        // query to return all items
+        const querySpec = {
+            query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description FROM Equipment e WHERE e.equipmentId = " + equipmentId
+        };
 
     // read all items in the Items container
     const { resources: items } = await equipmentContainer.items
         .query(querySpec)
         .fetchAll();
-
-
     return items[0];
+
+    }catch(err){
+        return {error: "error occured while finding equipment, check connection"}
+    }
+    
 }
 
 async function isEmployeeAdmin(userEmail) {
 
-    const querySpec = {
-        query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
-    };
-
-    const { resources: items } = await companyContainer.items
-        .query(querySpec)
-        .fetchAll();
-
-    return items[0];
-
-}
-
-async function incrementEquipmentId(equipmentId) {
-    console.log("Querying container: Equipment");
-
-    // query to return the equipmentId of an item
-    const querySpec = {
-        query: "SELECT e.equipmentId FROM Equipment e WHERE e.equipmentId = " + equipmentId
-    };
-
-    // read all items in the Items container
-    const { resources: items } = await equipmentContainer.items
-        .query(querySpec)
-        .fetchAll();
-
-        var latestId = items[0].equipmentId;
-
-        latestId = latestId + 1;
+    try{
+        const querySpec = {
+            query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+        };
     
-        items[0].equipmentId = latestId;
-
-    return items[0];
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+        return items[0];
+    }catch(err){
+        return {error: "error occured while checking admin rights, check connection"};
+    }
 }
+
 
 async function giveAdminPriviledge(userEmail) {
+   
+    try{
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+        };
+    
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+    
+         //grab current list of employees
+        var employees = items[0].employees;
+    
+        employees.forEach((element)=>{
+            if (element.email == userEmail) {
+                element.isAdmin = true;
+            }
+        });
 
-    const querySpec = {
-        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
-    };
-
-    const { resources: items } = await companyContainer.items
-        .query(querySpec)
-        .fetchAll();
-
-     //grab current list of employees
-    var employees = items[0].employees;
-
-    employees.forEach((element)=>{
-        if (element.email == userEmail) {
-            element.isAdmin = true;
-        }
-    });
-
-    //add new employee
-    //employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
-
-    //add new employee list to company
-    items[0].employees = employees;
-
-    //send to database
-    const { resource: updatedItem } = await companyContainer
-        //id and partition key 
-        .item(items[0].id, items[0].contactEmail)
-        // new json object to replace the one in the database
-        .replace(items[0]);
-
-    //return updated item
-    return updatedItem;
-
+        //add new employee list to company
+        items[0].employees = employees;
+    
+        //send to database
+        const { resource: updatedItem } = await companyContainer
+            //id and partition key 
+            .item(items[0].id, items[0].contactEmail)
+            // new json object to replace the one in the database
+            .replace(items[0]);
+        //return updated item
+        return updatedItem;
+    
+    } catch (e){
+        return {error: "error occured while giving admin rights"};
+    }
 }
 
 async function takeAdminPriviledge(userEmail) {
 
-    const querySpec = {
-        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
-    };
-
-    const { resources: items } = await companyContainer.items
-        .query(querySpec)
-        .fetchAll();
-
-     //grab current list of employees
-    var employees = items[0].employees;
-
-    employees.forEach((element)=>{
-        if (element.email == userEmail) {
-            element.isAdmin = false;
-        }
-    });
-
-    //add new employee
-    //employees.push({"email" : newEmployeeEmail, "isAdmin" : isAdmin});
-
-    //add new employee list to company
-    items[0].employees = employees;
-
-    //send to database
-    const { resource: updatedItem } = await companyContainer
-        //id and partition key 
-        .item(items[0].id, items[0].contactEmail)
-        // new json object to replace the one in the database
-        .replace(items[0]);
-
-    //return updated item
+    try{
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+        };
+    
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+    
+         //grab current list of employees
+        var employees = items[0].employees;
+    
+        employees.forEach((element)=>{
+            if (element.email == userEmail) {
+                element.isAdmin = false;
+            }
+        });
+    
+        //add new employee list to company
+        items[0].employees = employees;
+    
+        //send to database
+        const { resource: updatedItem } = await companyContainer
+            //id and partition key 
+            .item(items[0].id, items[0].contactEmail)
+            // new json object to replace the one in the database
+            .replace(items[0]);
+            //return updated item
     return updatedItem;
-
+    
+    } catch (e){ 
+        return {error: "error occured while removing admin rights"};
+    }
 }
 
 async function getTestData() {
@@ -373,6 +362,9 @@ async function getTestData() {
     
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, incrementEquipmentId, giveAdminPriviledge, takeAdminPriviledge,removeEmployeeFromCompany }; // Add any new database access functions to the export or they won't be usable
+
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge,removeEmployeeFromCompany }; // Add any new database access functions to the export or they won't be usable
+
+
 
 
