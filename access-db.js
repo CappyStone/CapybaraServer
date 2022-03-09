@@ -114,16 +114,22 @@ async function removeEmployeeFromCompany(userEmail){
        .query(querySpec)
        .fetchAll();
 
-    //grab current list of employees
-   var employees = items[0].employees;
-   var newEmployeeList = [];
+    try{
+        //grab current list of employees
+        var employees = items[0].employees;
+        var newEmployeeList = [];
 
-   employees.forEach(element =>{
-       if (element.email != userEmail){
-            newEmployeeList.push(element);
+        employees.forEach(element =>{
+            if (element.email != userEmail){
+                    newEmployeeList.push(element);
 
-       }
-   });
+            }
+         });
+    } catch (e){
+        return {error: "employee not found"};
+    }
+
+    
 
    
 
