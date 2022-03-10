@@ -1,7 +1,8 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
-const { addEquipmentToCompany } = require("../access-db");
-//const config = require("../config");
+// const config = require("../config");
+// const endpoint = config.endpoint;
+// const key = config.key;
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
@@ -19,7 +20,7 @@ const database = client.database(databaseId);
 const companyContainer = database.container(companyContainerId);
 const equipmentContainer = database.container(equipmentContainerId);
 
-const timeout = 8000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
+const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
 
 const newEquipmentEntry = {
     id: "",
@@ -91,7 +92,7 @@ describe('DB Connections', function () {
             assert.equal(items.length, oldLength + 1)
         });
 
-        it('Update name of item in Company Container', async function () {
+        it('Update item in Company Container', async function () {
             const querySpec = {
                 query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com'"
             };
@@ -105,28 +106,24 @@ describe('DB Connections', function () {
             assert.equal(items[0].companyName, "modifiedTestSuite");
         });
 
-        it('Update equipment for item in Company Container', async function () {
-            addEquipmentToCompany(7,"connection@testsuite.com",25);
-        });
-
-        // it('Delete item in Company Container', async function () {
-        //     const querySpec = {
-        //         query: "SELECT * FROM Company c"
-        //     };
+        it('Delete item in Company Container', async function () {
+            const querySpec = {
+                query: "SELECT * FROM Company c"
+            };
             
     
-        //     var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
-        //     var oldLength = items.length;
+            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+            var oldLength = items.length;
             
-        //     const addedItemQuery = {
-        //         query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com' AND c.companyName = 'modifiedTestSuite'"
-        //     };
-        //     var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
-        //     await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
+            const addedItemQuery = {
+                query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com' AND c.companyName = 'modifiedTestSuite'"
+            };
+            var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
+            await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
             
-        //     var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
-        //     assert.equal(items.length, oldLength - 1);
-        // });
+            var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+            assert.equal(items.length, oldLength - 1);
+        });
     });
 
     describe('Equipment Container', function () {

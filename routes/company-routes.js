@@ -64,6 +64,28 @@ module.exports = function (app) {
 
     })
 
+    app.post('/removeEmployeeFromCompany', async (req, res) => {
+        const userEmail = req.body.userEmail;
+        
+        //response type
+        res.contentType('application/json');
+
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.removeEmployeeFromCompany(userEmail)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length; // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+
+
+    })
+
+
     app.post('/createCompany', async (req, res) => {
 
         //parameters needed to make a new company
@@ -232,4 +254,46 @@ module.exports = function (app) {
 
 
     })
+
+
+    app.post('/giveAdminPriviledge', async (req, res) => {
+        const userEmail = req.body.userEmail;
+
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.giveAdminPriviledge(userEmail)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length; // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+
+
+    })
+
+    app.post('/takeAdminPriviledge', async (req, res) => {
+        const userEmail = req.body.userEmail;
+
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.takeAdminPriviledge(userEmail)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length; // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+
+
+    })
+    
 }
