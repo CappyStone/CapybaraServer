@@ -29,7 +29,7 @@ const equipmentContainer = database.container(equipmentContainerId);
 
 const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 is not always enough (~3% fail rate)
 
-describe('API Calls', function () {
+describe('API Tests', function () {
     this.timeout(timeout);
     describe('Fetch Methods', function () {
         it('POST /getCompanyData', (done) => {
@@ -103,7 +103,7 @@ describe('API Calls', function () {
         });
     });
 
-    describe('Create Methods', function () {
+    describe('Create / Update Methods', function () {
         it('POST /createCompany', (done) => {
             chai.request(app)
                 .post('/createCompany')
@@ -172,7 +172,7 @@ describe('API Calls', function () {
                     "newEmployeeEmail": "apitest@donk.com",
                     "isAdmin": "false"
                 })
-                .end(async (err, res) => {
+                .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('employees');
@@ -183,8 +183,67 @@ describe('API Calls', function () {
                         }
                     }
                     assert.equal(foundEmployee, true);
+                    done();
+                });
+        });
+
+        it('POST /giveAdminPriviledge', (done) => {
+            chai.request(app)
+                .post('/giveAdminPriviledge')
+                .send({ "userEmail": "apitest@donk.com" })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('employees');
+                    var adminTrue = false;
+                    for (var i = 0; i < res.body.employees.length; i++) {
+                        if (res.body.employees[i].email === "apitest@donk.com" && res.body.employees[i].isAdmin === true) {
+                            adminTrue = true;
+                        }
+                    }
+                    assert.equal(adminTrue, true);
+                    done();
+                });
+        });
+
+        it('POST /takeAdminPriviledge', (done) => {
+            chai.request(app)
+                .post('/takeAdminPriviledge')
+                .send({ "userEmail": "apitest@donk.com" })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('employees');
+                    var adminFalse = false;
+                    for (var i = 0; i < res.body.employees.length; i++) {
+                        if (res.body.employees[i].email === "apitest@donk.com" && res.body.employees[i].isAdmin === false) {
+                            adminFalse = true;
+                        }
+                    }
+                    assert.equal(adminFalse, true);
+                    done();
+                });
+        });
+    });
+
+    describe('Delete Methods', function () {
+        it('POST /removeEmployeeFromCompany', (done) => {
+            chai.request(app)
+                .post('/removeEmployeeFromCompany')
+                .send({ "userEmail": "apitest@donk.com" })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('employees');
+                    var employeeFound = false;
+                    for (var i = 0; i < res.body.employees.length; i++) {
+                        if (res.body.employees[i].email === "apitest@donk.com") {
+                            employeeFound = true;
+                        }
+                    }
+                    assert.equal(employeeFound, false);
                     //No api to delete company yet, manually delete for now.....
-                    //(do after adding employee as it will delete both in one move)
+                    //(doing so here after we are done manipulating our test company entry)
                     const addedItemQuery = {
                         query: "SELECT * FROM Company c Where c.companyName = 'waffles'"
                     };
@@ -195,3 +254,20 @@ describe('API Calls', function () {
         });
     });
 });
+
+// describe('API Negative Tests', function () {
+//     this.timeout(timeout);
+//     describe('Fetch Methods', function () {
+//         it('POST /getCompanyData', (done) => {
+//             chai.request(app)
+//                 .post('/getCompanyData')
+//                 .send("Random Text")
+//                 .end((err, res) => {
+//                     res.should.have.status(400);
+//                     console.log(res.body);
+//                     assert.equal(true, true);
+//                     done();
+//                 });
+//         }); 
+//     });
+// });
