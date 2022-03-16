@@ -110,7 +110,7 @@ async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin){
 
 async function removeEmployeeFromCompany(userEmail){
 
-    console.log(`creating removing entry`);
+    //console.log(`creating removing entry`);
 
    // query for company 
    const querySpec = {
@@ -157,7 +157,7 @@ async function removeEmployeeFromCompany(userEmail){
 
 
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
-    console.log(`Creating new company`);
+    //console.log(`Creating new company`);
 
     try{
         //new json file for company
@@ -233,7 +233,7 @@ async function createNewEquipment(category, productName, description, manufactur
 }
 
 async function getEquipmentData(equipmentId) {
-    console.log("Querying container: Equipment");
+    //console.log("Querying container: Equipment");
 
 
     try{
@@ -255,7 +255,7 @@ async function getEquipmentData(equipmentId) {
 }
 
 async function addEquipmentToCompany(equipmentIdentifier,userEmail,amountOfEquipment) {
-    console.log("Adding equipment to company in container: Company");
+    //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -286,7 +286,7 @@ async function addEquipmentToCompany(equipmentIdentifier,userEmail,amountOfEquip
 }
 
 async function removeEquipmentFromCompany(equipmentIdentifier,userEmail) {
-    console.log("Adding equipment to company in container: Company");
+    //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -314,7 +314,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier,userEmail) {
 }
 
 async function updateEquipmentAmountInCompany(equipmentIdentifier,userEmail,amountOfEquipment) {
-    console.log("Adding equipment to company in container: Company");
+    //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -434,6 +434,42 @@ async function takeAdminPriviledge(userEmail) {
     }
 }
 
+async function deleteCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
+     //console.log(`Deleting company`);
+    var companyId = "";
+    var companyEmail = "";
+   // query for company 
+   const querySpec = {
+    query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c"
+};
+
+// read all items in the Items container
+const { resources: items } = await companyContainer.items
+    .query(querySpec)
+    .fetchAll();
+
+ try{
+     var companies = items;
+     var newCompanyList = [];
+
+     for (var element of companies) {
+        if (element.companyName != companyName){
+            newCompanyList.push(element);
+     } else{
+         companyId = element.id;
+         companyEmail = element.contactEmail;
+     }
+      }
+ } catch (e){
+     return {error: "Company not found"};
+ }
+
+ const item = companyContainer.item(companyId, companyEmail);
+ console.log(await item.delete());
+
+}
+
+
 async function getTestData() {
     console.log("Querying container: Diagnostics");
 
@@ -453,6 +489,6 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany,removeEmployeeFromCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany,removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
 
 

@@ -295,5 +295,39 @@ module.exports = function (app) {
 
 
     })
+
+    app.post('/deleteCompany', async (req, res) => {
+
+        //parameters needed to make a new company
+        const companyName = req.body.companyName;
+        const companyStreet = req.body.companyStreet;
+        const companyCity = req.body.companyCity;
+        const companyCountry = req.body.companyCountry;
+        const companyProvinceState = req.body.companyProvinceState;
+        const companyPostalZipCode = req.body.companyPostalZipCode;
+        const companyEmail = req.body.companyEmail;
+        const adminEmail = req.body.adminEmail;
+
+        //response type
+        res.contentType('application/json');
+
+        var items = Object.assign({}, await db.deleteCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail));
+        // try to find existing company
+        //var items = Object.assign({}, await db.getCompanyData(adminEmail)); // combine the result with an empty object to ensure items is not undefined
+        //if (Object.keys(items).length == 0) {
+            //delete a company
+            //var newCompany = Object.assign({}, await db.deleteCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail));
+        //}
+
+        //query for newly deleted company
+        //items = Object.assign({}, await db.getCompanyData(adminEmail)); // combine the result with an empty object to ensure items is not undefined
+
+        //send the response
+        if (Object.keys(items).length > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    })
     
 }
