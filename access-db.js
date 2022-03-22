@@ -37,7 +37,6 @@ const diagnosticsContainer = database.container(diagnosticsContainerId);
 async function getCompanyData(userEmail) {
 
     try {
-
         // query to return all items
         const querySpec = {
             query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
@@ -126,19 +125,18 @@ async function removeEmployeeFromCompany(userEmail) {
         //grab current list of employees
         var employees = items[0].employees;
         var newEmployeeList = [];
+        var admins = employees.filter(employee => employee.isAdmin);
+        console.log("Admins found: " + admins.length);
 
-        employees.forEach(element => {
-            if (element.email != userEmail) {
-                newEmployeeList.push(element);
+        employees.forEach(employee => {
+            if (employee.email != userEmail || (employee.isAdmin && admins.length <= 1)) {
+                newEmployeeList.push(employee);
 
             }
         });
     } catch (e) {
         return { error: "employee not found" };
     }
-
-
-
 
 
     //add new employee list to company
@@ -150,6 +148,7 @@ async function removeEmployeeFromCompany(userEmail) {
         .item(items[0].id, items[0].contactEmail)
         // new json object to replace the one in the database
         .replace(items[0]);
+
 
     //return updated item
     return updatedItem;
@@ -255,7 +254,9 @@ async function getEquipmentData(equipmentId) {
 }
 
 async function addEquipmentToCompany(equipmentIdentifier, userEmail, amountOfEquipment) {
+
     //console.log("Adding equipment to company in container: Company");
+
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -286,6 +287,7 @@ async function addEquipmentToCompany(equipmentIdentifier, userEmail, amountOfEqu
 }
 
 async function removeEquipmentFromCompany(equipmentIdentifier, userEmail) {
+
     //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
@@ -314,6 +316,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier, userEmail) {
 }
 
 async function updateEquipmentAmountInCompany(equipmentIdentifier, userEmail, amountOfEquipment) {
+
     //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
@@ -431,6 +434,7 @@ async function takeAdminPriviledge(userEmail) {
 
     } catch (e) {
         return { error: "error occured while removing admin rights" };
+
     }
 }
 
@@ -477,7 +481,7 @@ async function getTestData() {
     // read all items in the Items container
     const { resources: items } = await diagnosticsContainer.items.query(querySpec).fetchAll();
 
-    console.log(items);
+    // console.log(items);
 
     return items[0];
 
@@ -486,5 +490,6 @@ async function getTestData() {
 
 
 module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
+
 
 
