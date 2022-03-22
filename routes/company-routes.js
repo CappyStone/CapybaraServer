@@ -298,7 +298,7 @@ module.exports = function (app) {
 
     app.post('/deleteCompany', async (req, res) => {
 
-        //parameters needed to make a new company
+        //parameters needed to delete a company
         
         const companyEmail = req.body.contactEmail;
        
