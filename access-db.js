@@ -2,9 +2,9 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-// const config = require("./config");
-// const endpoint = config.endpoint;
-// const key = config.key;
+//const config = require("./config");
+//const endpoint = config.endpoint;
+//const key = config.key;
 
 //Cosmos connection for the company container
 
@@ -131,11 +131,13 @@ async function removeEmployeeFromCompany(userEmail) {
         employees.forEach(employee => {
             if (employee.email != userEmail || (employee.isAdmin && admins.length <= 1)) {
                 newEmployeeList.push(employee);
+
             }
         });
     } catch (e) {
         return { error: "Employee not found" };
     }
+
 
     //add new employee list to company
     items[0].employees = newEmployeeList;
@@ -146,6 +148,7 @@ async function removeEmployeeFromCompany(userEmail) {
         .item(items[0].id, items[0].contactEmail)
         // new json object to replace the one in the database
         .replace(items[0]);
+
 
     //return updated item
     return updatedItem;
@@ -287,13 +290,14 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
 }
 
 async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
+
     //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
     const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
 
-    if (companyUpdating == null || equipmentAdding == null || amountOfEquipment < 1) {
+    if (companyUpdating == null || equipmentAdding == null) {
         return { error: 'Could not find equipment or company' };
     }
 
@@ -425,6 +429,38 @@ async function takeAdminPriviledge(userEmail) {
     }
 }
 
+async function deleteCompany(contactEmail) {
+    try {
+        //console.log(`Deleting company`);
+        // query for company 
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+
+        /**
+     * Delete item
+     * Pass the id and partition key value to delete the item
+     */
+    
+        if (items.length <= 0) {
+            return { error: "no company found" };
+        }
+
+        const { resource: result } = await companyContainer.item(items[0].id, items[0].contactEmail).delete();
+
+        return {success: items[0].companyName + " has been deleted"};
+    } catch (e) {
+        return { error: "error occured while deleting company" };
+    }
+
+}
+
+
 async function getTestData() {
     console.log("Querying container: Diagnostics");
 
@@ -444,6 +480,7 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
+
 
 
