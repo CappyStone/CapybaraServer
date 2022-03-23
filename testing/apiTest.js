@@ -317,20 +317,3 @@ describe('API Tests', function () {
         });
     });
 });
-
-// describe('API Negative Tests', function () {
-//     this.timeout(timeout);
-//     describe('Fetch Methods', function () {
-//         it('POST /getCompanyData', (done) => {
-//             chai.request(app)
-//                 .post('/getCompanyData')
-//                 .send("Random Text")
-//                 .end((err, res) => {
-//                     res.should.have.status(400);
-//                     console.log(res.body);
-//                     assert.equal(true, true);
-//                     done();
-//                 });
-//         });
-//     });
-// });
