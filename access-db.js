@@ -2,9 +2,9 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-// const config = require("./config");
-// const endpoint = config.endpoint;
-// const key = config.key;
+//const config = require("./config");
+//const endpoint = config.endpoint;
+//const key = config.key;
 
 //Cosmos connection for the company container
 
@@ -109,7 +109,7 @@ async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin) {
 
 async function removeEmployeeFromCompany(userEmail) {
 
-    console.log(`creating removing entry`);
+    //console.log(`creating removing entry`);
 
     // query for company 
     const querySpec = {
@@ -131,11 +131,13 @@ async function removeEmployeeFromCompany(userEmail) {
         employees.forEach(employee => {
             if (employee.email != userEmail || (employee.isAdmin && admins.length <= 1)) {
                 newEmployeeList.push(employee);
+
             }
         });
     } catch (e) {
         return { error: "employee not found" };
     }
+
 
     //add new employee list to company
     items[0].employees = newEmployeeList;
@@ -147,13 +149,14 @@ async function removeEmployeeFromCompany(userEmail) {
         // new json object to replace the one in the database
         .replace(items[0]);
 
+
     //return updated item
     return updatedItem;
 }
 
 
 async function createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail) {
-    console.log(`Creating new company`);
+    //console.log(`Creating new company`);
 
     try {
         //new json file for company
@@ -229,7 +232,7 @@ async function createNewEquipment(category, productName, description, manufactur
 }
 
 async function getEquipmentData(equipmentId) {
-    console.log("Querying container: Equipment");
+    //console.log("Querying container: Equipment");
 
 
     try {
@@ -251,7 +254,9 @@ async function getEquipmentData(equipmentId) {
 }
 
 async function addEquipmentToCompany(equipmentIdentifier, userEmail, amountOfEquipment) {
-    console.log("Adding equipment to company in container: Company");
+
+    //console.log("Adding equipment to company in container: Company");
+
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -282,7 +287,8 @@ async function addEquipmentToCompany(equipmentIdentifier, userEmail, amountOfEqu
 }
 
 async function removeEquipmentFromCompany(equipmentIdentifier, userEmail) {
-    console.log("Adding equipment to company in container: Company");
+
+    //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -310,7 +316,8 @@ async function removeEquipmentFromCompany(equipmentIdentifier, userEmail) {
 }
 
 async function updateEquipmentAmountInCompany(equipmentIdentifier, userEmail, amountOfEquipment) {
-    console.log("Adding equipment to company in container: Company");
+
+    //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(userEmail);
@@ -427,8 +434,41 @@ async function takeAdminPriviledge(userEmail) {
 
     } catch (e) {
         return { error: "error occured while removing admin rights" };
+
     }
 }
+
+async function deleteCompany(contactEmail) {
+    try {
+        //console.log(`Deleting company`);
+        // query for company 
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+
+        /**
+     * Delete item
+     * Pass the id and partition key value to delete the item
+     */
+    
+        if (items.length <= 0) {
+            return { error: "no company found" };
+        }
+
+        const { resource: result } = await companyContainer.item(items[0].id, items[0].contactEmail).delete();
+
+        return {success: items[0].companyName + " has been deleted"};
+    } catch (e) {
+        return { error: "error occured while deleting company" };
+    }
+
+}
+
 
 async function getTestData() {
     console.log("Querying container: Diagnostics");
@@ -449,6 +489,7 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
+
 
 

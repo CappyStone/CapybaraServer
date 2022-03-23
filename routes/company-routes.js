@@ -295,5 +295,25 @@ module.exports = function (app) {
 
 
     })
+
+    app.post('/deleteCompany', async (req, res) => {
+
+        //parameters needed to delete a company
+        
+        const companyEmail = req.body.contactEmail;
+       
+
+        //response type
+        res.contentType('application/json');
+
+        var items = Object.assign({}, await db.deleteCompany(companyEmail));
+        
+        //send the response
+        if (Object.keys(items).length > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    })
     
 }
