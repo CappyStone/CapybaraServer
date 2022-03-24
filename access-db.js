@@ -279,7 +279,6 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
 
-
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer
         .item(companyUpdating.id, companyUpdating.contactEmail)
@@ -291,8 +290,6 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
 
 async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
 
-    //console.log("Adding equipment to company in container: Company");
-
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
     const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
@@ -302,6 +299,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
     }
 
     var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentId !== equipmentIdentifier);
+
     companyUpdating.ownedEquipment = newEquipmentHolder;
 
     // read all items in the Items container
@@ -327,7 +325,8 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail,
     }
 
     var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId == equipmentIdentifier);
-    companyUpdating.ownedEquipment[indexOfItem] = { equipmentId: equipmentIdentifier, amount: amountOfEquipment }
+    
+    companyUpdating.ownedEquipment[indexOfItem].amount = amountOfEquipment;
 
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer

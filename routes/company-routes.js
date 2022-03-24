@@ -174,7 +174,6 @@ module.exports = function (app) {
         //response type
         res.contentType('application/json');
 
-
         //change this to info from the db
         var items = Object.assign({}, await db.addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
@@ -195,7 +194,6 @@ module.exports = function (app) {
 
         //response type
         res.contentType('application/json');
-
 
         //change this to info from the db
         var items = Object.assign({}, await db.removeEquipmentFromCompany(equipmentIdentifier, contactEmail)); // combine the result with an empty object to ensure items is not undefined
@@ -218,7 +216,6 @@ module.exports = function (app) {
 
         //response type
         res.contentType('application/json');
-
 
         //change this to info from the db
         var items = Object.assign({}, await db.updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined

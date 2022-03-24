@@ -224,9 +224,72 @@ describe('API Tests', function () {
                     done();
                 });
         });
+
+        it('POST /addEquipmentToCompany', (done) => {
+            chai.request(app)
+                .post('/addEquipmentToCompany')
+                .send({
+                    "equipmentIdentifier": 6,
+                    "contactEmail": "new@donk.com",
+                    "amountOfEquipment": 2
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    const addedItemQuery = {
+                        query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                    assert.equal(company[0].amount, 2);
+                    done();
+                })
+
+        });
+
+        it('POST /updateEquipmentAmountInCompany', (done) => {
+            chai.request(app)
+                .post('/updateEquipmentAmountInCompany')
+                .send({
+                    "equipmentIdentifier": 6,
+                    "contactEmail": "new@donk.com",
+                    "amountOfEquipment": 5
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    const addedItemQuery = {
+                        query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                    assert.equal(company[0].amount, 5);
+                    done();
+                })
+        });
     });
 
     describe('Delete Methods', function () {
+        it('POST /removeEquipmentFromCompany',  (done) => {
+            chai.request(app)
+                .post('/removeEquipmentFromCompany')
+                .send({
+                    "equipmentIdentifier": 6,
+                    "contactEmail": "new@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    const addedItemQuery = {
+                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: companyEquipment } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                    var equipmentFound = false;
+                    for(var i = 0; i < companyEquipment[0].ownedEquipment.length; i++) {
+                        if(companyEquipment[0].ownedEquipment[i].equipmentId === 6) {
+                            equipmentFound = true;
+                        }
+                    }
+                    assert.equal(equipmentFound, false);
+                    done();
+                })
+        });
+        
         it('POST /removeEmployeeFromCompany', (done) => {
             chai.request(app)
                 .post('/removeEmployeeFromCompany')
