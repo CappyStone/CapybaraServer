@@ -112,7 +112,7 @@ module.exports = function (app) {
         if (Object.keys(items).length > 0) {
             res.json(items);
         } else {
-            res.json({})
+            res.json(newCompany);
         }
     })
 
@@ -165,15 +165,14 @@ module.exports = function (app) {
 
     app.post('/addEquipmentToCompany', async (req, res) => {
         const equipmentIdentifier = req.body.equipmentIdentifier;
-        const userEmail = req.body.userEmail;
+        const contactEmail = req.body.contactEmail;
         const amountOfEquipment = req.body.amountOfEquipment;
 
         //response type
         res.contentType('application/json');
 
-
         //change this to info from the db
-        var items = Object.assign({}, await db.addEquipmentToCompany(equipmentIdentifier, userEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
 
         //send the response
@@ -188,14 +187,13 @@ module.exports = function (app) {
 
     app.post('/removeEquipmentFromCompany', async (req, res) => {
         const equipmentIdentifier = req.body.equipmentIdentifier;
-        const userEmail = req.body.userEmail;
+        const contactEmail = req.body.contactEmail;
 
         //response type
         res.contentType('application/json');
 
-
         //change this to info from the db
-        var items = Object.assign({}, await db.removeEquipmentFromCompany(equipmentIdentifier, userEmail)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.removeEquipmentFromCompany(equipmentIdentifier, contactEmail)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
 
         //send the response
@@ -210,15 +208,14 @@ module.exports = function (app) {
 
     app.post('/updateEquipmentAmountInCompany', async (req, res) => {
         const equipmentIdentifier = req.body.equipmentIdentifier;
-        const userEmail = req.body.userEmail;
+        const contactEmail = req.body.contactEmail;
         const amountOfEquipment = req.body.amountOfEquipment;
 
         //response type
         res.contentType('application/json');
 
-
         //change this to info from the db
-        var items = Object.assign({}, await db.updateEquipmentAmountInCompany(equipmentIdentifier, userEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
 
         //send the response
@@ -291,6 +288,26 @@ module.exports = function (app) {
         }
 
 
+    })
+
+    app.post('/deleteCompany', async (req, res) => {
+
+        //parameters needed to delete a company
+        
+        const companyEmail = req.body.contactEmail;
+       
+
+        //response type
+        res.contentType('application/json');
+
+        var items = Object.assign({}, await db.deleteCompany(companyEmail));
+        
+        //send the response
+        if (Object.keys(items).length > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
     })
     
 }
