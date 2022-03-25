@@ -42,16 +42,15 @@ module.exports = function (app) {
     })
 
     app.post('/addEmployeeToCompany', async (req, res) => {
-        const adminEmail = req.body.adminEmail;
+        const companyEmail = req.body.companyEmail;
         const newEmployeeEmail = req.body.newEmployeeEmail;
         const isAdmin = req.body.isAdmin;
 
         //response type
         res.contentType('application/json');
 
-
         //change this to info from the db
-        var items = Object.assign({}, await db.addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
 
         //send the response
@@ -60,8 +59,6 @@ module.exports = function (app) {
         } else {
             res.json({})
         }
-
-
     })
 
     app.post('/removeEmployeeFromCompany', async (req, res) => {
