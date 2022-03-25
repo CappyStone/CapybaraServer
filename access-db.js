@@ -72,12 +72,12 @@ async function getCompanyByContactEmail(contactEmail) {
     }
 }
 
-async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin) {
+async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
 
     try {
         // query for company 
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + adminEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where c.contactEmail = '" + companyEmail + "'"
         };
 
         // read all items in the Items container
@@ -86,13 +86,14 @@ async function addEmployeeToCompany(adminEmail, newEmployeeEmail, isAdmin) {
             .fetchAll();
 
         //grab current list of employees
-        var employees = items[0].employees;
+        var newEmployees = items[0].employees;
 
         //add new employee
-        employees.push({ "email": newEmployeeEmail, "isAdmin": isAdmin });
+        newEmployees.push({ "email": newEmployeeEmail, "isAdmin": isAdmin });
 
         //add new employee list to company
-        items[0].employees = employees;
+        items[0].employees = newEmployees;
+
         //send to database
         const { resource: updatedItem } = await companyContainer
             //id and partition key 
