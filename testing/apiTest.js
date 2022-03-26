@@ -168,7 +168,7 @@ describe('API Tests', function () {
             chai.request(app)
                 .post('/addEmployeeToCompany')
                 .send({
-                    "adminEmail": "admin@donk.com",
+                    "companyEmail": "new@donk.com",
                     "newEmployeeEmail": "apitest@donk.com",
                     "isAdmin": "false"
                 })
