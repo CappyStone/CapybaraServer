@@ -2,9 +2,9 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-//const config = require("./config");
-//const endpoint = config.endpoint;
-//const key = config.key;
+// const config = require("./config");
+// const endpoint = config.endpoint;
+// const key = config.key;
 
 //Cosmos connection for the company container
 
@@ -448,14 +448,14 @@ async function deleteCompany(contactEmail) {
      */
     
         if (items.length <= 0) {
-            return { error: "no company found" };
+            return { error: "No company found" };
         }
 
         const { resource: result } = await companyContainer.item(items[0].id, items[0].contactEmail).delete();
 
         return {success: items[0].companyName + " has been deleted"};
     } catch (e) {
-        return { error: "error occured while deleting company" };
+        return { error: "Error occured while deleting company" };
     }
 
 }

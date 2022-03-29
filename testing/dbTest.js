@@ -1,5 +1,6 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
+
 // const config = require("../config");
 // const endpoint = config.endpoint;
 // const key = config.key;

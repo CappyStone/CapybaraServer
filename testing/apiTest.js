@@ -294,7 +294,7 @@ describe('API Tests', function () {
             chai.request(app)
                 .post('/removeEmployeeFromCompany')
                 .send({ "userEmail": "apitest@donk.com" })
-                .end(async (err, res) => {
+                .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('employees');
@@ -305,13 +305,19 @@ describe('API Tests', function () {
                         }
                     }
                     assert.equal(employeeFound, false);
-                    //No api to delete company yet, manually delete for now.....
-                    //(doing so here after we are done manipulating our test company entry)
-                    const addedItemQuery = {
-                        query: "SELECT * FROM Company c Where c.companyName = 'waffles'"
-                    };
-                    var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
+                    done();
+                });
+        });
+
+        it('POST /deleteCompany', (done) => {
+            chai.request(app)
+                .post('/deleteCompany')
+                .send({ "contactEmail": "new@donk.com" })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('success');
+                    assert.equal(res.body.success, "waffles has been deleted");
                     done();
                 });
         });
