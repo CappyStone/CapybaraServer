@@ -8,7 +8,6 @@ const _ = require("lodash");
 chai.use(chaiHttp);
 
 const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 is not always enough (~3% fail rate)
-// giveAdminPriviledge, takeAdminPriviledge, 
 
 describe('API Negative Tests', function () {
     this.timeout(timeout);
@@ -70,6 +69,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Some fields missing values");
                     done();
                 });
@@ -82,6 +82,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Some fields missing values");
                     done();
                 });
@@ -94,6 +95,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Could not find equipment or company");
                     done();
                 });
@@ -110,6 +112,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Equipment needs to have an amount of at least 1");
                     done();
                 });
@@ -126,6 +129,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Company already owns this equipment");
                     done();
                 });
@@ -138,6 +142,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Could not find equipment or company");
                     done();
                 });
@@ -154,6 +159,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Equipment needs to have an amount of at least 1");
                     done();
                 });
@@ -166,6 +172,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Issue occured while adding employee");
                     done();
                 });
@@ -178,6 +185,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Error occured while giving admin rights");
                     done();
                 });
@@ -190,6 +198,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Error occured while removing admin rights");
                     done();
                 });
@@ -204,6 +213,7 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Could not find equipment or company");
                     done();
                 });
@@ -216,7 +226,21 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
+                    res.body.should.have.property('error');
                     assert.equal(res.body.error, "Employee not found");
+                    done();
+                });
+        });
+
+        it('POST /deleteCompany (Text Response)', (done) => {
+            chai.request(app)
+                .post('/deleteCompany')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "No company found");
                     done();
                 });
         });
