@@ -11,8 +11,8 @@ const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 is not al
 
 describe('API Negative Tests', function () {
     this.timeout(timeout);
-    describe('Fetch Methods', function () {
-        it('POST /getCompanyData', (done) => {
+    describe('Read Methods', function () {
+        it('/getCompanyData', (done) => {
             chai.request(app)
                 .post('/getCompanyData')
                 .send("Random Text")
@@ -24,7 +24,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /getCompanyByContactEmail', (done) => {
+        it('/getCompanyByContactEmail', (done) => {
             chai.request(app)
                 .post('/getCompanyByContactEmail')
                 .send("Random Text")
@@ -36,7 +36,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /getEquipmentData', (done) => {
+        it('/getEquipmentData', (done) => {
             chai.request(app)
                 .post('/getEquipmentData')
                 .send("Random Text")
@@ -48,7 +48,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /isEmployeeAdmin', (done) => {
+        it('/isEmployeeAdmin', (done) => {
             chai.request(app)
                 .post('/isEmployeeAdmin')
                 .send("Random Text")
@@ -61,8 +61,8 @@ describe('API Negative Tests', function () {
         });
     });
 
-    describe('Update Methods', function () {
-        it('POST /createCompany', (done) => {
+    describe('Create Methods', function () {
+        it('/createCompany', (done) => {
             chai.request(app)
                 .post('/createCompany')
                 .send("Random Text")
@@ -75,7 +75,7 @@ describe('API Negative Tests', function () {
                 });
         });
         
-        it('POST /createNewEquipment', (done) => {
+        it('/createNewEquipment', (done) => {
             chai.request(app)
                 .post('/createNewEquipment')
                 .send("Random Text")
@@ -87,8 +87,10 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+    });
 
-        it('POST /addEquipmentToCompany (Text Request)', (done) => {
+    describe('Update Methods', function () {
+        it('/addEquipmentToCompany (Text Request)', (done) => {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send("Random Text")
@@ -101,7 +103,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /addEquipmentToCompany (Amount < 1)', (done) => {
+        it('/addEquipmentToCompany (Amount < 1)', (done) => {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send({
@@ -118,7 +120,7 @@ describe('API Negative Tests', function () {
                 });
         });
         
-        it('POST /addEquipmentToCompany (Equipment Already Present)', (done) => {
+        it('/addEquipmentToCompany (Equipment Already Present)', (done) => {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send({
@@ -135,7 +137,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /updateEquipmentAmountInCompany (Text Request)', (done) => {
+        it('/updateEquipmentAmountInCompany (Text Request)', (done) => {
             chai.request(app)
                 .post('/updateEquipmentAmountInCompany')
                 .send("Random Text")
@@ -148,7 +150,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /updateEquipmentAmountInCompany (Amount < 1)', (done) => {
+        it('/updateEquipmentAmountInCompany (Amount < 1)', (done) => {
             chai.request(app)
                 .post('/updateEquipmentAmountInCompany')
                 .send({
@@ -165,7 +167,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /addEmployeeToCompany', (done) => {
+        it('/addEmployeeToCompany', (done) => {
             chai.request(app)
                 .post('/addEmployeeToCompany')
                 .send("Random Text")
@@ -178,7 +180,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /giveAdminPriviledge', (done) => {
+        it('/giveAdminPriviledge', (done) => {
             chai.request(app)
                 .post('/giveAdminPriviledge')
                 .send("Random Text")
@@ -191,7 +193,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /takeAdminPriviledge', (done) => {
+        it('/takeAdminPriviledge', (done) => {
             chai.request(app)
                 .post('/takeAdminPriviledge')
                 .send("Random Text")
@@ -206,7 +208,7 @@ describe('API Negative Tests', function () {
     });
 
     describe('Delete Methods', function () {
-        it('POST /removeEquipmentFromCompany (Text Response)', (done) => {
+        it('/removeEquipmentFromCompany (Text Response)', (done) => {
             chai.request(app)
                 .post('/removeEquipmentFromCompany')
                 .send("Random Text")
@@ -219,7 +221,7 @@ describe('API Negative Tests', function () {
                 });
         });
         
-        it('POST /removeEmployeeFromCompany (Text Response)', (done) => {
+        it('/removeEmployeeFromCompany (Text Response)', (done) => {
             chai.request(app)
                 .post('/removeEmployeeFromCompany')
                 .send("Random Text")
@@ -232,7 +234,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('POST /deleteCompany (Text Response)', (done) => {
+        it('/deleteCompany (Text Response)', (done) => {
             chai.request(app)
                 .post('/deleteCompany')
                 .send("Random Text")

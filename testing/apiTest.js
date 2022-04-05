@@ -31,8 +31,8 @@ const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 is not al
 
 describe('API Tests', function () {
     this.timeout(timeout);
-    describe('Fetch Methods', function () {
-        it('POST /getCompanyData', (done) => {
+    describe('Read Methods', function () {
+        it('/getCompanyData', (done) => {
             chai.request(app)
                 .post('/getCompanyData')
                 .send({ "userEmail": "admin@test1.com" })
@@ -51,7 +51,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /getCompanyByContactEmail', (done) => {
+        it('/getCompanyByContactEmail', (done) => {
             chai.request(app)
                 .post('/getCompanyByContactEmail')
                 .send({ "contactEmail": "test@test.com" })
@@ -68,7 +68,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /getEquipmentData', (done) => {
+        it('/getEquipmentData', (done) => {
             chai.request(app)
                 .post('/getEquipmentData')
                 .send({ "equipmentId": "6" })
@@ -85,7 +85,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /isEmployeeAdmin', (done) => {
+        it('/isEmployeeAdmin', (done) => {
             chai.request(app)
                 .post('/isEmployeeAdmin')
                 .send({ "userEmail": "admin@test2.com" })
@@ -103,8 +103,8 @@ describe('API Tests', function () {
         });
     });
 
-    describe('Create / Update Methods', function () {
-        it('POST /createCompany', (done) => {
+    describe('Create Methods', function () {
+        it('/createCompany', (done) => {
             chai.request(app)
                 .post('/createCompany')
                 .send({
@@ -131,7 +131,7 @@ describe('API Tests', function () {
 
         });
 
-        it('POST /createNewEquipment', (done) => {
+        it('/createNewEquipment', (done) => {
             chai.request(app)
                 .post('/createNewEquipment')
                 .send({
@@ -163,8 +163,10 @@ describe('API Tests', function () {
                     done();
                 });
         });
+    });
 
-        it('POST /addEmployeeToCompany', (done) => {
+    describe('Update Methods', function () {
+        it('/addEmployeeToCompany', (done) => {
             chai.request(app)
                 .post('/addEmployeeToCompany')
                 .send({
@@ -187,7 +189,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /giveAdminPriviledge', (done) => {
+        it('/giveAdminPriviledge', (done) => {
             chai.request(app)
                 .post('/giveAdminPriviledge')
                 .send({ "userEmail": "apitest@donk.com" })
@@ -206,7 +208,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /takeAdminPriviledge', (done) => {
+        it('/takeAdminPriviledge', (done) => {
             chai.request(app)
                 .post('/takeAdminPriviledge')
                 .send({ "userEmail": "apitest@donk.com" })
@@ -225,7 +227,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /addEquipmentToCompany', (done) => {
+        it('/addEquipmentToCompany', (done) => {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send({
@@ -245,7 +247,7 @@ describe('API Tests', function () {
 
         });
 
-        it('POST /updateEquipmentAmountInCompany', (done) => {
+        it('/updateEquipmentAmountInCompany', (done) => {
             chai.request(app)
                 .post('/updateEquipmentAmountInCompany')
                 .send({
@@ -266,7 +268,7 @@ describe('API Tests', function () {
     });
 
     describe('Delete Methods', function () {
-        it('POST /removeEquipmentFromCompany',  (done) => {
+        it('/removeEquipmentFromCompany',  (done) => {
             chai.request(app)
                 .post('/removeEquipmentFromCompany')
                 .send({
@@ -290,7 +292,7 @@ describe('API Tests', function () {
                 })
         });
         
-        it('POST /removeEmployeeFromCompany', (done) => {
+        it('/removeEmployeeFromCompany', (done) => {
             chai.request(app)
                 .post('/removeEmployeeFromCompany')
                 .send({ "userEmail": "apitest@donk.com" })
@@ -309,7 +311,7 @@ describe('API Tests', function () {
                 });
         });
 
-        it('POST /deleteCompany', (done) => {
+        it('/deleteCompany', (done) => {
             chai.request(app)
                 .post('/deleteCompany')
                 .send({ "contactEmail": "new@donk.com" })
