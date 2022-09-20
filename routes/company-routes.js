@@ -17,9 +17,7 @@ module.exports = function (app) {
         } else {
             res.json({})
         }
-
-
-    })
+    });
 
     app.post('/getCompanyByContactEmail', async (req, res) => {
         const contactEmail = req.body.contactEmail;
@@ -37,51 +35,75 @@ module.exports = function (app) {
         } else {
             res.json({})
         }
+    });
 
+    app.post('/getAssociatedCompanies', async (req, res) => {
+        const userEmail = req.body.userEmail;
 
-    })
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.getAssociatedCompanies(userEmail)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length; // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    });
 
     app.post('/addEmployeeToCompany', async (req, res) => {
         const companyEmail = req.body.companyEmail;
         const newEmployeeEmail = req.body.newEmployeeEmail;
         const isAdmin = req.body.isAdmin;
+        const authority = req.body.authority;
 
         //response type
         res.contentType('application/json');
-
-        //change this to info from the db
-        var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
-
-        //send the response
-        if (size > 0) {
-            res.json(items);
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Not Admin" });
+            return;
         } else {
-            res.json({})
+            //change this to info from the db
+            var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin)); // combine the result with an empty object to ensure items is not undefined
+            var size = Object.keys(items).length; // get the number of keys in the object
+
+            //send the response
+            if (size > 0) {
+                res.json(items);
+            } else {
+                res.json({})
+            }
         }
-    })
+    });
 
     app.post('/removeEmployeeFromCompany', async (req, res) => {
         const userEmail = req.body.userEmail;
-        
+        const companyEmail = req.body.companyEmail;
+        const authority = req.body.authority;
+
         //response type
         res.contentType('application/json');
 
-
-        //change this to info from the db
-        var items = Object.assign({}, await db.removeEmployeeFromCompany(userEmail)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
-
-        //send the response
-        if (size > 0) {
-            res.json(items);
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Not Admin" });
+            return;
         } else {
-            res.json({})
+            //change this to info from the db
+            var items = Object.assign({}, await db.removeEmployeeFromCompany(userEmail)); // combine the result with an empty object to ensure items is not undefined
+            var size = Object.keys(items).length; // get the number of keys in the object
+
+            //send the response
+            if (size > 0) {
+                res.json(items);
+            } else {
+                res.json({})
+            }
         }
-
-
-    })
-
+    });
 
     app.post('/createCompany', async (req, res) => {
 
@@ -231,12 +253,13 @@ module.exports = function (app) {
 
     app.post('/isEmployeeAdmin', async (req, res) => {
         const userEmail = req.body.userEmail;
+        const companyEmail = req.body.companyEmail;
 
         //response type
         res.contentType('application/json');
 
         //change this to info from the db
-        var items = Object.assign({}, await db.isEmployeeAdmin(userEmail)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.isEmployeeAdmin(userEmail, companyEmail)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length; // get the number of keys in the object
 
         //send the response
@@ -293,15 +316,15 @@ module.exports = function (app) {
     app.post('/deleteCompany', async (req, res) => {
 
         //parameters needed to delete a company
-        
+
         const companyEmail = req.body.contactEmail;
-       
+
 
         //response type
         res.contentType('application/json');
 
         var items = Object.assign({}, await db.deleteCompany(companyEmail));
-        
+
         //send the response
         if (Object.keys(items).length > 0) {
             res.json(items);
@@ -309,5 +332,5 @@ module.exports = function (app) {
             res.json({})
         }
     })
-    
+
 }

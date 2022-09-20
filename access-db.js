@@ -72,8 +72,28 @@ async function getCompanyByContactEmail(contactEmail) {
     }
 }
 
-async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
+async function getAssociatedCompanies(userEmail) {
+    try {
+        // query to return all items
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c"
+        };
 
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+    
+        // console.log(userEmail);
+        return items.filter(item => {
+            return item.employees.findIndex(employee => employee.email === userEmail) >= 0;
+        })
+    } catch (err) {
+        return { error: "An error occured, check database connection" };
+    }
+}
+
+async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
     try {
         // query for company 
         const querySpec = {
@@ -326,7 +346,7 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail,
     }
 
     var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId == equipmentIdentifier);
-    
+
     companyUpdating.ownedEquipment[indexOfItem].amount = amountOfEquipment;
 
     // read all items in the Items container
@@ -338,18 +358,20 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail,
     return updatedItem;
 }
 
-async function isEmployeeAdmin(userEmail) {
-
+async function isEmployeeAdmin(userEmail, companyEmail) {
     try {
         const querySpec = {
-            query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+            query: "SELECT e.isAdmin FROM (SELECT c.employees FROM Company c WHERE c.contactEmail = '" + companyEmail + "') As d JOIN e in d.employees WHERE e.email = '" + userEmail + "'"
         };
 
         const { resources: items } = await companyContainer.items
             .query(querySpec)
             .fetchAll();
-        return items[0];
+
+        // console.log(items);
+        return items[0].isAdmin;
     } catch (err) {
+        // console.log(err);
         return { error: "Error occured while checking admin rights, check connection" };
     }
 }
@@ -453,7 +475,7 @@ async function deleteCompany(contactEmail) {
 
         const { resource: result } = await companyContainer.item(items[0].id, items[0].contactEmail).delete();
 
-        return {success: items[0].companyName + " has been deleted"};
+        return { success: items[0].companyName + " has been deleted" };
     } catch (e) {
         return { error: "Error occured while deleting company" };
     }
@@ -480,7 +502,7 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
 
 
 
