@@ -36,7 +36,6 @@ const equipmentContainer = database.container(equipmentContainerId);
 
 const diagnosticsContainer = database.container(diagnosticsContainerId);
 
-
 async function getCompanyData(userEmail) {
 
     try {
@@ -118,7 +117,7 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
             from: 'noreply.greenstorm@gmail.com',
             to: newEmployeeEmail,
             subject: 'You have been invited to join Greenstorm',
-            html: '<h1>Welcome to Greenstorm</h1><p>The Admin for your organization has invited you to use Greenstorm to collaborate with them. Use the button below to set up your account and get started:</p><button style="background:#04AA6D; color:white; border-radius: 8px; font-size: 20px;"><a href="https://www.greenstorm.xyz" style="background:#04AA6D; color:white;">Setup account</a></button><p>If you have any questions please reach out to the Admin for your organization. Our customer success team is also on standby.</p> <p>Welcome aboard,</p><p>The Greenstorm team</p>'
+            html: '<body style="background:#b3be9dff;font-family:verdana, sans-serif; padding:20px;"><h1 style="color:#054a29ff; font-family: Arial; text-align:center;">Welcome to Greenstorm</h1><p style="color:black">The Admin for your organization has invited you to use Greenstorm to collaborate with them. Click on the button below to set up your account and get started:</p><button style="background:#d5d5d7ff; color:#054a29ff; border-radius: 2px; font-size: 20px; padding: 15px 32px; border: 2px solid #054a29ff; margin:auto; display:block;"><a href="https://www.greenstorm.xyz" style="background:#d5d5d7ff; color:#054a29ff;">Setup account</a></button><p style="color:black">If you have any questions please reach out to the Admin of your organization. Our customer success team is also on standby.</p><p style="color:black">Welcome aboard,</p><p style="color:black">The Greenstorm team</p></body>'
           };
           
           transporter.sendMail(mailOptions, function(error, info){
