@@ -1,10 +1,13 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
+var nodemailer = require('nodemailer');
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-// const config = require("./config");
-// const endpoint = config.endpoint;
-// const key = config.key;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+ const config = require("./config");
+ const endpoint = config.endpoint;
+ const key = config.key;
+ const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -102,6 +105,29 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
             .replace(items[0]);
 
         //return updated item
+
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'noreply.greenstorm@gmail.com',
+              pass: emailpass
+            }
+          });
+          
+          var mailOptions = {
+            from: 'noreply.greenstorm@gmail.com',
+            to: newEmployeeEmail,
+            subject: 'You have been invited to join Greenstorm',
+            html: '<h1>Welcome to Greenstorm</h1><p>The Admin for your organization has invited you to use Greenstorm to collaborate with them. Use the button below to set up your account and get started:</p><button style="background:#04AA6D; color:white; border-radius: 8px; font-size: 20px;"><a href="https://www.greenstorm.xyz" style="background:#04AA6D; color:white;">Setup account</a></button><p>If you have any questions please reach out to the Admin for your organization. Our customer success team is also on standby.</p> <p>Welcome aboard,</p><p>The Greenstorm team</p>'
+          };
+          
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
         return updatedItem;
     } catch (e) {
         return { error: "Issue occured while adding employee" };
