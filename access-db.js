@@ -1,9 +1,9 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
 
- //const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
- //const key = process.env.CUSTOMCONNSTR_CosmosDBString;
- //const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+ const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+ const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+ const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
  const config = require("./config");
  const endpoint = config.endpoint;
  const key = config.key;
