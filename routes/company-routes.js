@@ -64,7 +64,7 @@ module.exports = function (app) {
         //response type
         res.contentType('application/json');
         if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
-            res.json({ error: "Not Admin" });
+            res.json({ error: "Unable to verify permissions." });
             return;
         } else {
             //change this to info from the db
@@ -89,7 +89,7 @@ module.exports = function (app) {
         res.contentType('application/json');
 
         if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
-            res.json({ error: "Not Admin" });
+            res.json({ error: "Unable to verify permissions." });
             return;
         } else {
             //change this to info from the db

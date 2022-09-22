@@ -176,7 +176,7 @@ describe('API Negative Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Not Admin");
+                    assert.equal(res.body.error, "Unable to verify permissions.");
                     done();
                 });
         });
@@ -230,7 +230,7 @@ describe('API Negative Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Not Admin");
+                    assert.equal(res.body.error, "Unable to verify permissions.");
                     done();
                 });
         });
