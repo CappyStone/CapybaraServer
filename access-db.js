@@ -386,7 +386,7 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail,
 async function isEmployeeAdmin(userEmail, companyEmail) {
     try {
         if (!userEmail || !companyEmail) {
-            return false;
+            throw new Error("Unable to verify permissions.")
         }
 
         const querySpec = {
@@ -401,7 +401,7 @@ async function isEmployeeAdmin(userEmail, companyEmail) {
         return items[0].isAdmin;
     } catch (err) {
         // console.log(err);
-        return { error: "Error occured while checking admin rights, check connection" };
+        return { error: err };
     }
 }
 

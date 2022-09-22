@@ -271,7 +271,7 @@ module.exports = function (app) {
                 res.json({})
             }
         } else {
-            res.json({ error: true })
+            res.json({ error: "Unable to verify permissions." })
         }
     })
 

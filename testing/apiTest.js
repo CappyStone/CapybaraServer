@@ -95,7 +95,7 @@ describe('API Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.be.property("isAdmin");
+                    res.body.should.have.property('isAdmin');
                     var foundAdmin = false;
                     if (res.body.isAdmin === true) {
                         foundAdmin = true;

@@ -55,8 +55,8 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.be.property("isAdmin");
-                    assert.equal(res.body.isAdmin, false);
+                    res.body.should.have.property("error");
+                    assert.equal(res.body.error, "Unable to verify permissions.");
                     done();
                 });
         });
