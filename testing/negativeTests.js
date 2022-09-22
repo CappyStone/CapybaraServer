@@ -55,7 +55,8 @@ describe('API Negative Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    assert.equal(_.isEmpty(res.body), true);
+                    res.body.should.be.property("isAdmin");
+                    assert.equal(res.body.isAdmin, false);
                     done();
                 });
         });
@@ -175,7 +176,7 @@ describe('API Negative Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Issue occured while adding employee");
+                    assert.equal(res.body.error, "Not Admin");
                     done();
                 });
         });
@@ -229,7 +230,7 @@ describe('API Negative Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Employee not found");
+                    assert.equal(res.body.error, "Not Admin");
                     done();
                 });
         });

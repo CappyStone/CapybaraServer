@@ -1,13 +1,13 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
 
- const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
- const key = process.env.CUSTOMCONNSTR_CosmosDBString;
- const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
- //const config = require("./config");
- //const endpoint = config.endpoint;
- //const key = config.key;
- //const emailpass = config.emailpass;
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+//const config = require("./config");
+//const endpoint = config.endpoint;
+//const key = config.key;
+//const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -85,7 +85,7 @@ async function getAssociatedCompanies(userEmail) {
         const { resources: items } = await companyContainer.items
             .query(querySpec)
             .fetchAll();
-    
+
         // console.log(userEmail);
         return items.filter(item => {
             return item.employees.findIndex(employee => employee.email === userEmail) >= 0;
@@ -128,25 +128,25 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-              user: 'noreply.greenstorm@gmail.com',
-              pass: emailpass
+                user: 'noreply.greenstorm@gmail.com',
+                pass: emailpass
             }
-          });
-          
-          var mailOptions = {
+        });
+
+        var mailOptions = {
             from: 'noreply.greenstorm@gmail.com',
             to: newEmployeeEmail,
             subject: 'You have been invited to join Greenstorm',
             html: '<body style="background:#b3be9dff;font-family:verdana, sans-serif; padding:20px;"><h1 style="color:#054a29ff; font-family: Arial; text-align:center;">Welcome to Greenstorm</h1><p style="color:black">The Admin for your organization has invited you to use Greenstorm to collaborate with them. Click on the button below to set up your account and get started:</p><button style="background:#d5d5d7ff; color:#054a29ff; border-radius: 2px; font-size: 20px; padding: 15px 32px; border: 2px solid #054a29ff; margin:auto; display:block;"><a href="https://www.greenstorm.xyz" style="background:#d5d5d7ff; color:#054a29ff;">Setup account</a></button><p style="color:black">If you have any questions please reach out to the Admin of your organization. Our customer success team is also on standby.</p><p style="color:black">Welcome aboard,</p><p style="color:black">The Greenstorm team</p></body>'
-          };
-          
-          transporter.sendMail(mailOptions, function(error, info){
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-              console.log(error);
+                console.log(error);
             } else {
-              console.log('Email sent: ' + info.response);
+                console.log('Email sent: ' + info.response);
             }
-          });
+        });
         return updatedItem;
     } catch (e) {
         return { error: "Issue occured while adding employee" };
@@ -385,8 +385,12 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail,
 
 async function isEmployeeAdmin(userEmail, companyEmail) {
     try {
+        if (!userEmail || !companyEmail) {
+            return false;
+        }
+
         const querySpec = {
-            query: "SELECT e.isAdmin FROM (SELECT c.employees FROM Company c WHERE c.contactEmail = '" + companyEmail + "') As d JOIN e in d.employees WHERE e.email = '" + userEmail + "'"
+            query: "SELECT e.isAdmin FROM Company c Join e in c.employees Where c.contactEmail = '" + companyEmail + "' and e.email = '" + userEmail + "'"
         };
 
         const { resources: items } = await companyContainer.items
@@ -493,7 +497,7 @@ async function deleteCompany(contactEmail) {
      * Delete item
      * Pass the id and partition key value to delete the item
      */
-    
+
         if (items.length <= 0) {
             return { error: "No company found" };
         }
