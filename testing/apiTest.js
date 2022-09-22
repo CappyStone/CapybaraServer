@@ -5,11 +5,11 @@ const assert = require('assert');
 const app = require('../index.js');
 const should = chai.should();
 
-// const config = require("../config");
-// const endpoint = config.endpoint;
-// const key = config.key;
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const config = require("../config");
+const endpoint = config.endpoint;
+const key = config.key;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 
 const databaseConfig = {
@@ -88,7 +88,10 @@ describe('API Tests', function () {
         it('/isEmployeeAdmin', (done) => {
             chai.request(app)
                 .post('/isEmployeeAdmin')
-                .send({ "userEmail": "admin@test2.com" })
+                .send({ 
+                    "userEmail": "admin@test2.com",
+                    "companyEmail": "test2@test2.com"
+                })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -172,7 +175,8 @@ describe('API Tests', function () {
                 .send({
                     "companyEmail": "new@donk.com",
                     "newEmployeeEmail": "apitest@donk.com",
-                    "isAdmin": "false"
+                    "isAdmin": "false",
+                    "authority": "admin@donk.com"
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -295,7 +299,11 @@ describe('API Tests', function () {
         it('/removeEmployeeFromCompany', (done) => {
             chai.request(app)
                 .post('/removeEmployeeFromCompany')
-                .send({ "userEmail": "apitest@donk.com" })
+                .send({ 
+                    "userEmail": "apitest@donk.com",
+                    "companyEmail": "new@donk.com",
+                    "authority": "admin@donk.com"
+                })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
