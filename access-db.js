@@ -4,10 +4,10 @@ var nodemailer = require('nodemailer');
  const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
  const key = process.env.CUSTOMCONNSTR_CosmosDBString;
  const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
- const config = require("./config");
- const endpoint = config.endpoint;
- const key = config.key;
- const emailpass = config.emailpass;
+ //const config = require("./config");
+ //const endpoint = config.endpoint;
+ //const key = config.key;
+ //const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
