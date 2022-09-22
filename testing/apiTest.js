@@ -5,11 +5,11 @@ const assert = require('assert');
 const app = require('../index.js');
 const should = chai.should();
 
-const config = require("../config");
-const endpoint = config.endpoint;
-const key = config.key;
-//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const config = require("../config");
+//const endpoint = config.endpoint;
+//const key = config.key;
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 
 const databaseConfig = {
