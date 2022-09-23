@@ -25,7 +25,7 @@ jobs:
         env:
           CUSTOMCONNSTR_CosmosAddress: ${{ secrets.COSMOSADDRESS }}
           CUSTOMCONNSTR_CosmosDBString: ${{ secrets.COSMOSDBSTRING }}
-          EmailPass: ${{ secrets.EMAILPASS }}
+          CUSTOMCONNSTR_EmailPass: ${{ secrets.EMAILPASS }}
           
         run: |
           npm install
