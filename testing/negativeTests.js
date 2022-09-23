@@ -60,6 +60,18 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+
+        it('/getAssociatedCompanies', (done) => {
+            chai.request(app)
+                .post('/getAssociatedCompanies')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body), true);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -244,6 +256,19 @@ describe('API Negative Tests', function () {
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
                     assert.equal(res.body.error, "No company found");
+                    done();
+                });
+        });
+
+        it('/deleteEquipment (Text Response)', (done) => {
+            chai.request(app)
+                .post('/deleteEquipment')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "No equipment found");
                     done();
                 });
         });
