@@ -388,7 +388,7 @@ async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail,
         return { error: 'Equipment needs to have an amount of at least 1' };
     }
 
-    var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId == equipmentIdentifier);
+    var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId === equipmentIdentifier);
 
     companyUpdating.ownedEquipment[indexOfItem].amount = amountOfEquipment;
 
