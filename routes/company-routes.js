@@ -222,7 +222,7 @@ module.exports = function (app) {
 
             //send the response
             if (items['error']) {
-                res.json({ error: 'Unable to add equipment' });
+                res.json({ error: items['error'] });
             } else {
                 res.json(items);
             }
@@ -246,7 +246,11 @@ module.exports = function (app) {
             // var size = Object.keys(items).length; // get the number of keys in the object
 
             //send the response
-            res.json(items);
+            if (items['error']) {
+                res.json({ error: items['error'] });
+            } else {
+                res.json(items);
+            }
         }
     })
 
