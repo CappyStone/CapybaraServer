@@ -245,7 +245,6 @@ describe('API Tests', function () {
                             };
                             var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
                             assert.equal(company[0].amount, 1);
-                            done();
                         });
                     done();
                 });
