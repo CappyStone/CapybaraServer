@@ -274,7 +274,6 @@ describe('API Tests', function () {
                             var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
                             console.log(company[0]);
                             assert.equal(company[0].amount, 5);
-                            done();
                         })
                     done();
                 });
@@ -307,7 +306,6 @@ describe('API Tests', function () {
                                 }
                             }
                             assert.equal(equipmentFound, false);
-                            done();
                         })
                     done();
                 });
