@@ -283,6 +283,24 @@ async function createNewEquipment(category, productName, description, manufactur
     }
 }
 
+async function getFilteredVehicles(year, make, model) {
+    try {
+        // query to return all items
+        const querySpec = {
+            query: "SELECT e.productName, e.manufacturer, e.equipmentId FROM Equipment e WHERE e.manufacturer = '" + make + "' AND e.productName = '" + model + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await equipmentContainer.items
+            .query(querySpec)
+            .fetchAll();
+        return items;
+
+    } catch (err) {
+        return { error: "Error occured while finding equipment, check connection" }
+    }
+}
+
 async function getEquipmentData(equipmentId) {
     //console.log("Querying container: Equipment");
 
@@ -290,7 +308,7 @@ async function getEquipmentData(equipmentId) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description, e.equipmentId FROM Equipment e WHERE e.equipmentId = " + equipmentId
+            query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description, e.equipmentId, e.manufacturer FROM Equipment e WHERE e.equipmentId = " + equipmentId
         };
 
         // read all items in the Items container
@@ -310,7 +328,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
-    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
+    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier);
 
     if (companyUpdating == null || equipmentAdding == null) {
         return { error: 'Could not find equipment or company' };
@@ -531,7 +549,7 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
 
 
 
