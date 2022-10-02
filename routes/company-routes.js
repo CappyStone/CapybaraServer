@@ -206,6 +206,7 @@ module.exports = function (app) {
 
     app.post('/addEquipmentToCompany', async (req, res) => {
         const equipmentId = req.body.equipmentId;
+        const licensePlate = req.body.licensePlate;
         const companyEmail = req.body.companyEmail;
         const amountOfEquipment = req.body.amountOfEquipment;
         const authority = req.body.authority;
@@ -218,7 +219,7 @@ module.exports = function (app) {
             res.contentType('application/json');
 
             //change this to info from the db
-            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
+            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment, licensePlate)); // combine the result with an empty object to ensure items is not undefined
 
             //send the response
             if (items['error']) {
@@ -286,7 +287,7 @@ module.exports = function (app) {
         var company = Object.assign({}, await db.getCompanyByContactEmail(companyEmail)); // combine the result with an empty object to ensure items is not undefined
 
         for (var i in company.ownedEquipment) {
-            items.push(Object.assign({}, await db.getEquipmentData(company.ownedEquipment[i].equipmentId)));
+            items.push(Object.assign({ licensePlate: company.ownedEquipment[i].licensePlate }, await db.getEquipmentData(company.ownedEquipment[i].equipmentId)));
         }
 
         // console.log(items);
