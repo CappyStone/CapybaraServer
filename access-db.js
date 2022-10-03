@@ -533,7 +533,7 @@ async function deleteEquipment(equipmentId) {
     try {
         // query for company 
         const querySpec = {
-            query: "SELECT e.id, e.equipmentId, e.productName FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
+            query: "SELECT e.id, e.equipmentId, e.productName FROM Equipment e WHERE e.equipmentId = " + equipmentId
         };
 
         // read all items in the Items container

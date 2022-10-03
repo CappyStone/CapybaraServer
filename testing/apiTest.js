@@ -4,6 +4,7 @@ const chai = require('chai');
 const assert = require('assert');
 const app = require('../index.js');
 const should = chai.should();
+const _ = require("lodash");
 
 //const config = require("../config");
 //const endpoint = config.endpoint;
@@ -362,7 +363,7 @@ describe('API Tests', function () {
         it('/deleteEquipment', (done) => {
             chai.request(app)
                 .post('/deleteEquipment')
-                .send({ "equipmentId": "7" })
+                .send({ "equipmentId": 7 })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
