@@ -111,7 +111,7 @@ describe('API Negative Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Could not find equipment or company");
+                    assert.equal(res.body.error, "Unable to verify permissions.");
                     done();
                 });
         });
@@ -120,8 +120,9 @@ describe('API Negative Tests', function () {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send({
-                    "equipmentIdentifier": 6,
-                    "contactEmail": "test@test.com",
+                    "authority": "admin@test1.com",
+                    "equipmentId": 6,
+                    "companyEmail": "test@test.com",
                     "amountOfEquipment": 0
                 })
                 .end((err, res) => {
@@ -137,8 +138,9 @@ describe('API Negative Tests', function () {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send({
-                    "equipmentIdentifier": 2,
-                    "contactEmail": "test@test.com",
+                    "authority": "admin@test1.com",
+                    "equipmentId": 2,
+                    "companyEmail": "test@test.com",
                     "amountOfEquipment": 1
                 })
                 .end((err, res) => {
@@ -229,7 +231,7 @@ describe('API Negative Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Could not find equipment or company");
+                    assert.equal(res.body.error, "Unable to verify permissions.");
                     done();
                 });
         });

@@ -168,6 +168,25 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/getModels', async (req, res) => {
+        const year = req.body.searchYear;
+        const make = req.body.searchMake;
+        const model = req.body.searchModel;
+
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.getFilteredVehicles(year, make, model)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    });
+
     app.post('/getEquipmentData', async (req, res) => {
         const equipmentId = req.body.equipmentId;
         //response type
@@ -186,46 +205,53 @@ module.exports = function (app) {
     })
 
     app.post('/addEquipmentToCompany', async (req, res) => {
-        const equipmentIdentifier = req.body.equipmentIdentifier;
-        const contactEmail = req.body.contactEmail;
+        const equipmentId = req.body.equipmentId;
+        const companyEmail = req.body.companyEmail;
         const amountOfEquipment = req.body.amountOfEquipment;
+        const authority = req.body.authority;
 
-        //response type
-        res.contentType('application/json');
-
-        //change this to info from the db
-        var items = Object.assign({}, await db.addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
-
-        //send the response
-        if (size > 0) {
-            res.json(items);
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Unable to verify permissions." });
+            return;
         } else {
-            res.json({})
+            //response type
+            res.contentType('application/json');
+
+            //change this to info from the db
+            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
+
+            //send the response
+            if (items['error']) {
+                res.json({ error: items['error'] });
+            } else {
+                res.json(items);
+            }
         }
-
-
-    })
+    });
 
     app.post('/removeEquipmentFromCompany', async (req, res) => {
-        const equipmentIdentifier = req.body.equipmentIdentifier;
-        const contactEmail = req.body.contactEmail;
+        const equipmentIdentifier = req.body.equipmentId;
+        const companyEmail = req.body.companyEmail;
+        const authority = req.body.authority;
 
-        //response type
-        res.contentType('application/json');
-
-        //change this to info from the db
-        var items = Object.assign({}, await db.removeEquipmentFromCompany(equipmentIdentifier, contactEmail)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
-
-        //send the response
-        if (size > 0) {
-            res.json(items);
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Unable to verify permissions." });
+            return;
         } else {
-            res.json({})
+            //response type
+            res.contentType('application/json');
+
+            //change this to info from the db
+            var items = Object.assign({}, await db.removeEquipmentFromCompany(equipmentIdentifier, companyEmail)); // combine the result with an empty object to ensure items is not undefined
+            // var size = Object.keys(items).length; // get the number of keys in the object
+
+            //send the response
+            if (items['error']) {
+                res.json({ error: items['error'] });
+            } else {
+                res.json(items);
+            }
         }
-
-
     })
 
     app.post('/updateEquipmentAmountInCompany', async (req, res) => {
@@ -250,6 +276,24 @@ module.exports = function (app) {
 
     })
 
+    app.post('/getCompanyVehicles', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+
+        //response type
+        res.contentType('application/json');
+
+        var items = [];
+        var company = Object.assign({}, await db.getCompanyByContactEmail(companyEmail)); // combine the result with an empty object to ensure items is not undefined
+
+        for (var i in company.ownedEquipment) {
+            items.push(Object.assign({}, await db.getEquipmentData(company.ownedEquipment[i].equipmentId)));
+        }
+
+        // console.log(items);
+
+        //send the response
+        res.json(items);
+    });
 
     app.post('/isEmployeeAdmin', async (req, res) => {
         const userEmail = req.body.userEmail;

@@ -88,7 +88,7 @@ describe('API Tests', function () {
         it('/isEmployeeAdmin', (done) => {
             chai.request(app)
                 .post('/isEmployeeAdmin')
-                .send({ 
+                .send({
                     "userEmail": "admin@test2.com",
                     "companyEmail": "test2@test2.com"
                 })
@@ -170,12 +170,6 @@ describe('API Tests', function () {
                         foundEquipment = true;
                     }
                     assert.equal(foundEquipment, true);
-                    //No api to delete equipment manually delete
-                    const addedItemQuery = {
-                        query: "SELECT * FROM Equipment e Where e.productName = 'TESTING'"
-                    };
-                    var { resources: addedItem } = await equipmentContainer.items.query(addedItemQuery).fetchAll();
-                    await equipmentContainer.item(addedItem[0].id, addedItem[0].equipmentId).delete()
                     done();
                 });
         });
@@ -246,73 +240,93 @@ describe('API Tests', function () {
 
         it('/addEquipmentToCompany', (done) => {
             chai.request(app)
-                .post('/addEquipmentToCompany')
-                .send({
-                    "equipmentIdentifier": 6,
-                    "contactEmail": "new@donk.com",
-                    "amountOfEquipment": 2
-                })
-                .end(async (err, res) => {
-                    res.should.have.status(200);
-                    const addedItemQuery = {
-                        query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
-                    };
-                    var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    assert.equal(company[0].amount, 2);
+                .post('/giveAdminPriviledge')
+                .send({ "userEmail": "admin@donk.com" })
+                .end((err, res) => {
+                    chai.request(app)
+                        .post('/addEquipmentToCompany')
+                        .send({
+                            "equipmentId": 6,
+                            "companyEmail": "new@donk.com",
+                            "authority": "admin@donk.com",
+                            "amountOfEquipment": 1
+                        })
+                        .end(async (err, res) => {
+                            res.should.have.status(200);
+                            const addedItemQuery = {
+                                query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
+                            };
+                            var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                            assert.equal(company[0].amount, 1);
+                        });
                     done();
-                })
+                });
 
         });
 
         it('/updateEquipmentAmountInCompany', (done) => {
+            // add relevant equipment to company
             chai.request(app)
-                .post('/updateEquipmentAmountInCompany')
-                .send({
-                    "equipmentIdentifier": 6,
-                    "contactEmail": "new@donk.com",
-                    "amountOfEquipment": 5
-                })
+                .post('/giveAdminPriviledge')
+                .send({ "userEmail": "admin@donk.com" })
                 .end(async (err, res) => {
-                    res.should.have.status(200);
-                    const addedItemQuery = {
-                        query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
-                    };
-                    var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    assert.equal(company[0].amount, 5);
+                    // update existing equipment
+                    chai.request(app)
+                        .post('/updateEquipmentAmountInCompany')
+                        .send({
+                            "equipmentIdentifier": 6,
+                            "contactEmail": "new@donk.com",
+                            "amountOfEquipment": 5
+                        })
+                        .end(async (err, res) => {
+                            res.should.have.status(200);
+                            const addedItemQuery = {
+                                query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
+                            };
+                            var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                            console.log(company[0]);
+                            assert.equal(company[0].amount, 5);
+                        })
                     done();
-                })
+                });
         });
     });
 
     describe('Delete Methods', function () {
-        it('/removeEquipmentFromCompany',  (done) => {
+        it('/removeEquipmentFromCompany', (done) => {
             chai.request(app)
-                .post('/removeEquipmentFromCompany')
-                .send({
-                    "equipmentIdentifier": 6,
-                    "contactEmail": "new@donk.com"
-                })
-                .end(async (err, res) => {
-                    res.should.have.status(200);
-                    const addedItemQuery = {
-                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
-                    };
-                    var { resources: companyEquipment } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    var equipmentFound = false;
-                    for(var i = 0; i < companyEquipment[0].ownedEquipment.length; i++) {
-                        if(companyEquipment[0].ownedEquipment[i].equipmentId === 6) {
-                            equipmentFound = true;
-                        }
-                    }
-                    assert.equal(equipmentFound, false);
+                .post('/giveAdminPriviledge')
+                .send({ "userEmail": "admin@donk.com" })
+                .end((err, res) => {
+                    chai.request(app)
+                        .post('/removeEquipmentFromCompany')
+                        .send({
+                            "equipmentId": 6,
+                            "companyEmail": "new@donk.com",
+                            "authority": "admin@donk.com"
+                        })
+                        .end(async (err, res) => {
+                            res.should.have.status(200);
+                            const addedItemQuery = {
+                                query: "SELECT c.ownedEquipment FROM Company c WHERE c.contactEmail = 'new@donk.com'"
+                            };
+                            var { resources: companyEquipment } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                            var equipmentFound = false;
+                            for (var i = 0; i < companyEquipment[0].ownedEquipment.length; i++) {
+                                if (companyEquipment[0].ownedEquipment[i].equipmentId === 6) {
+                                    equipmentFound = true;
+                                }
+                            }
+                            assert.equal(equipmentFound, false);
+                        })
                     done();
-                })
+                });
         });
-        
+
         it('/removeEmployeeFromCompany', (done) => {
             chai.request(app)
                 .post('/removeEmployeeFromCompany')
-                .send({ 
+                .send({
                     "userEmail": "apitest@donk.com",
                     "companyEmail": "new@donk.com",
                     "authority": "admin@donk.com"
