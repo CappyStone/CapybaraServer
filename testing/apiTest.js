@@ -104,6 +104,18 @@ describe('API Tests', function () {
                     done();
                 });
         });
+
+        it('/getAssociatedCompanies', (done) => {
+            chai.request(app)
+                .post('/getAssociatedCompanies')
+                .send({ "userEmail": "user@test1.com" })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body), false);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -139,6 +151,7 @@ describe('API Tests', function () {
                 .post('/createNewEquipment')
                 .send({
                     "category": "tool",
+                    "equipmentId": "7",
                     "productName": "TESTING",
                     "description": "TESTING PURPOSES ONLY",
                     "manufacturer": "apiTEST",
@@ -342,6 +355,19 @@ describe('API Tests', function () {
                     res.body.should.be.a('object');
                     res.body.should.have.property('success');
                     assert.equal(res.body.success, "waffles has been deleted");
+                    done();
+                });
+        });
+
+        it('/deleteEquipment', (done) => {
+            chai.request(app)
+                .post('/deleteEquipment')
+                .send({ "equipmentId": "7" })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('success');
+                    assert.equal(res.body.success, "TESTING has been deleted");
                     done();
                 });
         });

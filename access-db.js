@@ -529,6 +529,35 @@ async function deleteCompany(contactEmail) {
 
 }
 
+async function deleteEquipment(equipmentId) {
+    try {
+        // query for company 
+        const querySpec = {
+            query: "SELECT e.id, e.equipmentId, e.productName FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await equipmentContainer.items
+            .query(querySpec)
+            .fetchAll();
+
+        /**
+     * Delete item
+     * Pass the id and partition key value to delete the item
+     */
+
+        if (items.length <= 0) {
+            return { error: "No equipment found" };
+        }
+
+        const { resource: result } = await equipmentContainer.item(items[0].id, items[0].equipmentId).delete();
+
+        return { success: items[0].productName + " has been deleted" };
+    } catch (e) {
+        return { error: "Error occured while deleting equipment" };
+    }
+
+}
 
 async function getTestData() {
     console.log("Querying container: Diagnostics");
@@ -548,8 +577,4 @@ async function getTestData() {
 
 }
 
-
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany }; // Add any new database access functions to the export or they won't be usable
-
-
-
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany, deleteEquipment }; // Add any new database access functions to the export or they won't be usable

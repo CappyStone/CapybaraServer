@@ -380,4 +380,23 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/deleteEquipment', async (req, res) => {
+
+        //parameters needed to delete a company
+
+        const equipmentId = req.body.equipmentId;
+
+        //response type
+        res.contentType('application/json');
+
+        var items = Object.assign({}, await db.deleteEquipment(equipmentId));
+
+        //send the response
+        if (Object.keys(items).length > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    })
+
 }
