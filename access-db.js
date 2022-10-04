@@ -1,13 +1,13 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
-//const config = require("./config");
-//const endpoint = config.endpoint;
-//const key = config.key;
-//const emailpass = config.emailpass;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+const config = require("./config");
+const endpoint = config.endpoint;
+const key = config.key;
+const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -323,7 +323,7 @@ async function getEquipmentData(equipmentId) {
 
 }
 
-async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment) {
+async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment, licensePlate) {
     //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
@@ -339,7 +339,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
     if (companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null) {
         return { error: 'Company already owns this equipment' };
     }
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment }
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment, licensePlate: licensePlate, Trips:[]}
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
 
@@ -350,6 +350,46 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
         .replace(companyUpdating);
 
     return updatedItem;
+}
+
+async function addTripToVehicle(companyEmail, licensePlate, km) {
+    try {
+        
+        // query for company 
+        const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
+
+        //grab equipment list
+
+        var equipmentList = companyUpdating.ownedEquipment;
+
+        const currentDate = new Date();
+        const currentDayOfMonth = currentDate.getDate();
+        const currentMonth = currentDate.getMonth(); // Be careful! January is 0, not 1
+        const currentYear = currentDate.getFullYear();
+        const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
+        // "27-11-2020"
+
+        var newTrip = {"date":dateString,"kilometers":km}
+
+        equipmentList.forEach(license => {
+            if(license.licensePlate === licensePlate){
+                license.Trips.push(newTrip)
+            }
+        });
+
+        companyUpdating.ownedEquipment = equipmentList;
+        
+        // read all items in the Items container
+        const { resources: updatedItem } = await companyContainer
+        .item(companyUpdating.id, companyUpdating.contactEmail)
+        // new json object to replace the one in the database
+        .replace(companyUpdating);
+
+        return updatedItem;
+
+    } catch (e) {
+        return { error: "Issue occured while adding trip" };
+    }
 }
 
 async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
@@ -577,4 +617,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany, deleteEquipment }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany, deleteEquipment, addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
