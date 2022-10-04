@@ -323,7 +323,7 @@ async function getEquipmentData(equipmentId) {
 
 }
 
-async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment) {
+async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment, licensePlate) {
     //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
@@ -339,7 +339,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
     if (companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null) {
         return { error: 'Company already owns this equipment' };
     }
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment }
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment, licensePlate: licensePlate }
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
 
