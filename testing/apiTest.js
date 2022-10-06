@@ -253,8 +253,7 @@ describe('API Tests', function () {
                         .send({
                             "equipmentId": 6,
                             "companyEmail": "new@donk.com",
-                            "authority": "admin@donk.com",
-                            "amountOfEquipment": 1
+                            "authority": "admin@donk.com"
                         })
                         .end(async (err, res) => {
                             res.should.have.status(200);
@@ -269,32 +268,6 @@ describe('API Tests', function () {
 
         });
 
-        it('/updateEquipmentAmountInCompany', (done) => {
-            // add relevant equipment to company
-            chai.request(app)
-                .post('/giveAdminPriviledge')
-                .send({ "userEmail": "admin@donk.com" })
-                .end(async (err, res) => {
-                    // update existing equipment
-                    chai.request(app)
-                        .post('/updateEquipmentAmountInCompany')
-                        .send({
-                            "equipmentIdentifier": 6,
-                            "contactEmail": "new@donk.com",
-                            "amountOfEquipment": 5
-                        })
-                        .end(async (err, res) => {
-                            res.should.have.status(200);
-                            const addedItemQuery = {
-                                query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
-                            };
-                            var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                            console.log(company[0]);
-                            assert.equal(company[0].amount, 5);
-                        })
-                    done();
-                });
-        });
     });
 
     describe('Delete Methods', function () {

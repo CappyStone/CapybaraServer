@@ -203,7 +203,6 @@ module.exports = function (app) {
         const equipmentId = req.body.equipmentId;
         const licensePlate = req.body.licensePlate;
         const companyEmail = req.body.companyEmail;
-        const amountOfEquipment = req.body.amountOfEquipment;
         const authority = req.body.authority;
 
         if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
@@ -214,7 +213,7 @@ module.exports = function (app) {
             res.contentType('application/json');
 
             //change this to info from the db
-            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment, licensePlate)); // combine the result with an empty object to ensure items is not undefined
+            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, licensePlate)); // combine the result with an empty object to ensure items is not undefined
 
             //send the response
             if (items['error']) {
@@ -274,28 +273,6 @@ module.exports = function (app) {
                 res.json(items);
             }
         }
-    })
-
-    app.post('/updateEquipmentAmountInCompany', async (req, res) => {
-        const equipmentIdentifier = req.body.equipmentIdentifier;
-        const contactEmail = req.body.contactEmail;
-        const amountOfEquipment = req.body.amountOfEquipment;
-
-        //response type
-        res.contentType('application/json');
-
-        //change this to info from the db
-        var items = Object.assign({}, await db.updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail, amountOfEquipment)); // combine the result with an empty object to ensure items is not undefined
-        var size = Object.keys(items).length; // get the number of keys in the object
-
-        //send the response
-        if (size > 0) {
-            res.json(items);
-        } else {
-            res.json({})
-        }
-
-
     })
 
     app.post('/getCompanyVehicles', async (req, res) => {

@@ -323,7 +323,7 @@ async function getEquipmentData(equipmentId) {
 
 }
 
-async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOfEquipment, licensePlate) {
+async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licensePlate) {
     //console.log("Adding equipment to company in container: Company");
 
     // query to return all items
@@ -332,15 +332,13 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
 
     if (companyUpdating == null || equipmentAdding == null) {
         return { error: 'Could not find equipment or company' };
-    } if (amountOfEquipment < 1) {
-        return { error: 'Equipment needs to have an amount of at least 1' };
     }
 
     if (companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null) {
         return { error: 'Company already owns this equipment' };
     }
 
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment, licensePlate: licensePlate, Trips:[]}
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, Trips:[]}
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -407,32 +405,6 @@ async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
     var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentId !== equipmentIdentifier);
 
     companyUpdating.ownedEquipment = newEquipmentHolder;
-
-    // read all items in the Items container
-    const { resources: updatedItem } = await companyContainer
-        .item(companyUpdating.id, companyUpdating.contactEmail)
-        // new json object to replace the one in the database
-        .replace(companyUpdating);
-
-    return updatedItem;
-}
-
-async function updateEquipmentAmountInCompany(equipmentIdentifier, contactEmail, amountOfEquipment) {
-    //console.log("Adding equipment to company in container: Company");
-
-    // query to return all items
-    const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
-    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
-
-    if (companyUpdating == null || equipmentAdding == null) {
-        return { error: 'Could not find equipment or company' };
-    } if (amountOfEquipment < 1) {
-        return { error: 'Equipment needs to have an amount of at least 1' };
-    }
-
-    var indexOfItem = companyUpdating.ownedEquipment.findIndex((item) => item.equipmentId === equipmentIdentifier);
-
-    companyUpdating.ownedEquipment[indexOfItem].amount = amountOfEquipment;
 
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer
@@ -618,4 +590,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
