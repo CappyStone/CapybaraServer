@@ -76,9 +76,9 @@ describe('API Tests', function () {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('estimatedPrice');
+                    res.body.should.have.property('fuelType');
                     var foundEquipment = false;
-                    if (res.body.productName === "Electric Drill") {
+                    if (res.body.productName === "Soul EV") {
                         foundEquipment = true;
                     }
                     assert.equal(foundEquipment, true);
@@ -147,33 +147,37 @@ describe('API Tests', function () {
 
         });
 
-        it('/createNewEquipment', (done) => {
+        /* it('/createNewEquipment', (done) => {
             chai.request(app)
                 .post('/createNewEquipment')
                 .send({
-                    "category": "tool",
-                    "equipmentId": "7",
-                    "productName": "TESTING",
-                    "description": "TESTING PURPOSES ONLY",
-                    "manufacturer": "apiTEST",
-                    "serialNumber": "87162",
-                    "greenScore": "10",
-                    "efficiencyRating": "10kWh",
-                    "estimatedPrice": "99999",
-                    "verified": "false"
+                    "id": "API_TEST_ID",
+                    "equipmentId": "API_TEST_ID",
+                    "year": "2018",
+                    "productName": "Greg's Lunch",
+                    "vehicleClass": "Legs",
+                    "manufacturer": "Greg",
+                    "price": "3.50",
+                    "cityFuelConsumption": "5",
+                    "hwyFuelConsumption": "0",
+                    "combFuelConsumption": "0",
+                    "cO2Emissions": "0",
+                    "cO2Rating": "10",
+                    "smogRating": "10",
+                    "fuelType": "Beans"
                 })
                 .end(async (err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('tags');
+                    res.body.should.have.property('productName');
                     var foundEquipment = false;
-                    if (res.body.productName === "TESTING") {
+                    if (res.body.equipmentId === "API_TEST_ID") {
                         foundEquipment = true;
                     }
                     assert.equal(foundEquipment, true);
                     done();
                 });
-        });
+        }); */
     });
 
     describe('Update Methods', function () {
@@ -360,17 +364,17 @@ describe('API Tests', function () {
                 });
         });
 
-        it('/deleteEquipment', (done) => {
+        /* it('/deleteEquipment', (done) => {
             chai.request(app)
                 .post('/deleteEquipment')
-                .send({ "equipmentId": 7 })
+                .send({ "equipmentId": "API_TEST_ID" })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('success');
-                    assert.equal(res.body.success, "TESTING has been deleted");
+                    assert.equal(res.body.success, "Greg's Lunch has been deleted");
                     done();
                 });
-        });
+        }); */
     });
 });

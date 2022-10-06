@@ -239,7 +239,7 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
     }
 }
 
-async function createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
+/* async function createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
     try {
         if (category == null || productName == null || description == null || manufacturer == null || serialNumber == null || greenScore == null || efficiencyRating == null || estimatedPrice == null || verified == null) {
             return { error: 'Some fields missing values' };
@@ -281,7 +281,7 @@ async function createNewEquipment(category, productName, description, manufactur
     } catch (err) {
         return { error: "Erorr occured while creating equipment" };
     }
-}
+} */
 
 async function getFilteredVehicles(year, make, model) {
     try {
@@ -308,7 +308,7 @@ async function getEquipmentData(equipmentId) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description, e.equipmentId, e.manufacturer FROM Equipment e WHERE e.equipmentId = " + equipmentId
+            query: "SELECT e.equipmentId, e.manufacturer, e.productName, e.vehicleClass, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.fuelType FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
         };
 
         // read all items in the Items container
@@ -341,8 +341,6 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
     }
 
     const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment, licensePlate: licensePlate, Trips:[]}
-
-    
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -577,7 +575,7 @@ async function deleteEquipment(equipmentId) {
     try {
         // query for company 
         const querySpec = {
-            query: "SELECT e.id, e.equipmentId, e.productName FROM Equipment e WHERE e.equipmentId = " + equipmentId
+            query: "SELECT e.id, e.equipmentId, e.productName FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
         };
 
         // read all items in the Items container
@@ -600,7 +598,6 @@ async function deleteEquipment(equipmentId) {
     } catch (e) {
         return { error: "Error occured while deleting equipment" };
     }
-
 }
 
 async function getTestData() {
@@ -621,4 +618,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, createNewEquipment, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany, deleteEquipment, addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateEquipmentAmountInCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
