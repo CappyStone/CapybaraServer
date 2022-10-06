@@ -209,6 +209,7 @@ module.exports = function (app) {
         const licensePlate = req.body.licensePlate;
         const companyEmail = req.body.companyEmail;
         const amountOfEquipment = req.body.amountOfEquipment;
+        const licensePlate = req.body.licensePlate;
         const authority = req.body.authority;
 
         if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
@@ -220,6 +221,33 @@ module.exports = function (app) {
 
             //change this to info from the db
             var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment, licensePlate)); // combine the result with an empty object to ensure items is not undefined
+
+
+            //send the response
+            if (items['error']) {
+                res.json({ error: items['error'] });
+            } else {
+                res.json(items);
+            }
+        }
+    });
+
+    app.post('/addTripToVehicle', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+        const licencePlate = req.body.licencePlate;
+        const km = req.body.km;
+        const authority = req.body.authority;
+
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Unable to verify permissions." });
+            return;
+        } else {
+            //response type
+            res.contentType('application/json');
+
+            //change this to info from the db
+            var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, km)); // combine the result with an empty object to ensure items is not undefined
+
 
             //send the response
             if (items['error']) {
@@ -287,6 +315,7 @@ module.exports = function (app) {
         var company = Object.assign({}, await db.getCompanyByContactEmail(companyEmail)); // combine the result with an empty object to ensure items is not undefined
 
         for (var i in company.ownedEquipment) {
+
             items.push(Object.assign({ licensePlate: company.ownedEquipment[i].licensePlate }, await db.getEquipmentData(company.ownedEquipment[i].equipmentId)));
         }
 
