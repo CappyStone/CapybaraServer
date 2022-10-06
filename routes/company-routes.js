@@ -208,7 +208,7 @@ module.exports = function (app) {
         const equipmentId = req.body.equipmentId;
         const companyEmail = req.body.companyEmail;
         const amountOfEquipment = req.body.amountOfEquipment;
-        const licensePlate = req.body.licensePlate;
+        const licenseplate = req.body.licensePlate;
         const authority = req.body.authority;
 
         if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
@@ -219,7 +219,7 @@ module.exports = function (app) {
             res.contentType('application/json');
 
             //change this to info from the db
-            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment, licensePlate)); // combine the result with an empty object to ensure items is not undefined
+            var items = Object.assign({}, await db.addEquipmentToCompany(equipmentId, companyEmail, amountOfEquipment, licenseplate)); // combine the result with an empty object to ensure items is not undefined
 
             //send the response
             if (items['error']) {
