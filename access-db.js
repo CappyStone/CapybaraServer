@@ -339,7 +339,11 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
     if (companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null) {
         return { error: 'Company already owns this equipment' };
     }
+
     const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment, licensePlate: licensePlate, Trips:[]}
+
+    
+
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
 
