@@ -138,18 +138,13 @@ module.exports = function (app) {
         }
     })
 
-    app.post('/createNewEquipment', async (req, res) => {
-
+    /* app.post('/createNewEquipment', async (req, res) => {
         //parameters needed to make a new company
-        const category = req.body.category;
+        const category = req.body.vehicleClass;
         const productName = req.body.productName;
-        const description = req.body.description;
         const manufacturer = req.body.manufacturer;
-        const serialNumber = req.body.serialNumber;
-        const greenScore = req.body.greenScore;
-        const efficiencyRating = req.body.efficiencyRating;
-        const estimatedPrice = req.body.estimatedPrice;
-        const verified = req.body.verified;
+        const efficiencyRating = req.body.combFuelConsumption;
+        const estimatedPrice = req.body.price;
 
         //response type
         res.contentType('application/json');
@@ -166,7 +161,7 @@ module.exports = function (app) {
         } else {
             res.json({})
         }
-    })
+    }) */
 
     app.post('/getModels', async (req, res) => {
         const year = req.body.searchYear;

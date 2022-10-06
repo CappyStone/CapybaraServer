@@ -88,7 +88,7 @@ describe('API Negative Tests', function () {
                 });
         });
         
-        it('/createNewEquipment', (done) => {
+        /* it('/createNewEquipment', (done) => {
             chai.request(app)
                 .post('/createNewEquipment')
                 .send("Random Text")
@@ -99,7 +99,7 @@ describe('API Negative Tests', function () {
                     assert.equal(res.body.error, "Some fields missing values");
                     done();
                 });
-        });
+        }); */
     });
 
     describe('Update Methods', function () {
@@ -262,7 +262,7 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('/deleteEquipment (Text Response)', (done) => {
+        /* it('/deleteEquipment (Text Response)', (done) => {
             chai.request(app)
                 .post('/deleteEquipment')
                 .send("Random Text")
@@ -273,6 +273,6 @@ describe('API Negative Tests', function () {
                     assert.equal(res.body.error, "No equipment found");
                     done();
                 });
-        });
+        }); */
     });
 });
