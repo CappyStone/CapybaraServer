@@ -116,14 +116,13 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('/addEquipmentToCompany (Amount < 1)', (done) => {
+        /*it('/addEquipmentToCompany (Amount < 1)', (done) => {
             chai.request(app)
                 .post('/addEquipmentToCompany')
                 .send({
                     "authority": "admin@test1.com",
                     "equipmentId": 6,
                     "companyEmail": "test@test.com",
-                    "amountOfEquipment": 0
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -132,7 +131,7 @@ describe('API Negative Tests', function () {
                     assert.equal(res.body.error, "Equipment needs to have an amount of at least 1");
                     done();
                 });
-        });
+        });*/
         
         it('/addEquipmentToCompany (Equipment Already Present)', (done) => {
             chai.request(app)
@@ -141,43 +140,12 @@ describe('API Negative Tests', function () {
                     "authority": "admin@test1.com",
                     "equipmentId": 2,
                     "companyEmail": "test@test.com",
-                    "amountOfEquipment": 1
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
                     assert.equal(res.body.error, "Company already owns this equipment");
-                    done();
-                });
-        });
-
-        it('/updateEquipmentAmountInCompany (Text Request)', (done) => {
-            chai.request(app)
-                .post('/updateEquipmentAmountInCompany')
-                .send("Random Text")
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Could not find equipment or company");
-                    done();
-                });
-        });
-
-        it('/updateEquipmentAmountInCompany (Amount < 1)', (done) => {
-            chai.request(app)
-                .post('/updateEquipmentAmountInCompany')
-                .send({
-                    "equipmentIdentifier": 6,
-                    "contactEmail": "test@test.com",
-                    "amountOfEquipment": 0
-                })
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('error');
-                    assert.equal(res.body.error, "Equipment needs to have an amount of at least 1");
                     done();
                 });
         });
