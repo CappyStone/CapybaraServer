@@ -308,7 +308,7 @@ async function getEquipmentData(equipmentId) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description, e.equipmentId, e.manufacturer FROM Equipment e WHERE e.equipmentId = " + equipmentId
+            query: "SELECT e.productName, e.greenScore, e.estimatedPrice, e.description, e.equipmentId, e.manufacturer FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
         };
 
         // read all items in the Items container
@@ -341,8 +341,6 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, amountOf
     }
 
     const newEquipmentItem = { equipmentId: equipmentIdentifier, amount: amountOfEquipment, licensePlate: licensePlate, Trips:[]}
-
-    
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
