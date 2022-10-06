@@ -24,25 +24,20 @@ const equipmentContainer = database.container(equipmentContainerId);
 const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
 
 const newEquipmentEntry = {
-    id: "",
-    equipmentId: 7,
-    category: "vehicle",
-    productName: "Model 3.5",
-    description: "3 but more",
-    manufacturer: "Teslo",
-    serialNumber: "5YJ3E1EAXHF",
-    greenScore: "10",
-    efficiencyRating: "26kWh/100mi",
-    estimatedPrice: 66130.73,
-    verified: true,
-    tags: [
-        {
-            tag: "teslo"
-        },
-        {
-            tag: "electric vehicle"
-        }
-    ]
+    "id": "1",
+    "equipmentId": 1,
+    "year": "2018",
+    "productName": "LEAF",
+    "vehicleClass": "Mid-size",
+    "manufacturer": "NissanTest",
+    "price": "35998",
+    "cityFuelConsumption": "16.9",
+    "hwyFuelConsumption": "21.1",
+    "combFuelConsumption": "18.8",
+    "cO2Emissions": "0",
+    "cO2Rating": "10",
+    "smogRating": "10",
+    "fuelType": "Electric"
 }
 const newCompanyEntry = {
     id: "",
@@ -154,16 +149,16 @@ describe('DB Connections', function () {
 
         it('Update item in Equipment Container', async function () {
             const querySpec = {
-                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'Teslo'"
+                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'NissanTest'"
             };
     
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
             assert.equal(items[0].productName, newEquipmentEntry.productName);
-            items[0].productName = "Model 3.7";
+            items[0].productName = "Leaf";
             //send to database
             await equipmentContainer.item(items[0].id, items[0].equipmentId).replace(items[0]);
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
-            assert.equal(items[0].productName, "Model 3.7");
+            assert.equal(items[0].productName, "Leaf");
         });
 
         it('Delete item in Equipment Container', async function () {
@@ -176,7 +171,7 @@ describe('DB Connections', function () {
             var oldLength = items.length;
             
             const addedItemQuery = {
-                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'Teslo' AND e.productName = 'Model 3.7'"
+                query: "SELECT e.id, e.equipmentId, e.year, e.productName, e.vehicleClass, e.manufacturer, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.cO2Emissions, e.cO2Rating, e.smogRating, e.fuelType FROM Equipment e Where e.manufacturer = 'NissanTest' AND e.productName = 'Leaf'"
             };
             var { resources: addedItem } = await equipmentContainer.items.query(addedItemQuery).fetchAll();
             await equipmentContainer.item(addedItem[0].id, addedItem[0].equipmentId).delete()
