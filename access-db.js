@@ -3,7 +3,9 @@ var nodemailer = require('nodemailer');
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
 const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+
 //const config = require("./config");
 //const endpoint = config.endpoint;
 //const key = config.key;
@@ -338,7 +340,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
         return { error: 'Company already owns this equipment' };
     }
 
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, Trips:[]}
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, Trips: [] }
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -352,9 +354,21 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
     return updatedItem;
 }
 
+async function calculateTrip(startAddress, endAddress) {
+    const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
+        key: mapQuestKey,
+        from: startAddress,
+        to: endAddress,
+    });
+
+    var result = await (await fetch(mapQuestURL)).json();
+
+    return result;
+}
+
 async function addTripToVehicle(companyEmail, licensePlate, km) {
     try {
-        
+
         // query for company 
         const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
 
@@ -369,21 +383,21 @@ async function addTripToVehicle(companyEmail, licensePlate, km) {
         const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
         // "27-11-2020"
 
-        var newTrip = {"date":dateString,"kilometers":km}
+        var newTrip = { "date": dateString, "kilometers": km }
 
         equipmentList.forEach(license => {
-            if(license.licensePlate === licensePlate){
+            if (license.licensePlate === licensePlate) {
                 license.Trips.push(newTrip)
             }
         });
 
         companyUpdating.ownedEquipment = equipmentList;
-        
+
         // read all items in the Items container
         const { resources: updatedItem } = await companyContainer
-        .item(companyUpdating.id, companyUpdating.contactEmail)
-        // new json object to replace the one in the database
-        .replace(companyUpdating);
+            .item(companyUpdating.id, companyUpdating.contactEmail)
+            // new json object to replace the one in the database
+            .replace(companyUpdating);
 
         return updatedItem;
 
@@ -590,4 +604,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, calculateTrip }; // Add any new database access functions to the export or they won't be usable
