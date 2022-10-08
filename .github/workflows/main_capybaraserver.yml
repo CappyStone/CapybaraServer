@@ -26,6 +26,7 @@ jobs:
           CUSTOMCONNSTR_CosmosAddress: ${{ secrets.COSMOSADDRESS }}
           CUSTOMCONNSTR_CosmosDBString: ${{ secrets.COSMOSDBSTRING }}
           CUSTOMCONNSTR_EmailPass: ${{ secrets.EMAILPASS }}
+          CUSTOMCONNSTR_MapQuestKey: ${{ secrets.MAPQUEST }}
           
         run: |
           npm install
