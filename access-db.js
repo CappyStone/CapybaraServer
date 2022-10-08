@@ -354,11 +354,14 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
     return updatedItem;
 }
 
-async function calculateTrip(startAddress, endAddress) {
+async function calculateTrip(startAddress, endAddress, equipmentId) {
+    var vehicle = await this.getEquipmentData(equipmentId);
+
     const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
         key: mapQuestKey,
         from: startAddress,
         to: endAddress,
+        highwayEfficiency: vehicle.hwyFuelConsumption
     });
 
     var result = await (await fetch(mapQuestURL)).json();

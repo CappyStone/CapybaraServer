@@ -227,8 +227,9 @@ module.exports = function (app) {
     app.post('/calculateTrip', async (req, res) => {
         const startAddress = req.body.startAddress;
         const endAddress = req.body.endAddress;
+        const vehicleId = req.body.vehicleId;
 
-        var result = await db.calculateTrip(startAddress, endAddress); //"20 Eglinton Ave, E", "1 Apple Park Way"
+        var result = await db.calculateTrip(startAddress, endAddress, vehicleId);
 
         res.json(result);
     });
