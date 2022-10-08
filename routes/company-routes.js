@@ -224,39 +224,23 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/calculateTrip', async (req, res) => {
-        const startAddress = req.body.startAddress;
-        const endAddress = req.body.endAddress;
-        const vehicleId = req.body.vehicleId;
-
-        var result = await db.calculateTrip(startAddress, endAddress, vehicleId);
-
-        res.json(result);
-    });
-
     app.post('/addTripToVehicle', async (req, res) => {
         const companyEmail = req.body.companyEmail;
         const licencePlate = req.body.licencePlate;
-        const km = req.body.km;
-        const authority = req.body.authority;
+        const startAddress = req.body.startAddress;
+        const endAddress = req.body.endAddress;
 
-        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
-            res.json({ error: "Unable to verify permissions." });
-            return;
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, startAddress, endAddress)); // combine the result with an empty object to ensure items is not undefined
+
+        //send the response
+        if (items['error']) {
+            res.json({ error: items['error'] });
         } else {
-            //response type
-            res.contentType('application/json');
-
-            //change this to info from the db
-            var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, km)); // combine the result with an empty object to ensure items is not undefined
-
-
-            //send the response
-            if (items['error']) {
-                res.json({ error: items['error'] });
-            } else {
-                res.json(items);
-            }
+            res.json(items);
         }
     });
 

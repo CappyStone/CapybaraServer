@@ -354,30 +354,25 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
     return updatedItem;
 }
 
-async function calculateTrip(startAddress, endAddress, equipmentId) {
-    var vehicle = await this.getEquipmentData(equipmentId);
-
-    const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
-        key: mapQuestKey,
-        from: startAddress,
-        to: endAddress,
-        highwayEfficiency: vehicle.hwyFuelConsumption
-    });
-
-    var result = await (await fetch(mapQuestURL)).json();
-
-    return result;
-}
-
-async function addTripToVehicle(companyEmail, licensePlate, km) {
+async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAddress) {
     try {
-
         // query for company 
         const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
 
         //grab equipment list
 
         var equipmentList = companyUpdating.ownedEquipment;
+        var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
+        var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
+
+        const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
+            key: mapQuestKey,
+            from: startAddress,
+            to: endAddress,
+            highwayEfficiency: vehicleMetadata.hwyFuelConsumption
+        });
+
+        var mapResult = await (await fetch(mapQuestURL)).json();
 
         const currentDate = new Date();
         const currentDayOfMonth = currentDate.getDate();
@@ -386,13 +381,12 @@ async function addTripToVehicle(companyEmail, licensePlate, km) {
         const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
         // "27-11-2020"
 
-        var newTrip = { "date": dateString, "kilometers": km }
-
-        equipmentList.forEach(license => {
-            if (license.licensePlate === licensePlate) {
-                license.Trips.push(newTrip)
-            }
-        });
+        var newTrip = { 
+            "date": dateString, 
+            "kilometers": mapResult.route.distance,
+            "fuelUsed": mapResult.route.fuelUsed
+        }
+        vehicle.Trips.push(newTrip);
 
         companyUpdating.ownedEquipment = equipmentList;
 
