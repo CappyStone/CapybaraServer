@@ -224,6 +224,15 @@ module.exports = function (app) {
         }
     });
 
+    app.post('/calculateTrip', async (req, res) => {
+        const startAddress = req.body.startAddress;
+        const endAddress = req.body.endAddress;
+
+        var result = await db.calculateTrip(startAddress, endAddress); //"20 Eglinton Ave, E", "1 Apple Park Way"
+
+        res.json(result);
+    });
+
     app.post('/addTripToVehicle', async (req, res) => {
         const companyEmail = req.body.companyEmail;
         const licencePlate = req.body.licencePlate;
