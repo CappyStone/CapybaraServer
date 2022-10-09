@@ -370,7 +370,7 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
     return trips;
 }
 
-async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAddress) {
+async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress) {
     try {
         // query for company 
         const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
@@ -392,7 +392,9 @@ async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAdd
         var newTrip = {
             "date": Date.now(),
             "distance": mapResult.route.distance,
-            "fuelUsed": mapResult.route.fuelUsed
+            "fuelUsed": mapResult.route.fuelUsed,
+            "time": mapResult.route.time,
+            "user": currentUser
         }
         vehicle.trips.push(newTrip);
 
