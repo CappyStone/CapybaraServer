@@ -340,7 +340,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
         return { error: 'Company already owns this equipment' };
     }
 
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, Trips: [] }
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, trips: [] }
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -360,7 +360,6 @@ async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAdd
         const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
 
         //grab equipment list
-
         var equipmentList = companyUpdating.ownedEquipment;
         var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
         var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
@@ -374,19 +373,12 @@ async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAdd
 
         var mapResult = await (await fetch(mapQuestURL)).json();
 
-        const currentDate = new Date();
-        const currentDayOfMonth = currentDate.getDate();
-        const currentMonth = currentDate.getMonth(); // Be careful! January is 0, not 1
-        const currentYear = currentDate.getFullYear();
-        const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
-        // "27-11-2020"
-
         var newTrip = { 
-            "date": dateString, 
-            "kilometers": mapResult.route.distance,
+            "date": Date.now(), 
+            "distance": mapResult.route.distance,
             "fuelUsed": mapResult.route.fuelUsed
         }
-        vehicle.Trips.push(newTrip);
+        vehicle.trips.push(newTrip);
 
         companyUpdating.ownedEquipment = equipmentList;
 
@@ -601,4 +593,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, calculateTrip }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
