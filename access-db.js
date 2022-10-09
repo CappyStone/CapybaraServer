@@ -354,6 +354,22 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
     return updatedItem;
 }
 
+async function getTripsForCompany(companyEmail, licensePlateFilter) {
+    const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+    var equipmentList = companyToQuery.ownedEquipment;
+
+    var trips = [];
+    for (var i in equipmentList) {
+        var vehicle = equipmentList[i];
+
+        if (licensePlateFilter === null || licensePlateFilter === vehicle.licensePlate) {
+            trips = trips.concat(vehicle.trips);
+        }
+    }
+
+    return trips;
+}
+
 async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAddress) {
     try {
         // query for company 
@@ -373,8 +389,8 @@ async function addTripToVehicle(companyEmail, licensePlate, startAddress, endAdd
 
         var mapResult = await (await fetch(mapQuestURL)).json();
 
-        var newTrip = { 
-            "date": Date.now(), 
+        var newTrip = {
+            "date": Date.now(),
             "distance": mapResult.route.distance,
             "fuelUsed": mapResult.route.fuelUsed
         }
@@ -593,4 +609,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany }; // Add any new database access functions to the export or they won't be usable

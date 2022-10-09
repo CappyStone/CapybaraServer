@@ -224,6 +224,19 @@ module.exports = function (app) {
         }
     });
 
+    app.post('/getTripsForCompany', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+        const licensePlate = req.body.licensePlate;
+
+        let items = Object.assign({}, await db.getTripsForCompany(companyEmail, licensePlate));
+
+        if (items['error']) {
+            res.json({ error: items['error'] });
+        } else {
+            res.json(items);
+        }
+    });
+
     app.post('/addTripToVehicle', async (req, res) => {
         const companyEmail = req.body.companyEmail;
         const licencePlate = req.body.licencePlate;
