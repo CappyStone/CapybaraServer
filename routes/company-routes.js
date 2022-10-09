@@ -258,6 +258,25 @@ module.exports = function (app) {
         }
     });
 
+    app.post('/removeTripFromCompany', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+        const currentUser = req.body.currentUser;
+        const timestamp = req.body.timestamp;
+
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.removeTripFromCompany(companyEmail, currentUser, timestamp)); // combine the result with an empty object to ensure items is not undefined
+
+        //send the response
+        if (items['error']) {
+            res.json({ error: items['error'] });
+        } else {
+            res.json(items);
+        }
+    });
+
     app.post('/removeEquipmentFromCompany', async (req, res) => {
         const equipmentIdentifier = req.body.equipmentId;
         const companyEmail = req.body.companyEmail;

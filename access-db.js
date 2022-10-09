@@ -413,6 +413,39 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
     }
 }
 
+async function removeTripFromCompany(companyEmail, currentUser, timestamp) {
+    try {
+        // query for company 
+        const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
+
+        //grab equipment list
+        var equipmentList = companyUpdating.ownedEquipment;
+
+        var isAdmin = await this.isEmployeeAdmin(currentUser, companyEmail);
+
+        for (var i in equipmentList) {
+            var vehicle = equipmentList[i];
+            vehicle.trips = vehicle.trips.filter(trip => {
+                return !(trip.date === timestamp && (currentUser === trip.user || isAdmin))
+            });
+        }
+
+        companyUpdating.ownedEquipment = equipmentList;
+
+        // read all items in the Items container
+        const { resources: updatedItem } = await companyContainer
+            .item(companyUpdating.id, companyUpdating.contactEmail)
+            // new json object to replace the one in the database
+            .replace(companyUpdating);
+
+        return updatedItem;
+
+    } catch (e) {
+        return { error: "Issue occured while removing trip" };
+    }
+}
+
+
 async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
 
     // query to return all items
@@ -611,4 +644,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany }; // Add any new database access functions to the export or they won't be usable
