@@ -3,7 +3,9 @@ var nodemailer = require('nodemailer');
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
 const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+
 //const config = require("./config");
 //const endpoint = config.endpoint;
 //const key = config.key;
@@ -338,7 +340,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
         return { error: 'Company already owns this equipment' };
     }
 
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, Trips:[]}
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, trips: [] }
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -352,38 +354,57 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
     return updatedItem;
 }
 
-async function addTripToVehicle(companyEmail, licensePlate, km) {
+async function getTripsForCompany(companyEmail, licensePlateFilter) {
+    const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+    var equipmentList = companyToQuery.ownedEquipment;
+
+    var trips = [];
+    for (var i in equipmentList) {
+        var vehicle = equipmentList[i];
+
+        if (licensePlateFilter === null || licensePlateFilter === vehicle.licensePlate) {
+            trips = trips.concat(vehicle.trips);
+        }
+    }
+
+    return trips;
+}
+
+async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress) {
     try {
-        
         // query for company 
         const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
 
         //grab equipment list
-
         var equipmentList = companyUpdating.ownedEquipment;
+        var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
+        var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
 
-        const currentDate = new Date();
-        const currentDayOfMonth = currentDate.getDate();
-        const currentMonth = currentDate.getMonth(); // Be careful! January is 0, not 1
-        const currentYear = currentDate.getFullYear();
-        const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
-        // "27-11-2020"
-
-        var newTrip = {"date":dateString,"kilometers":km}
-
-        equipmentList.forEach(license => {
-            if(license.licensePlate === licensePlate){
-                license.Trips.push(newTrip)
-            }
+        const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
+            key: mapQuestKey,
+            from: startAddress,
+            to: endAddress,
+            highwayEfficiency: vehicleMetadata.hwyFuelConsumption
         });
 
+        var mapResult = await (await fetch(mapQuestURL)).json();
+
+        var newTrip = {
+            "date": Date.now(),
+            "distance": mapResult.route.distance,
+            "fuelUsed": mapResult.route.fuelUsed,
+            "time": mapResult.route.time,
+            "user": currentUser
+        }
+        vehicle.trips.push(newTrip);
+
         companyUpdating.ownedEquipment = equipmentList;
-        
+
         // read all items in the Items container
         const { resources: updatedItem } = await companyContainer
-        .item(companyUpdating.id, companyUpdating.contactEmail)
-        // new json object to replace the one in the database
-        .replace(companyUpdating);
+            .item(companyUpdating.id, companyUpdating.contactEmail)
+            // new json object to replace the one in the database
+            .replace(companyUpdating);
 
         return updatedItem;
 
@@ -391,6 +412,39 @@ async function addTripToVehicle(companyEmail, licensePlate, km) {
         return { error: "Issue occured while adding trip" };
     }
 }
+
+async function removeTripFromCompany(companyEmail, currentUser, timestamp) {
+    try {
+        // query for company 
+        const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
+
+        //grab equipment list
+        var equipmentList = companyUpdating.ownedEquipment;
+
+        var isAdmin = await this.isEmployeeAdmin(currentUser, companyEmail);
+
+        for (var i in equipmentList) {
+            var vehicle = equipmentList[i];
+            vehicle.trips = vehicle.trips.filter(trip => {
+                return !(trip.date === timestamp && (currentUser === trip.user || isAdmin))
+            });
+        }
+
+        companyUpdating.ownedEquipment = equipmentList;
+
+        // read all items in the Items container
+        const { resources: updatedItem } = await companyContainer
+            .item(companyUpdating.id, companyUpdating.contactEmail)
+            // new json object to replace the one in the database
+            .replace(companyUpdating);
+
+        return updatedItem;
+
+    } catch (e) {
+        return { error: "Issue occured while removing trip" };
+    }
+}
+
 
 async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
 
@@ -590,4 +644,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany }; // Add any new database access functions to the export or they won't be usable

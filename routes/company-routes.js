@@ -224,29 +224,56 @@ module.exports = function (app) {
         }
     });
 
+    app.post('/getTripsForCompany', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+        const licensePlate = req.body.licensePlate;
+
+        let items = Object.assign({}, await db.getTripsForCompany(companyEmail, licensePlate));
+
+        if (items['error']) {
+            res.json({ error: items['error'] });
+        } else {
+            res.json(items);
+        }
+    });
+
     app.post('/addTripToVehicle', async (req, res) => {
         const companyEmail = req.body.companyEmail;
         const licencePlate = req.body.licencePlate;
-        const km = req.body.km;
-        const authority = req.body.authority;
+        const startAddress = req.body.startAddress;
+        const endAddress = req.body.endAddress;
+        const currentUser = req.body.currentUser;
 
-        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
-            res.json({ error: "Unable to verify permissions." });
-            return;
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, currentUser, startAddress, endAddress)); // combine the result with an empty object to ensure items is not undefined
+
+        //send the response
+        if (items['error']) {
+            res.json({ error: items['error'] });
         } else {
-            //response type
-            res.contentType('application/json');
+            res.json(items);
+        }
+    });
 
-            //change this to info from the db
-            var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, km)); // combine the result with an empty object to ensure items is not undefined
+    app.post('/removeTripFromCompany', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+        const currentUser = req.body.currentUser;
+        const timestamp = req.body.timestamp;
 
+        //response type
+        res.contentType('application/json');
 
-            //send the response
-            if (items['error']) {
-                res.json({ error: items['error'] });
-            } else {
-                res.json(items);
-            }
+        //change this to info from the db
+        var items = Object.assign({}, await db.removeTripFromCompany(companyEmail, currentUser, timestamp)); // combine the result with an empty object to ensure items is not undefined
+
+        //send the response
+        if (items['error']) {
+            res.json({ error: items['error'] });
+        } else {
+            res.json(items);
         }
     });
 
