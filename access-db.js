@@ -63,7 +63,7 @@ async function getCompanyByContactEmail(contactEmail) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container

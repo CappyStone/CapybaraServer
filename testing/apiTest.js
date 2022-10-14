@@ -90,8 +90,8 @@ describe('API Tests', function () {
             chai.request(app)
                 .post('/isEmployeeAdmin')
                 .send({
-                    "userEmail": "admin@test2.com",
-                    "companyEmail": "test2@test2.com"
+                    "userEmail": "admin@test1.com",
+                    "companyEmail": "test@test.com"
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -114,6 +114,44 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     assert.equal(_.isEmpty(res.body), false);
+                    done();
+                });
+        });
+
+        it('/getModels', (done) => { //tests getFilteredVehicles
+            chai.request(app)
+                .post('/getModels')
+                .send({ 
+                    "searchYear": 2018,
+                    "searchMake": "Acura",
+                    "searchModel": "ILX"
+                 })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body["0"].should.have.property('productName');
+                    var foundCar = false;
+                    if (res.body["0"].productName === 'ILX') {
+                        foundCar = true;
+                    }
+                    assert.equal(foundCar, true);
+                    done();
+                });
+        });
+
+        it('/getCompanyVehicles', (done) => { //tests getFilteredVehicles
+            chai.request(app)
+                .post('/getCompanyVehicles')
+                .send({"companyEmail": "test@test.com"})
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body[0].should.be.a('object');
+                    res.body[0].should.have.property('licensePlate');
+                    var foundLicense = false;
+                    if (res.body[0].licensePlate === 'LIGMA') {
+                        foundLicense = true;
+                    }
+                    assert.equal(foundLicense, true);
                     done();
                 });
         });
