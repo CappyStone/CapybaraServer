@@ -72,6 +72,30 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+
+        it('/getModels', (done) => {
+            chai.request(app)
+                .post('/getModels')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body), true);
+                    done();
+                });
+        });
+
+        it('/getCompanyVehicles', (done) => {
+            chai.request(app)
+                .post('/getCompanyVehicles')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    assert.equal(_.isEmpty(res.body[0]), true);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -138,7 +162,7 @@ describe('API Negative Tests', function () {
                 .post('/addEquipmentToCompany')
                 .send({
                     "authority": "admin@test1.com",
-                    "equipmentId": 2,
+                    "equipmentId": "10",
                     "companyEmail": "test@test.com",
                 })
                 .end((err, res) => {
