@@ -1,5 +1,6 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
+const axios = require("axios"); 
 
 // const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 // const key = process.env.CUSTOMCONNSTR_CosmosDBString;
@@ -13,6 +14,7 @@ const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 //const endpoint = config.endpoint;
 //const key = config.key;
 //const emailpass = config.emailpass;
+//const mapQuestKey = config.mapQuestKey;
 
 //Cosmos connection for the company container
 
@@ -395,9 +397,9 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             highwayEfficiency: (vehicleMetadata.combFuelConsumption * 2.35214583 )
         });
 
-        
-        // send request to MQ
-        var mapResult = await (await fetch(mapQuestURL)).json();
+
+        var mapResult = (await axios.post(mapQuestURL)).data;
+
 
         //Using the session ID from the mapResult, use the same session to get the route coordinates 
         const mapQuestRouteShapeURL = "http://www.mapquestapi.com/directions/v2/routeshape?" + new URLSearchParams({
@@ -407,7 +409,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
         });
 
         //Send request to MQ
-        var mapShapeResult = await (await fetch(mapQuestRouteShapeURL)).json();
+        var mapResult = (await axios.post(mapQuestRouteShapeURL)).data;
 
         // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
         var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * .001)
@@ -652,7 +654,7 @@ async function deleteEquipment(equipmentId) {
      */
 
         if (items.length <= 0) {
-            return { error: "No equipment found" };
+            return { error: "No equipment found " };
         }
 
         const { resource: result } = await equipmentContainer.item(items[0].id, items[0].equipmentId).delete();
