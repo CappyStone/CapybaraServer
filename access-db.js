@@ -385,24 +385,13 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             from: startAddress,
             to: endAddress,
             unit: "m",
-            fullShape: "true",
+            fullShape: true,
             //Fuel consumption is stored as l/100km, so it must be converted to mpg
-            highwayEfficiency: (vehicleMetadata.combFuelConsumption * 2.35214583 )
+            highwayEfficiency: (vehicleMetadata.hwyFuelConsumption * 2.35214583 )
         });
 
 
         var mapResult = (await axios.post(mapQuestURL)).data;
-
-
-        //Using the session ID from the mapResult, use the same session to get the route coordinates 
-        const mapQuestRouteShapeURL = "http://www.mapquestapi.com/directions/v2/routeshape?" + new URLSearchParams({
-            key: mapQuestKey,
-            sessionId: mapResult.route.sessionId,
-            fullShape: true
-        });
-
-        //Send request to MQ
-        var mapResult = (await axios.post(mapQuestRouteShapeURL)).data;
 
         // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
 
