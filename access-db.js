@@ -1,5 +1,6 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
+const axios = require("axios"); 
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
@@ -10,6 +11,7 @@ const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 //const endpoint = config.endpoint;
 //const key = config.key;
 //const emailpass = config.emailpass;
+//const mapQuestKey = config.mapQuestKey;
 
 //Cosmos connection for the company container
 
@@ -378,7 +380,9 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
         //grab equipment list
         var equipmentList = companyUpdating.ownedEquipment;
         var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
+        console.log(vehicle);
         var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
+        console.log(vehicleMetadata);
 
         const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
             key: mapQuestKey,
@@ -386,8 +390,10 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             to: endAddress,
             highwayEfficiency: vehicleMetadata.hwyFuelConsumption
         });
+        console.log(mapQuestURL);
 
-        var mapResult = await (await fetch(mapQuestURL)).json();
+        var mapResult = (await axios.post(mapQuestURL)).data;
+        console.log(mapResult);
 
         var newTrip = {
             "date": Date.now(),
@@ -397,6 +403,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "user": currentUser
         }
         vehicle.trips.push(newTrip);
+        console.log(newTrip);
 
         companyUpdating.ownedEquipment = equipmentList;
 
