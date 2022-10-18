@@ -399,7 +399,6 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "user": currentUser
         }
         vehicle.trips.push(newTrip);
-        console.log(newTrip);
 
         companyUpdating.ownedEquipment = equipmentList;
 
