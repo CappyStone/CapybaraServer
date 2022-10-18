@@ -384,7 +384,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
         var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
 
         //Variable to store the conversion rate from liters/100 km to miles per gallon
-        const lpk2mpg = 2.35214583 ;
+        const lpk2mpg = 2.35214583;
 
         //Creating the URL for MapQuest API request
         const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
