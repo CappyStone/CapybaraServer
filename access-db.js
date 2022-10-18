@@ -615,7 +615,7 @@ async function deleteEquipment(equipmentId) {
      */
 
         if (items.length <= 0) {
-            return { error: "No equipment found" };
+            return { error: "No equipment found " };
         }
 
         const { resource: result } = await equipmentContainer.item(items[0].id, items[0].equipmentId).delete();
