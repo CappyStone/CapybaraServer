@@ -2,16 +2,16 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
 const axios = require("axios"); 
 
-//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-//const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
-//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
+const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 
-const config = require("./config");
-const endpoint = config.endpoint;
-const key = config.key;
-const emailpass = config.emailpass;
-const mapQuestKey = config.mapQuestKey;
+//const config = require("./config");
+//const endpoint = config.endpoint;
+//const key = config.key;
+//const emailpass = config.emailpass;
+//const mapQuestKey = config.mapQuestKey;
 
 //Cosmos connection for the company container
 
@@ -397,8 +397,8 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "fuelUsed": mapResult.route.fuelUsed,
             "time": mapResult.route.time,
             "user": currentUser,
-            "start address": startAddress,
-            "end address": endAddress
+            "startAddress": startAddress,
+            "endAddress": endAddress
         }
         vehicle.trips.push(newTrip);
 
