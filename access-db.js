@@ -380,9 +380,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
         //grab equipment list
         var equipmentList = companyUpdating.ownedEquipment;
         var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
-        console.log(vehicle);
         var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
-        console.log(vehicleMetadata);
 
         const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
             key: mapQuestKey,
@@ -390,10 +388,8 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             to: endAddress,
             highwayEfficiency: vehicleMetadata.hwyFuelConsumption
         });
-        console.log(mapQuestURL);
 
         var mapResult = (await axios.post(mapQuestURL)).data;
-        console.log(mapResult);
 
         var newTrip = {
             "date": Date.now(),
