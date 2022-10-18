@@ -1,18 +1,11 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
+const axios = require("axios"); 
 
-// const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-// const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-// const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
-// const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
-const endpoint = "https://cappybaradatabase.documents.azure.com:443/";
-const key = "Opv0yZPWoi5Bhpa3JGqCBy4bLCm7VJCvlBrXSpmbvchL7DR6joRHZ7nUiC8NWbLbgBUKjJioEbCf5cBzim3Lcg==";
-const mapQuestKey = "YaAuoR0AIj6oqvKx9eGApTESYwf6Vw7I";
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
 const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
-//const config = require("./config");
-//const endpoint = config.endpoint;
-//const key = config.key;
-//const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -391,30 +384,20 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             key: mapQuestKey,
             from: startAddress,
             to: endAddress,
+            unit: "m",
+            fullShape: "true",
             //Fuel consumption is stored as l/100km, so it must be converted to mpg
             highwayEfficiency: (vehicleMetadata.combFuelConsumption * 2.35214583 )
         });
 
-        
-        // send request to MQ
-        var mapResult = await (await fetch(mapQuestURL)).json();
 
-        //Using the session ID from the mapResult, use the same session to get the route coordinates 
-        const mapQuestRouteShapeURL = "http://www.mapquestapi.com/directions/v2/routeshape?" + new URLSearchParams({
-            key: mapQuestKey,
-            sessionId: mapResult.route.sessionId,
-            fullShape: true
-        });
+        var mapResult = (await axios.post(mapQuestURL)).data;
 
-        //Send request to MQ
-        var mapShapeResult = await (await fetch(mapQuestRouteShapeURL)).json();
-
-        // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
         var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * .001)
         var routeCoords = [];
 
         //Array of coordinate pairs for the route
-        var routeLegs = mapShapeResult.route.shape.shapePoints;
+        var routeLegs = mapResult.route.shape.shapePoints;
 
         for(var i = 0; i < (routeLegs.length - 1); i+=2){
                 var latLngHolder = [routeLegs[i], routeLegs[i+1]];
@@ -652,7 +635,7 @@ async function deleteEquipment(equipmentId) {
      */
 
         if (items.length <= 0) {
-            return { error: "No equipment found" };
+            return { error: "No equipment found " };
         }
 
         const { resource: result } = await equipmentContainer.item(items[0].id, items[0].equipmentId).delete();
