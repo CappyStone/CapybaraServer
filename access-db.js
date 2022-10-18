@@ -393,6 +393,19 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
 
         var mapResult = (await axios.post(mapQuestURL)).data;
 
+
+        //Using the session ID from the mapResult, use the same session to get the route coordinates 
+        const mapQuestRouteShapeURL = "http://www.mapquestapi.com/directions/v2/routeshape?" + new URLSearchParams({
+            key: mapQuestKey,
+            sessionId: mapResult.route.sessionId,
+            fullShape: true
+        });
+
+        //Send request to MQ
+        var mapResult = (await axios.post(mapQuestRouteShapeURL)).data;
+
+        // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
+
         var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * .001)
         var routeCoords = [];
 
