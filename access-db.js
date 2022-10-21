@@ -396,7 +396,9 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "distance": mapResult.route.distance,
             "fuelUsed": mapResult.route.fuelUsed,
             "time": mapResult.route.time,
-            "user": currentUser
+            "user": currentUser,
+            "startAddress": startAddress,
+            "endAddress": endAddress
         }
         vehicle.trips.push(newTrip);
 
