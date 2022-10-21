@@ -7,12 +7,6 @@ const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
 const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 
-//const config = require("./config");
-//const endpoint = config.endpoint;
-//const key = config.key;
-//const emailpass = config.emailpass;
-//const mapQuestKey = config.mapQuestKey;
-
 //Cosmos connection for the company container
 
 //Company database configuration
@@ -291,7 +285,7 @@ async function getFilteredVehicles(year, make, model) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT e.productName, e.manufacturer, e.equipmentId FROM Equipment e WHERE e.manufacturer = '" + make + "' AND e.productName = '" + model + "'"
+            query: "SELECT e.productName, e.manufacturer, e.equipmentId FROM Equipment e WHERE e.manufacturer = '" + make + "' AND e.productName = '" + model + "'" + "' AND e.year = '" + year + "'"
         };
 
         // read all items in the Items container
@@ -312,7 +306,7 @@ async function getEquipmentData(equipmentId) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT e.equipmentId, e.manufacturer, e.productName, e.vehicleClass, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.fuelType FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
+            query: "SELECT e.equipmentId, e.manufacturer, e.productName, e.vehicleClass, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.fuelType, e.cO2Emissions FROM Equipment e WHERE e.equipmentId = '" + equipmentId + "'"
         };
 
         // read all items in the Items container
@@ -382,23 +376,50 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
         var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
         var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
 
+        //Variable to store the conversion rate from liters/100 km to miles per gallon
+        const lpk2mpg = 2.35214583;
+
+        //Creating the URL for MapQuest API request
         const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
             key: mapQuestKey,
             from: startAddress,
             to: endAddress,
-            highwayEfficiency: vehicleMetadata.hwyFuelConsumption
+            unit: "m",
+            fullShape: true,
+            //Fuel consumption is stored as l/100km, so it must be converted to mpg
+            highwayEfficiency: (vehicleMetadata.hwyFuelConsumption * 2.35214583 )
         });
+
 
         var mapResult = (await axios.post(mapQuestURL)).data;
 
+        // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
+
+        var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * .001)
+        var routeCoords = [];
+
+        //Array of coordinate pairs for the route
+        var routeLegs = mapResult.route.shape.shapePoints;
+
+        for(var i = 0; i < (routeLegs.length - 1); i+=2){
+                var latLngHolder = [routeLegs[i], routeLegs[i+1]];
+                routeCoords.push(latLngHolder);
+        }
+
+        // alert(startLocation.results.locations[0].latLng)
         var newTrip = {
+            "startLocation": mapResult.route.locations[0].latLng,
+            "endLocation": mapResult.route.locations[(mapResult.route.locations.length - 1)].latLng,
             "date": Date.now(),
             "distance": mapResult.route.distance,
             "fuelUsed": mapResult.route.fuelUsed,
             "time": mapResult.route.time,
             "user": currentUser,
+            "cO2Consumed": CO2Consumed.toFixed(3),
+            "routeCoords": routeCoords       
             "startAddress": startAddress,
             "endAddress": endAddress
+
         }
         vehicle.trips.push(newTrip);
 
