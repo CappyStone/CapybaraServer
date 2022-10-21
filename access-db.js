@@ -417,6 +417,9 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "user": currentUser,
             "cO2Consumed": CO2Consumed.toFixed(3),
             "routeCoords": routeCoords       
+            "startAddress": startAddress,
+            "endAddress": endAddress
+
         }
         vehicle.trips.push(newTrip);
 
