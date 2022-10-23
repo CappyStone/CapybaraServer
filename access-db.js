@@ -352,6 +352,10 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
 
 async function getTripsForCompany(companyEmail, licensePlateFilter) {
     const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+    if (companyToQuery === null || companyToQuery === undefined) {
+        return [];
+    }
+
     var equipmentList = companyToQuery.ownedEquipment;
 
     var trips = [];
@@ -416,10 +420,9 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "time": mapResult.route.time,
             "user": currentUser,
             "cO2Consumed": CO2Consumed.toFixed(3),
-            "routeCoords": routeCoords       
+            "routeCoords": routeCoords,
             "startAddress": startAddress,
             "endAddress": endAddress
-
         }
         vehicle.trips.push(newTrip);
 
