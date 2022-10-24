@@ -285,7 +285,7 @@ async function getFilteredVehicles(year, make, model) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT e.productName, e.manufacturer, e.equipmentId FROM Equipment e WHERE e.manufacturer = '" + make + "' AND e.productName = '" + model + "'" + "' AND e.year = '" + year + "'"
+            query: "SELECT e.productName, e.manufacturer, e.equipmentId FROM Equipment e WHERE e.manufacturer = '" + make + "' AND e.productName = '" + model + "' AND e.year = '" + year + "'"
         };
 
         // read all items in the Items container
