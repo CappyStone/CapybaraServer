@@ -370,6 +370,28 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
     return trips;
 }
 
+async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
+    const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+    var equipmentList = companyToQuery.ownedEquipment;
+    var trips = [];
+    var emissions = [];
+
+    for (var i in equipmentList) {
+        var vehicle = equipmentList[i];
+        if (licensePlateFilter === null || licensePlateFilter === vehicle.licensePlate) {
+            trips=trips.concat(vehicle.trips);
+        }
+        for(var i in trips){
+            var newEntry={
+                "c02": trips[i].cO2Consumed, 
+                "date": trips[i].date
+            };
+            emissions.push(newEntry);
+        }
+    }
+    return emissions;
+}
+
 async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress) {
     try {
         // query for company 
@@ -672,4 +694,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle }; // Add any new database access functions to the export or they won't be usable
