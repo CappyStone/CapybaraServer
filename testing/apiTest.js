@@ -166,10 +166,10 @@ describe('API Tests', function () {
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body[0].should.be.a('object');
-                    res.body[0].should.have.property('startAddress');
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('LIGMA');
                     var foundEndAddress = false;
-                    if (res.body[0].endAddress === '86 Marlborough Ave Ottawa') {
+                    if (res.body.LIGMA[0].endAddress === '86 Marlborough Ave Ottawa') {
                         foundEndAddress = true;
                     }
                     assert.equal(foundEndAddress, true);
@@ -182,14 +182,14 @@ describe('API Tests', function () {
                 .post('/getEmissionsPerVehicle')
                 .send({
                     "companyEmail": "test@test.com",
-                    "licencePlate": "LIGMA"
+                    "licensePlate": "LIGMA"
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body[0].should.be.a('object');
-                    res.body[0].should.have.property('c02');
+                    res.body.should.be.a('object');
+                    res.body['0'].should.have.property('c02');
                     var foundCO2 = false;
-                    if (res.body[0].c02 === "0.136") {
+                    if (res.body['0'].c02 === "0.136") {
                         foundCO2 = true;
                     }
                     assert.equal(foundCO2, true);
