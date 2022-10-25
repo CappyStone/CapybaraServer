@@ -253,7 +253,8 @@ async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinc
         // read all items in the Items container
         const { resources: items } = await companyContainer.items
             .query(querySpec)
-            .fetchAll();
+            .fetchAll(); 
+            
 
         //grab current company address
         var newCompanyAddress = items[0].companyAddress;
