@@ -242,6 +242,47 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
     }
 }
 
+async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinceState, newCountry, newPostalZipcode) {
+    try {
+
+        // query to return all items
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll(); 
+            
+
+        //grab current company address
+        var newCompanyAddress = items[0].companyAddress;
+
+        //update company
+        newCompanyAddress.push({ "street": newStreet, "city": newCity, "provinceState": newProvinceState, "country": newCountry, "postalZipcode": newPostalZipcode });
+
+        //add new address to company
+        items[0].companyAddress = newCompanyAddress;
+
+        console.log("Success!")
+        console.log(items[0].companyAddress)
+
+        //send to database
+        const { resource: updatedItem } = await companyContainer
+            //id and partition key 
+            .item(items[0].id, items[0].contactEmail)
+            // new json object to replace the one in the database
+            .replace(items[0]);
+
+        return updatedItem;
+
+    } catch (err) {
+        return { error: "An error occured, check database connection" };
+    }
+}
+
+
 /* async function createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
     try {
         if (category == null || productName == null || description == null || manufacturer == null || serialNumber == null || greenScore == null || efficiencyRating == null || estimatedPrice == null || verified == null) {
@@ -363,12 +404,12 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
 
     var equipmentList = companyToQuery.ownedEquipment;
 
-    var trips = [];
+    var trips = {};
     for (var i in equipmentList) {
         var vehicle = equipmentList[i];
 
         if (licensePlateFilter === null || licensePlateFilter === vehicle.licensePlate) {
-            trips = trips.concat(vehicle.trips);
+            trips[vehicle.licensePlate] = vehicle.trips;
         }
     }
 
@@ -377,9 +418,11 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
 
 async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
     const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+
     if (companyToQuery === null || companyToQuery === undefined) {
         return [];
     }
+    
     var equipmentList = companyToQuery.ownedEquipment;
     var trips = [];
     var emissions = [];
@@ -702,4 +745,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle, updateCompanyAddress }; // Add any new database access functions to the export or they won't be usable
