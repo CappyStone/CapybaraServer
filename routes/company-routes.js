@@ -138,38 +138,6 @@ module.exports = function (app) {
         }
     })
 
-    app.post('/updateCompanyAddress', async (req, res) => {
-        const contactEmail = req.body.contactEmail;
-        const newStreet = req.body.newStreet;
-        const newCity = req.body.newCity;
-        const newProvinceState = req.body.newProvinceState;
-        const newCountry = req.body.newCountry;
-        const newPostalZipcode = req.body.newPostalZipcode;
-
-        //response type
-        res.contentType('application/json');
-
-        console.log("hey");
-
-        // try to find existing company
-        var items = Object.assign({}, await db.getCompanyByContactEmail(contactEmail)); // combine the result with an empty object to ensure items is not undefined
-        console.log(items);
-        if (Object.keys(items).length != 0) {
-            //update company address
-            console.log("working");
-            var updatedCompany = Object.assign({}, await db.updateCompanyAddress(contactEmail, newStreet, newCity, newProvinceState, newCountry, newPostalZipcode));
-            var size = Object.keys(items).length; // get the number of keys in the object
-
-            console.log(updatedCompany);
-
-            //send the response
-            if (size > 0) {
-                res.json(updatedCompany);
-            } else {
-                res.json({})
-            }
-        }
-    });
 
 
     /* app.post('/createNewEquipment', async (req, res) => {
