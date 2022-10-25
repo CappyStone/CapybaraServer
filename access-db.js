@@ -2,10 +2,15 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 var nodemailer = require('nodemailer');
 const axios = require("axios"); 
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
-const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
+//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+
+const config = require("./config");
+const endpoint = config.endpoint;
+const key = config.key;
+const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -234,6 +239,45 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
 
     } catch (e) {
         return { error: "Error occured while creating company" };
+    }
+}
+
+async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinceState, newCountry, newPostalZipcode) {
+    try {
+
+        // query to return all items
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+
+        //grab current company address
+        var newCompanyAddress = items[0].companyAddress;
+
+        //update company
+        newCompanyAddress.push({ "street": newStreet, "city": newCity, "provinceState": newProvinceState, "country": newCountry, "postalZipcode": newPostalZipcode });
+
+        //add new address to company
+        items[0].companyAddress = newCompanyAddress;
+
+        console.log("Success!")
+        console.log(items[0].companyAddress)
+
+        //send to database
+        const { resource: updatedItem } = await companyContainer
+            //id and partition key 
+            .item(items[0].id, items[0].contactEmail)
+            // new json object to replace the one in the database
+            .replace(items[0]);
+
+        return updatedItem;
+
+    } catch (err) {
+        return { error: "An error occured, check database connection" };
     }
 }
 
@@ -694,4 +738,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle, updateCompanyAddress }; // Add any new database access functions to the export or they won't be usable
