@@ -1,15 +1,16 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
+const { concat } = require("lodash");
 var nodemailer = require('nodemailer');
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
-const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
+//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 
-//const config = require("./config");
-//const endpoint = config.endpoint;
-//const key = config.key;
-//const emailpass = config.emailpass;
+const config = require("./config");
+const endpoint = config.endpoint;
+const key = config.key;
+const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -154,6 +155,7 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
         return { error: "Issue occured while adding employee" };
     }
 }
+
 
 async function removeEmployeeFromCompany(userEmail) {
 
@@ -390,6 +392,74 @@ async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
         }
     }
     return emissions;
+}
+
+async function getTripData(contactEmail, licensePlate, cO2Consumed, distance, duration, fuelUsed, upperTimeBound, lowerTimeBound) {
+
+    try {
+
+        /* 
+        default parameter values
+        contactEmail: string
+        licensePlate: string or null if no license plate filter needed,
+        cO2consumed: bool
+        distance: bool
+        duraction: bool
+        fuelUsed: bool
+        upperTimeBound: non zero int if in use (unix timestamp), otherwise 0 
+        lowerTimeBound: non zero int if in use (unix timestamp), otherwise 0
+        */
+
+        var queryy = "SELECT"; 
+
+        if(cO2Consumed === true){
+            queryy = queryy + " f.cO2Consumed,";
+        }
+
+        if(duration === true){
+            queryy = queryy + " f.time,";
+        }
+
+        if(distance === true){
+            queryy = queryy + " f.distance,";
+        }
+
+        if(fuelUsed === true){
+            queryy = queryy + " f.fuelUsed,";
+        }
+
+        queryy = queryy + " f.date FROM c join e in c.ownedEquipment JOIN f in e.trips WHERE c.contactEmail = '" + contactEmail +"'"; 
+
+        if(upperTimeBound !==0){
+            queryy = queryy + " and f.date < " + upperTimeBound.toString();
+        }
+
+        if(lowerTimeBound !==0){
+            queryy = queryy + " and f.date > " + lowerTimeBound.toString();
+        }
+
+        if(licensePlate !==null){
+            queryy = queryy + " and e.licensePlate = '" + licensePlate + "'";
+        }
+
+
+        // query to return all items
+        const querySpec = {
+            query: queryy
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+
+        return items;
+
+    } catch (err) {
+        console.log(err);
+        return { error: "A query error occured, check database connection" };
+    }
+
 }
 
 async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress) {
@@ -666,4 +736,4 @@ async function getTestData() {
 
 }
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle, getTripData }; // Add any new database access functions to the export or they won't be usable
