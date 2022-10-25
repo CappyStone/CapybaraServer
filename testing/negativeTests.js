@@ -96,6 +96,30 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+        
+        it('/getTripsForCompany', (done) => {
+            chai.request(app)
+                .post('/getTripsForCompany')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body[0]), true);
+                    done();
+                });
+        });
+
+        it('/getEmissionsPerVehicle', (done) => {
+            chai.request(app)
+                .post('/getEmissionsPerVehicle')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body[0]), true);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -212,9 +236,35 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+
+        it('/addTripToVehicle', (done) => {
+            chai.request(app)
+                .post('/addTripToVehicle')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Issue occured while adding trip");
+                    done();
+                });
+        });
     });
 
     describe('Delete Methods', function () {
+        it('/removeTripFromCompany', (done) => {
+            chai.request(app)
+                .post('/removeTripFromCompany')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Issue occured while removing trip");
+                    done();
+                });
+        });
+        
         it('/removeEquipmentFromCompany (Text Response)', (done) => {
             chai.request(app)
                 .post('/removeEquipmentFromCompany')

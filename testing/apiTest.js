@@ -29,6 +29,7 @@ const companyContainer = database.container(companyContainerId);
 const equipmentContainer = database.container(equipmentContainerId);
 
 const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 is not always enough (~3% fail rate)
+var ts;
 
 describe('API Tests', function () {
     this.timeout(timeout);
@@ -152,6 +153,46 @@ describe('API Tests', function () {
                         foundLicense = true;
                     }
                     assert.equal(foundLicense, true);
+                    done();
+                });
+        });
+
+        it('/getTripsForCompany', (done) => {
+            chai.request(app)
+                .post('/getTripsForCompany')
+                .send({
+                    "companyEmail": "test@test.com",
+                    "licensePlate": "LIGMA"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body[0].should.be.a('object');
+                    res.body[0].should.have.property('startAddress');
+                    var foundEndAddress = false;
+                    if (res.body[0].endAddress === '86 Marlborough Ave Ottawa') {
+                        foundEndAddress = true;
+                    }
+                    assert.equal(foundEndAddress, true);
+                    done();
+                });
+        });
+
+        it('/getEmissionsPerVehicle', (done) => {
+            chai.request(app)
+                .post('/getEmissionsPerVehicle')
+                .send({
+                    "companyEmail": "test@test.com",
+                    "licencePlate": "LIGMA"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body[0].should.be.a('object');
+                    res.body[0].should.have.property('c02');
+                    var foundCO2 = false;
+                    if (res.body[0].c02 === "0.136") {
+                        foundCO2 = true;
+                    }
+                    assert.equal(foundCO2, true);
                     done();
                 });
         });
@@ -283,24 +324,44 @@ describe('API Tests', function () {
 
         it('/addEquipmentToCompany', (done) => {
             chai.request(app)
-                .post('/giveAdminPriviledge')
-                .send({ "userEmail": "admin@donk.com" })
-                .end((err, res) => {
-                    chai.request(app)
-                        .post('/addEquipmentToCompany')
-                        .send({
-                            "equipmentId": 6,
-                            "companyEmail": "new@donk.com",
-                            "authority": "admin@donk.com"
-                        })
-                        .end(async (err, res) => {
-                            res.should.have.status(200);
-                            const addedItemQuery = {
-                                query: "SELECT o.amount FROM Company c Join o in c.ownedEquipment Where o.equipmentId = 6 and c.contactEmail = 'new@donk.com'"
-                            };
-                            var { resources: company } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                            assert.equal(company[0].amount, 1);
-                        });
+                .post('/addEquipmentToCompany')
+                .send({
+                    "equipmentId": "6",
+                    "licensePlate": "JOEMAMA",
+                    "companyEmail": "new@donk.com",
+                    "authority": "admin@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    const addedItemQuery = {
+                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                    assert.equal(equipmentList.length, 1);
+                    done();
+                });
+
+        });
+
+        it('/addTripToVehicle', (done) => {
+            chai.request(app)
+                .post('/addTripToVehicle')
+                .send({
+                    "companyEmail": "new@donk.com",
+                    "licencePlate": "JOEMAMA",
+                    "startAddress": "160 Chapel Ottawa",
+                    "endAddress": "84 Marlborough Ave Ottawa",
+                    "currentUser": "admin@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    const addedItemQuery = {
+                        query: "SELECT o.trips FROM Company c Join o in c.ownedEquipment Where c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                    ts = equipmentList[0].trips[0].date;
+                    assert.equal(equipmentList[0].trips.length, 1);
                     done();
                 });
 
@@ -309,6 +370,27 @@ describe('API Tests', function () {
     });
 
     describe('Delete Methods', function () {
+        it('/removeTripFromCompany', (done) => {
+            chai.request(app)
+                .post('/removeTripFromCompany')
+                .send({
+                    "companyEmail": "new@donk.com",
+                    "currentUser": "admin@donk.com",
+                    "timestamp": ts
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    const addedItemQuery = {
+                        query: "SELECT o.trips FROM Company c Join o in c.ownedEquipment Where c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                    assert.equal(equipmentList[0].trips.length, 0);
+                    done();
+                });
+
+        });
+        
         it('/removeEquipmentFromCompany', (done) => {
             chai.request(app)
                 .post('/giveAdminPriviledge')

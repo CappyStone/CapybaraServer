@@ -7,6 +7,11 @@ const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
 const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 
+//const config = require("./config");
+//const endpoint = config.endpoint;
+//const key = config.key;
+//const mapQuestKey = config.mapQuestKey;
+
 //Cosmos connection for the company container
 
 //Company database configuration
@@ -372,6 +377,9 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
 
 async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
     const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+    if (companyToQuery === null || companyToQuery === undefined) {
+        return [];
+    }
     var equipmentList = companyToQuery.ownedEquipment;
     var trips = [];
     var emissions = [];
