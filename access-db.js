@@ -242,45 +242,6 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
     }
 }
 
-async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinceState, newCountry, newPostalZipcode) {
-    try {
-
-        // query to return all items
-        const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
-        };
-
-        // read all items in the Items container
-        const { resources: items } = await companyContainer.items
-            .query(querySpec)
-            .fetchAll(); 
-            
-
-        //grab current company address
-        var newCompanyAddress = items[0].companyAddress;
-
-        //update company
-        newCompanyAddress.push({ "street": newStreet, "city": newCity, "provinceState": newProvinceState, "country": newCountry, "postalZipcode": newPostalZipcode });
-
-        //add new address to company
-        items[0].companyAddress = newCompanyAddress;
-
-        console.log("Success!")
-        console.log(items[0].companyAddress)
-
-        //send to database
-        const { resource: updatedItem } = await companyContainer
-            //id and partition key 
-            .item(items[0].id, items[0].contactEmail)
-            // new json object to replace the one in the database
-            .replace(items[0]);
-
-        return updatedItem;
-
-    } catch (err) {
-        return { error: "An error occured, check database connection" };
-    }
-}
 
 
 /* async function createNewEquipment(category, productName, description, manufacturer, serialNumber, greenScore, efficiencyRating, estimatedPrice, verified) {
