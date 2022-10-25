@@ -303,21 +303,22 @@ module.exports = function (app) {
     })
 
     app.post('/getEmissionsPerVehicle', async (req, res) => {
-        const licencePlate = req.body.licencePlate;
+        const licensePlate = req.body.licensePlate;
         const companyEmail = req.body.companyEmail;
-            //response type
-            res.contentType('application/json');
 
-            //change this to info from the db
-            var items = Object.assign({}, await db.getEmissionsPerVehicle(companyEmail, licencePlate)); // combine the result with an empty object to ensure items is not undefined
-             var size = Object.keys(items).length; // get the number of keys in the object
+        //response type
+        res.contentType('application/json');
 
-            //send the response
-            if (items['error']) {
-                res.json({ error: items['error'] });
-            } else {
-                res.json(items);
-            }
+        //change this to info from the db
+        var items = Object.assign({}, await db.getEmissionsPerVehicle(companyEmail, licensePlate)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length; // get the number of keys in the object
+
+        //send the response
+        if (items['error']) {
+            res.json({ error: items['error'] });
+        } else {
+            res.json(items);
+        }
     })
 
     app.post('/getCompanyVehicles', async (req, res) => {

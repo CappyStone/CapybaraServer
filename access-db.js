@@ -358,12 +358,12 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
 
     var equipmentList = companyToQuery.ownedEquipment;
 
-    var trips = [];
+    var trips = {};
     for (var i in equipmentList) {
         var vehicle = equipmentList[i];
 
         if (licensePlateFilter === null || licensePlateFilter === vehicle.licensePlate) {
-            trips = trips.concat(vehicle.trips);
+            trips[vehicle.licensePlate] = vehicle.trips;
         }
     }
 
@@ -372,6 +372,11 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
 
 async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
     const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+
+    if (companyToQuery === null || companyToQuery === undefined) {
+        return [];
+    }
+
     var equipmentList = companyToQuery.ownedEquipment;
     var trips = [];
     var emissions = [];
