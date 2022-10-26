@@ -59,6 +59,7 @@ module.exports = function (app) {
         const companyEmail = req.body.companyEmail;
         const newEmployeeEmail = req.body.newEmployeeEmail;
         const isAdmin = req.body.isAdmin;
+        const newEmployeeName = req.body.newEmployeeName;
         const authority = req.body.authority;
 
         //response type
@@ -68,7 +69,7 @@ module.exports = function (app) {
             return;
         } else {
             //change this to info from the db
-            var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin)); // combine the result with an empty object to ensure items is not undefined
+            var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail,  newEmployeeEmail, newEmployeeName, isAdmin)); // combine the result with an empty object to ensure items is not undefined
             var size = Object.keys(items).length; // get the number of keys in the object
 
             //send the response
