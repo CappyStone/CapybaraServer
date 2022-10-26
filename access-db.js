@@ -1,7 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const { concat } = require("lodash");
 var nodemailer = require('nodemailer');
-const axios = require("axios"); 
+const axios = require("axios");
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
@@ -114,11 +114,11 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, newEmployeeN
 
         //grab current list of employees
         var newEmployees = items[0].employees;
-       
+
 
         //add new employee
         newEmployees.push({ "fullName": newEmployeeName, "email": newEmployeeEmail, "isAdmin": isAdmin });
-       
+
         //add new employee list to company
         items[0].employees = newEmployees;
 
@@ -257,8 +257,8 @@ async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinc
         // read all items in the Items container
         const { resources: items } = await companyContainer.items
             .query(querySpec)
-            .fetchAll(); 
-            
+            .fetchAll();
+
 
         //grab current company address
         var newCompanyAddress = items[0].companyAddress;
@@ -426,7 +426,7 @@ async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
     if (companyToQuery === null || companyToQuery === undefined) {
         return [];
     }
-    
+
     var equipmentList = companyToQuery.ownedEquipment;
     var trips = [];
     var emissions = [];
@@ -434,11 +434,11 @@ async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
     for (var i in equipmentList) {
         var vehicle = equipmentList[i];
         if (licensePlateFilter === null || licensePlateFilter === vehicle.licensePlate) {
-            trips=trips.concat(vehicle.trips);
+            trips = trips.concat(vehicle.trips);
         }
-        for(var i in trips){
-            var newEntry={
-                "c02": trips[i].cO2Consumed, 
+        for (var i in trips) {
+            var newEntry = {
+                "c02": trips[i].cO2Consumed,
                 "date": trips[i].date
             };
             emissions.push(newEntry);
@@ -462,35 +462,35 @@ async function getTripData(contactEmail, licensePlate, properties) {
         }
         */
 
-        var queryy = "SELECT"; 
+        var queryy = "SELECT";
 
-        if(properties.values.includes("cO2Consumed")){
+        if (properties.values.includes("cO2Consumed")) {
             queryy = queryy + " f.cO2Consumed,";
         }
 
-        if(properties.values.includes("duration")){
+        if (properties.values.includes("duration")) {
             queryy = queryy + " f.time,";
         }
 
-        if(properties.values.includes("distance")){
+        if (properties.values.includes("distance")) {
             queryy = queryy + " f.distance,";
         }
 
-        if(properties.values.includes("fuelUsed")){
+        if (properties.values.includes("fuelUsed")) {
             queryy = queryy + " f.fuelUsed,";
         }
 
-        queryy = queryy + " f.date FROM c join e in c.ownedEquipment JOIN f in e.trips WHERE c.contactEmail = '" + contactEmail +"'"; 
+        queryy = queryy + " f.date FROM c join e in c.ownedEquipment JOIN f in e.trips WHERE c.contactEmail = '" + contactEmail + "'";
 
-        if(properties.upperTimeBound > 0){
+        if (properties.upperTimeBound > 0) {
             queryy = queryy + " and f.date < " + properties.upperTimeBound.toString();
         }
 
-        if(properties.lowerTimeBound > 0){
+        if (properties.lowerTimeBound > 0) {
             queryy = queryy + " and f.date > " + properties.lowerTimeBound.toString();
         }
 
-        if(licensePlate !==null){
+        if (licensePlate !== null) {
             queryy = queryy + " and e.licensePlate = '" + licensePlate + "'";
         }
 
@@ -535,7 +535,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             unit: "m",
             fullShape: true,
             //Fuel consumption is stored as l/100km, so it must be converted to mpg
-            highwayEfficiency: (vehicleMetadata.hwyFuelConsumption * 2.35214583 )
+            highwayEfficiency: (vehicleMetadata.hwyFuelConsumption * 2.35214583)
         });
 
 
@@ -543,15 +543,18 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
 
         // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
 
-        var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * .001)
+        var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * 0.001)
         var routeCoords = [];
 
         //Array of coordinate pairs for the route
         var routeLegs = mapResult.route.shape.shapePoints;
+        var maneuvers = mapResult.route.shape.maneuverIndexes;
 
-        for(var i = 0; i < (routeLegs.length - 1); i+=2){
-                var latLngHolder = [routeLegs[i], routeLegs[i+1]];
-                routeCoords.push(latLngHolder);
+        for (var i in maneuvers) {
+            var index = maneuvers[i] * 2;
+
+            var latLngHolder = [routeLegs[index], routeLegs[index + 1]];
+            routeCoords.push(latLngHolder);
         }
 
         // alert(startLocation.results.locations[0].latLng)
@@ -817,5 +820,5 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany,getEmissionsPerVehicle, getTripData }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData }; // Add any new database access functions to the export or they won't be usable
 
