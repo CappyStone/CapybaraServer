@@ -12,6 +12,7 @@ const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 //const endpoint = config.endpoint;
 //const key = config.key;
 //const mapQuestKey = config.mapQuestKey;
+//const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -99,7 +100,7 @@ async function getAssociatedCompanies(userEmail) {
     }
 }
 
-async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
+async function addEmployeeToCompany(companyEmail, newEmployeeEmail, newEmployeeName, isAdmin) {
     try {
         // query for company 
         const querySpec = {
@@ -113,10 +114,11 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, isAdmin) {
 
         //grab current list of employees
         var newEmployees = items[0].employees;
+       
 
         //add new employee
-        newEmployees.push({ "email": newEmployeeEmail, "isAdmin": isAdmin });
-
+        newEmployees.push({ "fullName": newEmployeeName, "email": newEmployeeEmail, "isAdmin": isAdmin });
+       
         //add new employee list to company
         items[0].employees = newEmployees;
 
