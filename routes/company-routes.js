@@ -202,17 +202,12 @@ module.exports = function (app) {
     app.post('/getTripData', async (req, res) => {
         const contactEmail = req.body.contactEmail;
         const licensePlate = req.body.licensePlate;
-        const cO2Consumed = req.body.cO2Consumed;
-        const duration = req.body.duration;
-        const distance = req.body.distance;
-        const fuelUsed = req.body.fuelUsed;
-        const upperTimeBound = req.body.upperTimeBound; 
-        const lowerTimeBound = req.body.lowerTimeBound;
+        const properties = req.body.properties;
         //response type
         res.contentType('application/json');
 
         //change this to info from the db
-        var items = Object.assign({}, await db.getTripData(contactEmail, licensePlate, cO2Consumed, distance, duration, fuelUsed, upperTimeBound, lowerTimeBound)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.getTripData(contactEmail, licensePlate, properties)); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length // get the number of keys in the object
 
         //send the response

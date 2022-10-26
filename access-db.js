@@ -394,7 +394,7 @@ async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
     return emissions;
 }
 
-async function getTripData(contactEmail, licensePlate, cO2Consumed, distance, duration, fuelUsed, upperTimeBound, lowerTimeBound) {
+async function getTripData(contactEmail, licensePlate, properties) {
 
     try {
 
@@ -402,40 +402,39 @@ async function getTripData(contactEmail, licensePlate, cO2Consumed, distance, du
         default parameter values
         contactEmail: string
         licensePlate: string or null if no license plate filter needed,
-        cO2consumed: bool
-        distance: bool
-        duraction: bool
-        fuelUsed: bool
-        upperTimeBound: non zero int if in use (unix timestamp), otherwise 0 
-        lowerTimeBound: non zero int if in use (unix timestamp), otherwise 0
+        properties:{
+            values: [list of strings],
+            upperTimeBound: int,
+            lowerTimeBound: int
+        }
         */
 
         var queryy = "SELECT"; 
 
-        if(cO2Consumed === true){
+        if(properties.values.includes("cO2Consumed")){
             queryy = queryy + " f.cO2Consumed,";
         }
 
-        if(duration === true){
+        if(properties.values.includes("duration")){
             queryy = queryy + " f.time,";
         }
 
-        if(distance === true){
+        if(properties.values.includes("distance")){
             queryy = queryy + " f.distance,";
         }
 
-        if(fuelUsed === true){
+        if(properties.values.includes("fuelUsed")){
             queryy = queryy + " f.fuelUsed,";
         }
 
         queryy = queryy + " f.date FROM c join e in c.ownedEquipment JOIN f in e.trips WHERE c.contactEmail = '" + contactEmail +"'"; 
 
-        if(upperTimeBound !==0){
-            queryy = queryy + " and f.date < " + upperTimeBound.toString();
+        if(properties.upperTimeBound > 0){
+            queryy = queryy + " and f.date < " + properties.upperTimeBound.toString();
         }
 
-        if(lowerTimeBound !==0){
-            queryy = queryy + " and f.date > " + lowerTimeBound.toString();
+        if(properties.lowerTimeBound > 0){
+            queryy = queryy + " and f.date > " + properties.lowerTimeBound.toString();
         }
 
         if(licensePlate !==null){
