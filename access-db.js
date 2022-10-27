@@ -528,6 +528,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
         const lpk2mpg = 2.35214583;
 
         //Creating the URL for MapQuest API request
+        var hwyEfficiencyGal = (vehicleMetadata.hwyFuelConsumption * 2.35214583)
         const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
             key: mapQuestKey,
             from: startAddress,
@@ -535,7 +536,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             unit: "m",
             fullShape: true,
             //Fuel consumption is stored as l/100km, so it must be converted to mpg
-            highwayEfficiency: (vehicleMetadata.hwyFuelConsumption * 2.35214583)
+            highwayEfficiency: hwyEfficiencyGal
         });
 
 
@@ -563,7 +564,8 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             "endLocation": mapResult.route.locations[(mapResult.route.locations.length - 1)].latLng,
             "date": Date.now(),
             "distance": mapResult.route.distance,
-            "fuelUsed": mapResult.route.fuelUsed,
+            "fuelUsed": mapResult.route.fuelUsed ? mapResult.route.fuelUsed : (mapResult.route.distance ? Math.round(mapResult.route.distance / hwyEfficiencyGal, 2) : 0),
+            "fuelEstimate": mapResult.route.fuelUsed ? "MapQuest" : mapResult.route.distance ? "Estimate" : "None",
             "time": mapResult.route.time,
             "user": currentUser,
             "cO2Consumed": CO2Consumed.toFixed(3),
