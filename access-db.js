@@ -549,13 +549,20 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
 
         //Array of coordinate pairs for the route
         var routeLegs = mapResult.route.shape.shapePoints;
-        var maneuvers = mapResult.route.shape.maneuverIndexes;
 
-        for (var i in maneuvers) {
-            var index = maneuvers[i] * 2;
+        if (routeLegs.length > 1000) {
+            var maneuvers = mapResult.route.shape.maneuverIndexes;
+            for (var i in maneuvers) {
+                var index = maneuvers[i] * 2;
 
-            var latLngHolder = [routeLegs[index], routeLegs[index + 1]];
-            routeCoords.push(latLngHolder);
+                var latLngHolder = [routeLegs[index], routeLegs[index + 1]];
+                routeCoords.push(latLngHolder);
+            }
+        } else {
+            for (var i = 0; i < routeLegs.length - 1; i += 2) {
+                var latLngHolder = [routeLegs[i], routeLegs[i + 1]];
+                routeCoords.push(latLngHolder);
+            }
         }
 
         // alert(startLocation.results.locations[0].latLng)
