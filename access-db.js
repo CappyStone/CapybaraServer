@@ -520,82 +520,87 @@ async function getTripData(contactEmail, licensePlate, properties) {
 
 async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress) {
     try {
-        // query for company 
-        const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
+        
+        if((companyEmail !==null||companyEmail!=="") && (licensePlate!==null||licensePlate!=="")&&(currentUser
+        !==null||currentUser!=="")&&(startAddress!==null||startAddress!=="")&&(endAddress!==null||endAddress!=="")){
+            // query for company 
+            const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
 
-        //grab equipment list
-        var equipmentList = companyUpdating.ownedEquipment;
-        var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
-        var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
+            //grab equipment list
+            var equipmentList = companyUpdating.ownedEquipment;
+            var vehicle = equipmentList.filter(vehicle => vehicle.licensePlate == licensePlate)[0];
+            var vehicleMetadata = await this.getEquipmentData(vehicle.equipmentId);
 
-        //Variable to store the conversion rate from liters/100 km to miles per gallon
-        const lpk2mpg = 2.35214583;
+            //Variable to store the conversion rate from liters/100 km to miles per gallon
+            const lpk2mpg = 2.35214583;
 
-        //Creating the URL for MapQuest API request
-        var hwyEfficiencyGal = (vehicleMetadata.hwyFuelConsumption * 2.35214583)
-        const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
-            key: mapQuestKey,
-            from: startAddress,
-            to: endAddress,
-            unit: "m",
-            fullShape: true,
-            //Fuel consumption is stored as l/100km, so it must be converted to mpg
-            highwayEfficiency: hwyEfficiencyGal
-        });
+            //Creating the URL for MapQuest API request
+            var hwyEfficiencyGal = (vehicleMetadata.hwyFuelConsumption * 2.35214583)
+            const mapQuestURL = "http://www.mapquestapi.com/directions/v2/route?" + new URLSearchParams({
+                key: mapQuestKey,
+                from: startAddress,
+                to: endAddress,
+                unit: "m",
+                fullShape: true,
+                //Fuel consumption is stored as l/100km, so it must be converted to mpg
+                highwayEfficiency: hwyEfficiencyGal
+            });
 
 
-        var mapResult = (await axios.post(mapQuestURL)).data;
+            var mapResult = (await axios.post(mapQuestURL)).data;
 
-        // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
+            // Amount of CO2 consumed (kilograms of CO2 per kilometer driven are used here)
 
-        var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * 0.001)
-        var routeCoords = [];
+            var CO2Consumed = (mapResult.route.distance * vehicleMetadata.cO2Emissions * 0.001)
+            var routeCoords = [];
 
-        //Array of coordinate pairs for the route
-        var routeLegs = mapResult.route.shape.shapePoints;
+            //Array of coordinate pairs for the route
+            var routeLegs = mapResult.route.shape.shapePoints;
 
-        if (routeLegs.length > 1000) {
-            var maneuvers = mapResult.route.shape.maneuverIndexes;
-            for (var i in maneuvers) {
-                var index = maneuvers[i] * 2;
+            if (routeLegs.length > 1000) {
+                var maneuvers = mapResult.route.shape.maneuverIndexes;
+                for (var i in maneuvers) {
+                    var index = maneuvers[i] * 2;
 
-                var latLngHolder = [routeLegs[index], routeLegs[index + 1]];
-                routeCoords.push(latLngHolder);
+                    var latLngHolder = [routeLegs[index], routeLegs[index + 1]];
+                    routeCoords.push(latLngHolder);
+                }
+            } else {
+                for (var i = 0; i < routeLegs.length - 1; i += 2) {
+                    var latLngHolder = [routeLegs[i], routeLegs[i + 1]];
+                    routeCoords.push(latLngHolder);
+                }
             }
-        } else {
-            for (var i = 0; i < routeLegs.length - 1; i += 2) {
-                var latLngHolder = [routeLegs[i], routeLegs[i + 1]];
-                routeCoords.push(latLngHolder);
+
+            // alert(startLocation.results.locations[0].latLng)
+            var newTrip = {
+                "startLocation": mapResult.route.locations[0].latLng,
+                "endLocation": mapResult.route.locations[(mapResult.route.locations.length - 1)].latLng,
+                "date": Date.now(),
+                "distance": mapResult.route.distance,
+                "fuelUsed": mapResult.route.fuelUsed ? mapResult.route.fuelUsed : (mapResult.route.distance ? Math.round(mapResult.route.distance / hwyEfficiencyGal, 2) : 0),
+                "fuelEstimate": mapResult.route.fuelUsed ? "MapQuest" : mapResult.route.distance ? "Estimate" : "None",
+                "time": mapResult.route.time,
+                "user": currentUser,
+                "cO2Consumed": CO2Consumed.toFixed(3),
+                "routeCoords": routeCoords,
+                "startAddress": startAddress,
+                "endAddress": endAddress
             }
+            vehicle.trips.push(newTrip);
+
+            companyUpdating.ownedEquipment = equipmentList;
+
+            // read all items in the Items container
+            const { resources: updatedItem } = await companyContainer
+                .item(companyUpdating.id, companyUpdating.contactEmail)
+                // new json object to replace the one in the database
+                .replace(companyUpdating);
+
+            return updatedItem;
+
         }
-
-        // alert(startLocation.results.locations[0].latLng)
-        var newTrip = {
-            "startLocation": mapResult.route.locations[0].latLng,
-            "endLocation": mapResult.route.locations[(mapResult.route.locations.length - 1)].latLng,
-            "date": Date.now(),
-            "distance": mapResult.route.distance,
-            "fuelUsed": mapResult.route.fuelUsed ? mapResult.route.fuelUsed : (mapResult.route.distance ? Math.round(mapResult.route.distance / hwyEfficiencyGal, 2) : 0),
-            "fuelEstimate": mapResult.route.fuelUsed ? "MapQuest" : mapResult.route.distance ? "Estimate" : "None",
-            "time": mapResult.route.time,
-            "user": currentUser,
-            "cO2Consumed": CO2Consumed.toFixed(3),
-            "routeCoords": routeCoords,
-            "startAddress": startAddress,
-            "endAddress": endAddress
-        }
-        vehicle.trips.push(newTrip);
-
-        companyUpdating.ownedEquipment = equipmentList;
-
-        // read all items in the Items container
-        const { resources: updatedItem } = await companyContainer
-            .item(companyUpdating.id, companyUpdating.contactEmail)
-            // new json object to replace the one in the database
-            .replace(companyUpdating);
-
-        return updatedItem;
-
+        
     } catch (e) {
         return { error: "Issue occured while adding trip" };
     }
