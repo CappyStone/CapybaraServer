@@ -657,6 +657,67 @@ async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
     return updatedItem;
 }
 
+async function updateDashboardConfig(config, companyEmail) {
+    try {
+        if (!config || !companyEmail) {
+            throw new Error("Unable to verify permissions.")
+        }
+
+        const companyUpdating = await this.getCompanyByContactEmail(companyEmail);
+
+        companyUpdating.dashboardConfig = config;
+
+        const { resources: updatedItem } = await companyContainer
+            .item(companyUpdating.id, companyUpdating.companyEmail)
+            // new json object to replace the one in the database
+            .replace(companyUpdating);
+
+        // console.log(items);
+        return companyUpdating.dashboardConfig;
+    } catch (err) {
+        // console.log(err);
+        return { error: err };
+    }
+}
+
+async function getDashboardConfig(companyEmail) {
+    try {
+        const querySpec = {
+            query: "SELECT c.dashboardConfig FROM Company c WHERE c.contactEmail = '" + companyEmail + "'"
+        };
+
+        const { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
+
+        if (!items[0].dashboardConfig) {
+            items[0].dashboardConfig = await this.updateDashboardConfig({
+                overview: [
+                    {
+                        title: "Kilometers Driven This Year",
+                        type: "Bar",
+                        keys: { x: 'date', y: 'distance' },
+                        showXAxis: true,
+                        showYAxis: true,
+                        yUnits: "km"
+                    },
+                    {
+                        title: "Fuel Usage Breakdown by Vehicle",
+                        type: "Pie",
+                        keys: { x: 'licensePlate', y: 'fuelUsed' },
+                        showXAxis: false,
+                        showYAxis: false,
+                        yUnits: "gal"
+                    }
+                ],
+            }, companyEmail);
+        }
+
+        return items[0].dashboardConfig;
+    } catch (err) {
+        // console.log(err);
+        return { error: err };
+    }
+}
+
 async function isEmployeeAdmin(userEmail, companyEmail) {
     try {
         if (!userEmail || !companyEmail) {
@@ -833,5 +894,5 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig }; // Add any new database access functions to the export or they won't be usable
 
