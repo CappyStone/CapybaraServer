@@ -239,6 +239,7 @@ module.exports = function (app) {
         const contactEmail = req.body.contactEmail;
         const licensePlate = req.body.licensePlate;
         const properties = req.body.properties;
+        
         //response type
         res.contentType('application/json');
 
