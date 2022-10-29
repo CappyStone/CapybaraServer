@@ -19,10 +19,10 @@ const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 //Company database configuration
 const databaseConfig = {
     databaseId: "greenStormDB",
-    companyContainerId: "Company",
+    companyContainerId: "company",
     equipmentContainerId: "Equipment",
     diagnosticsContainerId: "Diagnostics",
-    partitionKey: { kind: "Hash", paths: ["/contactEmail", "/equipmentId", "/diagnosticsId"] }
+    partitionKey: { kind: "Hash", paths: ["/id", "/equipmentId", "/diagnosticsId"] }
 };
 
 const { databaseId, companyContainerId, equipmentContainerId, diagnosticsContainerId } = databaseConfig;
@@ -125,7 +125,7 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, newEmployeeN
         //send to database
         const { resource: updatedItem } = await companyContainer
             //id and partition key 
-            .item(items[0].id, items[0].contactEmail)
+            .item(items[0].id, items[0].id)
             // new json object to replace the one in the database
             .replace(items[0]);
 
@@ -198,7 +198,7 @@ async function removeEmployeeFromCompany(userEmail) {
     //send to database
     const { resource: updatedItem } = await companyContainer
         //id and partition key 
-        .item(items[0].id, items[0].contactEmail)
+        .item(items[0].id, items[0].id)
         // new json object to replace the one in the database
         .replace(items[0]);
 
@@ -266,7 +266,7 @@ async function updateCompanyName(contactEmail, newName) {
         //send to database
         const { resource: updatedItem } = await companyContainer
             //id and partition key 
-            .item(items[0].id, items[0].contactEmail)
+            .item(items[0].id, items[0].id)
             // new json object to replace the one in the database
             .replace(items[0]);
 
@@ -299,7 +299,7 @@ async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinc
         //send to database
         const { resource: updatedItem } = await companyContainer
             //id and partition key 
-            .item(items[0].id, items[0].contactEmail)
+            .item(items[0].id, items[0].id)
             // new json object to replace the one in the database
             .replace(items[0]);
 
@@ -417,7 +417,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
 
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer
-        .item(companyUpdating.id, companyUpdating.contactEmail)
+        .item(companyUpdating.id, companyUpdating.id)
         // new json object to replace the one in the database
         .replace(companyUpdating);
 
@@ -617,7 +617,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
 
             // read all items in the Items container
             const { resources: updatedItem } = await companyContainer
-                .item(companyUpdating.id, companyUpdating.contactEmail)
+                .item(companyUpdating.id, companyUpdating.id)
                 // new json object to replace the one in the database
                 .replace(companyUpdating);
 
@@ -651,7 +651,7 @@ async function removeTripFromCompany(companyEmail, currentUser, timestamp) {
 
         // read all items in the Items container
         const { resources: updatedItem } = await companyContainer
-            .item(companyUpdating.id, companyUpdating.contactEmail)
+            .item(companyUpdating.id, companyUpdating.id)
             // new json object to replace the one in the database
             .replace(companyUpdating);
 
@@ -679,7 +679,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
 
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer
-        .item(companyUpdating.id, companyUpdating.contactEmail)
+        .item(companyUpdating.id, companyUpdating.id)
         // new json object to replace the one in the database
         .replace(companyUpdating);
 
@@ -796,7 +796,7 @@ async function giveAdminPriviledge(userEmail) {
         //send to database
         const { resource: updatedItem } = await companyContainer
             //id and partition key 
-            .item(items[0].id, items[0].contactEmail)
+            .item(items[0].id, items[0].id)
             // new json object to replace the one in the database
             .replace(items[0]);
         //return updated item
@@ -833,7 +833,7 @@ async function takeAdminPriviledge(userEmail) {
         //send to database
         const { resource: updatedItem } = await companyContainer
             //id and partition key 
-            .item(items[0].id, items[0].contactEmail)
+            .item(items[0].id, items[0].id)
             // new json object to replace the one in the database
             .replace(items[0]);
         //return updated item
