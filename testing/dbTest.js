@@ -40,7 +40,7 @@ const newEquipmentEntry = {
     "fuelType": "Electric"
 }
 const newCompanyEntry = {
-    id: "",
+    id: "id",
     companyName: "connectionTestSuite",
     contactEmail: "connection@testsuite.com",
     companyAddress: {
