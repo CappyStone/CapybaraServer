@@ -10,9 +10,9 @@ const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 const databaseConfig = {
     databaseId: "greenStormTestDB",
-    companyContainerId: "Company",
+    companyContainerId: "company",
     equipmentContainerId: "Equipment",
-    partitionKey: { kind: "Hash", paths: ["/contactEmail", "/equipmentId"] }
+    partitionKey: { kind: "Hash", paths: ["/id", "/equipmentId"] }
 };
 
 const { databaseId, companyContainerId, equipmentContainerId } = databaseConfig;
@@ -97,7 +97,7 @@ describe('DB Connections', function () {
             assert.equal(items[0].companyName, newCompanyEntry.companyName);
             items[0].companyName = "modifiedTestSuite";
             //send to database
-            await companyContainer.item(items[0].id, items[0].contactEmail).replace(items[0]);
+            await companyContainer.item(items[0].id, items[0].id).replace(items[0]);
             var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
             assert.equal(items[0].companyName, "modifiedTestSuite");
         });
@@ -115,7 +115,7 @@ describe('DB Connections', function () {
                 query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = 'connection@testsuite.com' AND c.companyName = 'modifiedTestSuite'"
             };
             var { resources: addedItem } = await companyContainer.items.query(addedItemQuery).fetchAll();
-            await companyContainer.item(addedItem[0].id, addedItem[0].contactEmail).delete()
+            await companyContainer.item(addedItem[0].id, addedItem[0].id).delete()
             
             var { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
             assert.equal(items.length, oldLength - 1);
