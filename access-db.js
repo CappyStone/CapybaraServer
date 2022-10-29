@@ -217,7 +217,7 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
             return { error: 'Some fields missing values' };
         }
         const newCompany = {
-            id: "",
+            id: "id",
             companyName: companyName,
             contactEmail: companyEmail,
             companyAddress: {
@@ -239,7 +239,7 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
         };
 
         //push json to database to make company
-        const { resource: createdItem } = await companyContainer.items.create(newCompany);
+        return await companyContainer.items.create(newCompany);
 
     } catch (e) {
         return { error: "Error occured while creating company" };
@@ -866,7 +866,7 @@ async function deleteCompany(contactEmail) {
             return { error: "No company found" };
         }
 
-        const { resource: result } = await companyContainer.item(items[0].id, items[0].contactEmail).delete();
+        await companyContainer.item(items[0].id, items[0].id).delete();
 
         return { success: items[0].companyName + " has been deleted" };
     } catch (e) {
