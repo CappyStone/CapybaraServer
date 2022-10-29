@@ -15,9 +15,9 @@ const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 const databaseConfig = {
     databaseId: "greenStormDB",
-    companyContainerId: "Company",
+    companyContainerId: "company",
     equipmentContainerId: "Equipment",
-    partitionKey: { kind: "Hash", paths: ["/contactEmail", "/equipmentId"] }
+    partitionKey: { kind: "Hash", paths: ["/id", "/equipmentId"] }
 };
 
 chai.use(chaiHttp);
