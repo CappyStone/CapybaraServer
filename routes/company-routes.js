@@ -239,7 +239,7 @@ module.exports = function (app) {
         const contactEmail = req.body.contactEmail;
         const licensePlate = req.body.licensePlate;
         const properties = req.body.properties;
-        
+
         //response type
         res.contentType('application/json');
 
@@ -425,6 +425,49 @@ module.exports = function (app) {
         res.json(items);
     });
 
+    app.post('/getDashboardConfig', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.getDashboardConfig(companyEmail)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length; // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    });
+
+    app.post('/updateDashboardConfig', async (req, res) => {
+        const companyEmail = req.body.companyEmail;
+        const authority = req.body.authority;
+        const config = req.body.config;
+
+        //response type
+        res.contentType('application/json');
+
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Unable to verify permissions." });
+            return;
+        } else {
+            //change this to info from the db
+            var items = Object.assign({}, await db.updateDashboardConfig(config, companyEmail)); // combine the result with an empty object to ensure items is not undefined
+            var size = Object.keys(items).length; // get the number of keys in the object
+
+            //send the response
+            if (size > 0) {
+                res.json(items);
+            } else {
+                res.json({})
+            }
+        }
+    });
+
     app.post('/isEmployeeAdmin', async (req, res) => {
         const userEmail = req.body.userEmail;
         const companyEmail = req.body.companyEmail;
@@ -528,5 +571,4 @@ module.exports = function (app) {
             res.json({})
         }
     })
-
 }
