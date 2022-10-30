@@ -277,6 +277,37 @@ async function updateCompanyName(contactEmail, newName) {
     }
 }
 
+async function updateCompanyEmail(contactEmail, newContactEmail) {
+    try {
+
+        // query to return all items
+        const querySpec = {
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await companyContainer.items
+            .query(querySpec)
+            .fetchAll();
+        
+
+        //add new address to company
+        items[0].contactEmail = newContactEmail;
+
+        //send to database
+        const { resource: updatedItem } = await companyContainer
+            //id and partition key 
+            .item(items[0].id, items[0].id)
+            // new json object to replace the one in the database
+            .replace(items[0]);
+
+        return updatedItem;
+
+    } catch (err) {
+        return { error: "An error occured, check database connection" };
+    }
+}
+
 async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinceState, newCountry, newPostalZipcode) {
     try {
 
@@ -923,6 +954,6 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail }; // Add any new database access functions to the export or they won't be usable
 
 

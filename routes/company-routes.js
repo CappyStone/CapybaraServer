@@ -304,6 +304,30 @@ module.exports = function (app) {
         }
     });
 
+    app.post('/updateCompanyEmail', async (req, res) => {
+        const contactEmail = req.body.contactEmail;
+        const newCompanyEmail = req.body.newCompanyEmail;
+        const authority = req.body.authority;
+
+        if ((await db.isEmployeeAdmin(authority, contactEmail)) !== true) {
+            res.json({ error: "Unable to verify permissions." });
+            return;
+        } else {
+            //response type
+            res.contentType('application/json');
+
+            //change this to info from the db
+            var items = Object.assign({}, await db.updateCompanyEmail(contactEmail, newCompanyEmail)); // combine the result with an empty object to ensure items is not undefined
+
+            //send the response
+            if (items['error']) {
+                res.json({ error: items['error'] });
+            } else {
+                res.json(items);
+            }
+        }
+    });
+
     app.post('/updateCompanyAddress', async (req, res) => {
         const contactEmail = req.body.contactEmail;
         const newStreet = req.body.newStreet;
