@@ -511,11 +511,11 @@ async function getTripData(contactEmail, licensePlate, properties) {
         queryy = queryy + " f.date FROM c join e in c.ownedEquipment JOIN f in e.trips WHERE c.contactEmail = '" + contactEmail + "'";
 
         if (properties.upperTimeBound > 0) {
-            queryy = queryy + " and f.date <= " + (properties.upperTimeBound + 86400000).toString();
+            queryy = queryy + " and f.date < " + (properties.upperTimeBound + 86400000).toString();
         }
 
         if (properties.lowerTimeBound > 0) {
-            queryy = queryy + " and f.date >= " + properties.lowerTimeBound.toString();
+            queryy = queryy + " and f.date > " + properties.lowerTimeBound.toString();
         }
 
         if (licensePlate !== null) {
