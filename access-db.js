@@ -606,7 +606,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
                 "fuelEstimate": mapResult.route.fuelUsed ? "MapQuest" : mapResult.route.distance ? "Estimate" : "None",
                 "time": mapResult.route.time,
                 "user": currentUser,
-                "cO2Consumed": CO2Consumed.toFixed(3),
+                "cO2Consumed": parseFloat(CO2Consumed.toFixed(3)),
                 "routeCoords": routeCoords,
                 "startAddress": startAddress,
                 "endAddress": endAddress
@@ -737,6 +737,20 @@ async function getDashboardConfig(companyEmail) {
                         yUnits: "gal"
                     }
                 ],
+                trends: [
+                    {
+                        title: "Fuel Usage",
+                        key: "fuelUsed"
+                    },
+                    {
+                        title: "Distance Travelled",
+                        key: "distance"
+                    },
+                    {
+                        title: "CO₂ Emissions",
+                        key: "cO2Consumed"
+                    },
+                ]
             }, companyEmail);
         }
 
