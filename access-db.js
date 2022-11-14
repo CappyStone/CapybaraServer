@@ -757,7 +757,8 @@ async function getDashboardConfig(companyEmail) {
                         keys: { x: 'date', y: 'distance' },
                         showXAxis: true,
                         showYAxis: true,
-                        yUnits: "km"
+                        yUnits: "km",
+                        emphasized: true
                     },
                     {
                         title: "Fuel Usage Breakdown by Vehicle",
@@ -765,7 +766,8 @@ async function getDashboardConfig(companyEmail) {
                         keys: { x: 'licensePlate', y: 'fuelUsed' },
                         showXAxis: false,
                         showYAxis: false,
-                        yUnits: "gal"
+                        yUnits: "gal",
+                        emphasized: true
                     }
                 ],
                 trends: [
