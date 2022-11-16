@@ -774,7 +774,7 @@ async function getDashboardConfig(companyEmail) {
 
         const { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
 
-        if (!items[0].dashboardConfig) {
+        if (items[0].dashboardConfig == null) {
             items[0].dashboardConfig = await this.updateDashboardConfig({
                 overview: [
                     {
