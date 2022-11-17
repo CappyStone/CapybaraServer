@@ -66,7 +66,7 @@ async function getCompanyByContactEmail(contactEmail) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig, c._ts FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container
@@ -474,6 +474,31 @@ async function getTripsForCompany(companyEmail, licensePlateFilter) {
     }
 
     return trips;
+}
+
+async function getCompanyTimeStamp(companyEmail) {
+    const companyToQuery = await this.getCompanyByContactEmail(companyEmail);
+    if (companyToQuery === null || companyToQuery === undefined) {
+        return [];
+    }
+    var timeStamp = companyToQuery._ts * 1000;
+    //cosmos does not return a javascript time stamp, must multiply for conversion
+    var equipmentList = companyToQuery.ownedEquipment;
+    
+    if(equipmentList.length > 0){
+        
+        var tripList = equipmentList[0].trips; 
+        
+        if(tripList.length > 0){
+            for (var i in tripList) {
+                if(tripList[i].date < timeStamp){
+                    timeStamp = tripList[i].date;
+                }
+            }
+        }
+    }
+
+    return {"timeStamp": timeStamp};
 }
 
 async function getEmissionsPerVehicle(companyEmail, licensePlateFilter) {
@@ -971,6 +996,6 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail, getCompanyTimeStamp }; // Add any new database access functions to the export or they won't be usable
 
 

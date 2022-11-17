@@ -255,6 +255,24 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/getCompanyTimeStamp', async (req, res) => {
+        const contactEmail = req.body.contactEmail;
+
+        //response type
+        res.contentType('application/json');
+
+        //change this to info from the db
+        var items = Object.assign({}, await db.getCompanyTimeStamp(contactEmail)); // combine the result with an empty object to ensure items is not undefined
+        var size = Object.keys(items).length // get the number of keys in the object
+
+        //send the response
+        if (size > 0) {
+            res.json(items);
+        } else {
+            res.json({})
+        }
+    })
+
     app.post('/addEquipmentToCompany', async (req, res) => {
         const equipmentId = req.body.equipmentId;
         const licensePlate = req.body.licensePlate;
