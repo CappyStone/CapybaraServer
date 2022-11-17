@@ -236,7 +236,42 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
             ],
             ownedEquipment: [
             ],
-            dashboardConfig:[]
+            dashboardConfig: {
+                overview: [
+                    {
+                        title: "Kilometers Driven This Year",
+                        type: "Bar",
+                        keys: { x: 'date', y: 'distance' },
+                        showXAxis: true,
+                        showYAxis: true,
+                        yUnits: "km",
+                        emphasized: true
+                    },
+                    {
+                        title: "Fuel Usage Breakdown by Vehicle",
+                        type: "Pie",
+                        keys: { x: 'licensePlate', y: 'fuelUsed' },
+                        showXAxis: false,
+                        showYAxis: false,
+                        yUnits: "gal",
+                        emphasized: true
+                    }
+                ],
+                trends: [
+                    {
+                        title: "Fuel Usage",
+                        key: "fuelUsed"
+                    },
+                    {
+                        title: "Distance Travelled",
+                        key: "distance"
+                    },
+                    {
+                        title: "CO₂ Emissions",
+                        key: "cO2Consumed"
+                    },
+                ]
+            }
         };
 
         //push json to database to make company
@@ -773,45 +808,6 @@ async function getDashboardConfig(companyEmail) {
         };
 
         const { resources: items } = await companyContainer.items.query(querySpec).fetchAll();
-
-        if (items[0].dashboardConfig == null) {
-            items[0].dashboardConfig = await this.updateDashboardConfig({
-                overview: [
-                    {
-                        title: "Kilometers Driven This Year",
-                        type: "Bar",
-                        keys: { x: 'date', y: 'distance' },
-                        showXAxis: true,
-                        showYAxis: true,
-                        yUnits: "km",
-                        emphasized: true
-                    },
-                    {
-                        title: "Fuel Usage Breakdown by Vehicle",
-                        type: "Pie",
-                        keys: { x: 'licensePlate', y: 'fuelUsed' },
-                        showXAxis: false,
-                        showYAxis: false,
-                        yUnits: "gal",
-                        emphasized: true
-                    }
-                ],
-                trends: [
-                    {
-                        title: "Fuel Usage",
-                        key: "fuelUsed"
-                    },
-                    {
-                        title: "Distance Travelled",
-                        key: "distance"
-                    },
-                    {
-                        title: "CO₂ Emissions",
-                        key: "cO2Consumed"
-                    },
-                ]
-            }, companyEmail);
-        }
 
         return items[0].dashboardConfig;
     } catch (err) {
