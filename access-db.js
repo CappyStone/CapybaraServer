@@ -46,7 +46,7 @@ async function getCompanyData(userEmail) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+            query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment, c.dashboardConfig FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
         };
 
         // read all items in the Items container
@@ -66,7 +66,7 @@ async function getCompanyByContactEmail(contactEmail) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container
@@ -83,7 +83,7 @@ async function getAssociatedCompanies(userEmail) {
     try {
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment FROM Company c"
+            query: "SELECT c.id, c.companyName, c.employees, c.contactEmail, c.ownedEquipment, c.dashboardConfig FROM Company c"
         };
 
         // read all items in the Items container
@@ -104,7 +104,7 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, newEmployeeN
     try {
         // query for company 
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where c.contactEmail = '" + companyEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Join e in c.employees Where c.contactEmail = '" + companyEmail + "'"
         };
 
         // read all items in the Items container
@@ -166,7 +166,7 @@ async function removeEmployeeFromCompany(userEmail) {
 
     // query for company 
     const querySpec = {
-        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+        query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
     };
 
     // read all items in the Items container
@@ -236,6 +236,7 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
             ],
             ownedEquipment: [
             ],
+            dashboardConfig:[]
         };
 
         //push json to database to make company
@@ -251,7 +252,7 @@ async function updateCompanyName(contactEmail, newName) {
 
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container
@@ -282,7 +283,7 @@ async function updateCompanyEmail(contactEmail, newContactEmail) {
 
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container
@@ -313,7 +314,7 @@ async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinc
 
         // query to return all items
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container
@@ -821,7 +822,7 @@ async function giveAdminPriviledge(userEmail) {
 
     try {
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
         };
 
         const { resources: items } = await companyContainer.items
@@ -858,7 +859,7 @@ async function takeAdminPriviledge(userEmail) {
 
     try {
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Join e in c.employees Where e.email = '" + userEmail + "'"
         };
 
         const { resources: items } = await companyContainer.items
@@ -896,7 +897,7 @@ async function deleteCompany(contactEmail) {
         //console.log(`Deleting company`);
         // query for company 
         const querySpec = {
-            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment FROM Company c Where c.contactEmail = '" + contactEmail + "'"
+            query: "SELECT c.id, c.companyName, c.contactEmail, c.companyAddress, c.employees, c.ownedEquipment, c.dashboardConfig FROM Company c Where c.contactEmail = '" + contactEmail + "'"
         };
 
         // read all items in the Items container
