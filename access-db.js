@@ -780,7 +780,7 @@ async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
 
 async function updateDashboardConfig(config, companyEmail) {
     try {
-        if (!config || !companyEmail) {
+        if (config == null || companyEmail == null) {
             throw new Error("Unable to verify permissions.")
         }
 
