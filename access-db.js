@@ -2,6 +2,7 @@ const CosmosClient = require("@azure/cosmos").CosmosClient;
 const { concat } = require("lodash");
 var nodemailer = require('nodemailer');
 const axios = require("axios");
+const crypto = require("crypto");
 
 const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
 const key = process.env.CUSTOMCONNSTR_CosmosDBString;
@@ -219,8 +220,9 @@ async function createNewCompany(companyName, companyStreet, companyCity, company
         if (companyName == null || companyStreet == null || companyCity == null || companyProvinceState == null || companyCountry == null || companyPostalZipCode == null || companyEmail == null || adminEmail == null) {
             return { error: 'Some fields missing values' };
         }
+
         const newCompany = {
-            id: "id",
+            id: crypto.randomUUID(),
             companyName: companyName,
             contactEmail: companyEmail,
             companyAddress: {
