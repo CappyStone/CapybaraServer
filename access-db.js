@@ -57,6 +57,7 @@ async function getCompanyData(userEmail) {
         return items[0];
 
     } catch (err) {
+        console.log(err);
         return { error: "A query error occured, check database connection" };
     }
 
@@ -75,6 +76,7 @@ async function getCompanyByContactEmail(contactEmail) {
             .fetchAll();
         return items[0];
     } catch (err) {
+        console.log(err);
         return { error: "An error occured, check database connection" };
     }
 }
@@ -93,9 +95,10 @@ async function getAssociatedCompanies(userEmail) {
 
         // console.log(userEmail);
         return items.filter(item => {
-            return item.employees.findIndex(employee => employee.email === userEmail) >= 0;
+            return item.employees != null ? item.employees.findIndex(employee => employee.email === userEmail) >= 0 : false;
         })
     } catch (err) {
+        console.log(err);
         return { error: "An error occured, check database connection" };
     }
 }
@@ -309,6 +312,7 @@ async function updateCompanyName(contactEmail, newName) {
         return updatedItem;
 
     } catch (err) {
+        console.log(err);
         return { error: "An error occured, check database connection" };
     }
 }
@@ -340,6 +344,7 @@ async function updateCompanyEmail(contactEmail, newContactEmail) {
         return updatedItem;
 
     } catch (err) {
+        console.log(err);
         return { error: "An error occured, check database connection" };
     }
 }
@@ -373,6 +378,7 @@ async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinc
         return updatedItem;
 
     } catch (err) {
+        console.log(err);
         return { error: "An error occured, check database connection" };
     }
 }
