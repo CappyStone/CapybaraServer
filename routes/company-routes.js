@@ -122,10 +122,11 @@ module.exports = function (app) {
         res.contentType('application/json');
 
         // try to find existing company
+        var newCompany = {};
         var items = Object.assign({}, await db.getCompanyByContactEmail(companyEmail)); // combine the result with an empty object to ensure items is not undefined
         if (Object.keys(items).length == 0) {
             //create a new company
-            var newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail));
+            newCompany = Object.assign({}, await db.createNewCompany(companyName, companyStreet, companyCity, companyProvinceState, companyCountry, companyPostalZipCode, companyEmail, adminEmail));
         }
 
         //query for newly created company
