@@ -180,7 +180,8 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });*/
-        
+       
+        /*
         it('/addEquipmentToCompany (Equipment Already Present)', (done) => {
             chai.request(app)
                 .post('/addEquipmentToCompany')
@@ -197,6 +198,7 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+        */
 
         it('/addEmployeeToCompany', (done) => {
             chai.request(app)
