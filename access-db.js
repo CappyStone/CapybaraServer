@@ -481,10 +481,6 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
         return { error: 'Could not find equipment or company' };
     }
 
-    if (companyUpdating.ownedEquipment.find(x => x.equipmentId == equipmentIdentifier) != null) {
-        return { error: 'Company already owns this equipment' };
-    }
-
     const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, trips: [] }
 
 
