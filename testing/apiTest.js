@@ -246,6 +246,20 @@ describe('API Tests', function () {
                     done();
                 });
         });
+
+        it('/getDashboardConfig', (done) => {
+            chai.request(app)
+                .post('/getDashboardConfig')
+                .send({
+                    "compnayEmail": "test@test.com"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body), false);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -479,6 +493,23 @@ describe('API Tests', function () {
                     };
                     var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
                     assert.equal(companyList[0].contactAddress.city, "Old Donk City");
+                    done();
+                });
+
+        });
+
+        it('/updateDashboardConfig', (done) => {
+            chai.request(app)
+                .post('/updateDashboardConfig')
+                .send({
+                    "companyEmail": "new@donk2.com",
+                    "authority": "admin@donk.com",
+                    "config": {}
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body), true);
                     done();
                 });
 

@@ -120,6 +120,44 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+
+        it('/getCompanyTimeStamp', (done) => {
+            chai.request(app)
+                .post('/getCompanyTimeStamp')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    assert.equal(_.isEmpty(res.body), true);
+                    done();
+                });
+        });
+
+        it('/getTripData', (done) => {
+            chai.request(app)
+                .post('/getTripData')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "A query error occured, check database connection");
+                    done();
+                });
+        });
+
+        it('/getDashboardConfig', (done) => {
+            chai.request(app)
+                .post('/getTripData')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(_.isEmpty(res.body.error), false);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -251,6 +289,60 @@ describe('API Negative Tests', function () {
                     done();
                 });
         });
+
+        it('/updateCompanyName', (done) => {
+            chai.request(app)
+                .post('/updateCompanyName')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Unable to verify permissions.");
+                    done();
+                });
+        });
+
+        it('/updateCompanyEmail', (done) => {
+            chai.request(app)
+                .post('/updateCompanyEmail')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Unable to verify permissions.");
+                    done();
+                });
+        });
+
+        it('/updateCompanyAddress', (done) => {
+            chai.request(app)
+                .post('/updateCompanyAddress')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Unable to verify permissions.");
+                    done();
+                });
+        });
+
+        it('/updateDashboardConfig', (done) => {
+            chai.request(app)
+                .post('/updateDashboardConfig')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Unable to verify permissions.");
+                    done();
+                });
+        });
+
+
     });
 
     describe('Delete Methods', function () {
