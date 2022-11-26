@@ -196,6 +196,56 @@ describe('API Tests', function () {
                     done();
                 });
         });
+
+        it('/getCompanyTimeStamp', (done) => {
+            chai.request(app)
+                .post('/getCompanyTimeStamp')
+                .send({
+                    "contactEmail": "test@test.com"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('timeStamp');
+                    var timestampVal = false;
+                    if (res.body.timeStamp === 1666713816322) {
+                        timestampVal = true;
+                    }
+                    assert.equal(timestampVal, true);
+                    done();
+                });
+        });
+
+        it('/getTripData', (done) => {
+            chai.request(app)
+                .post('/getTripData')
+                .send({
+                    "contactEmail": "test@test.com",
+                    "licensePlate": "LIGMA",
+                    "properties": {
+                        "values": [
+                            'distance',
+                            'fuelUsed',
+                            'licensePlate',
+                            'cO2Consumed',
+                            'date'
+                        ],
+                        "upperTimeBound": 0,
+                        "lowerTimeBound": 0
+                    }
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body['0'].should.have.property('distance');
+                    var distanceFound = false;
+                    if (res.body['0'].distance === 0.661) {
+                        distanceFound = true;
+                    }
+                    assert.equal(distanceFound, true);
+                    done();
+                });
+        });
     });
 
     describe('Create Methods', function () {
@@ -357,11 +407,78 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     const addedItemQuery = {
-                        query: "SELECT o.trips FROM Company c Join o in c.ownedEquipment Where c.contactEmail = 'new@donk.com'"
+                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
                     };
                     var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    ts = equipmentList[0].trips[0].date;
-                    assert.equal(equipmentList[0].trips.length, 1);
+                    ts = equipmentList[0].ownedEquipment[0].date;
+                    assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 1);
+                    done();
+                });
+
+        });
+
+        it('/updateCompanyName', (done) => {
+            chai.request(app)
+                .post('/updateCompanyName')
+                .send({
+                    "contactEmail": "new@donk.com",
+                    "newCompanyName": "pancakes",
+                    "authority": "admin@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    const nameQuery = {
+                        query: "SELECT c.companyName FROM Company c Where c.contactEmail = 'new@donk.com'"
+                    };
+                    var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
+                    assert.equal(companyList[0].companyName, "pancakes");
+                    done();
+                });
+
+        });
+
+        it('/updateCompanyEmail', (done) => {
+            chai.request(app)
+                .post('/updateCompanyEmail')
+                .send({
+                    "contactEmail": "new@donk.com",
+                    "newCompanyEmail": "new@donk2.com",
+                    "authority": "admin@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    const nameQuery = {
+                        query: "SELECT c.companyName FROM Company c Where c.companyName = 'pancakes'"
+                    };
+                    var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
+                    assert.equal(companyList[0].contactEmail, "new@donk2.com");
+                    done();
+                });
+
+        });
+
+        it('/updateCompanyAddress', (done) => {
+            chai.request(app)
+                .post('/updateCompanyAddress')
+                .send({
+                    "contactEmail": "new@donk2.com",
+                    "newStreet": "12 Ram Ave",
+                    "newCity": "Old Donk City",
+                    "newProvinceState": "Ontario",
+                    "newCountry": "Canada",
+                    "newPostalZipcode":"K3T8B8",
+                    "authority": "admin@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    const nameQuery = {
+                        query: "SELECT c.companyAddress FROM Company c Where c.companyName = 'pancakes'"
+                    };
+                    var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
+                    assert.equal(companyList[0].contactAddress.city, "Old Donk City");
                     done();
                 });
 
@@ -374,7 +491,7 @@ describe('API Tests', function () {
             chai.request(app)
                 .post('/removeTripFromCompany')
                 .send({
-                    "companyEmail": "new@donk.com",
+                    "companyEmail": "new@donk2.com",
                     "currentUser": "admin@donk.com",
                     "timestamp": ts
                 })
@@ -382,7 +499,7 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     const addedItemQuery = {
-                        query: "SELECT o.trips FROM Company c Join o in c.ownedEquipment Where c.contactEmail = 'new@donk.com'"
+                        query: "SELECT o.trips FROM Company c Join o in c.ownedEquipment Where c.contactEmail = 'new@donk2.com'"
                     };
                     var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
                     assert.equal(equipmentList[0].trips.length, 0);
@@ -400,13 +517,13 @@ describe('API Tests', function () {
                         .post('/removeEquipmentFromCompany')
                         .send({
                             "equipmentId": 6,
-                            "companyEmail": "new@donk.com",
+                            "companyEmail": "new@donk2.com",
                             "authority": "admin@donk.com"
                         })
                         .end(async (err, res) => {
                             res.should.have.status(200);
                             const addedItemQuery = {
-                                query: "SELECT c.ownedEquipment FROM Company c WHERE c.contactEmail = 'new@donk.com'"
+                                query: "SELECT c.ownedEquipment FROM Company c WHERE c.contactEmail = 'new@donk2.com'"
                             };
                             var { resources: companyEquipment } = await companyContainer.items.query(addedItemQuery).fetchAll();
                             var equipmentFound = false;
@@ -426,7 +543,7 @@ describe('API Tests', function () {
                 .post('/removeEmployeeFromCompany')
                 .send({
                     "userEmail": "apitest@donk.com",
-                    "companyEmail": "new@donk.com",
+                    "companyEmail": "new@donk2.com",
                     "authority": "admin@donk.com"
                 })
                 .end((err, res) => {
@@ -447,12 +564,12 @@ describe('API Tests', function () {
         it('/deleteCompany', (done) => {
             chai.request(app)
                 .post('/deleteCompany')
-                .send({ "contactEmail": "new@donk.com" })
+                .send({ "contactEmail": "new@donk2.com" })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('success');
-                    assert.equal(res.body.success, "waffles has been deleted");
+                    assert.equal(res.body.success, "pancakes has been deleted");
                     done();
                 });
         });
