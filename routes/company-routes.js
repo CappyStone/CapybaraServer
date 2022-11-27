@@ -140,7 +140,7 @@ module.exports = function (app) {
         }
     })
 
-    app.post('/updateCompanyAddress', async (req, res) => {
+    /*app.post('/updateCompanyAddress', async (req, res) => {
         const contactEmail = req.body.contactEmail;
         const newStreet = req.body.newStreet;
         const newCity = req.body.newCity;
@@ -171,7 +171,7 @@ module.exports = function (app) {
                 res.json({})
             }
         }
-    });
+    });*/
 
 
 
@@ -353,7 +353,7 @@ module.exports = function (app) {
         const newCity = req.body.newCity;
         const newProvinceState = req.body.newProvinceState
         const newCountry = req.body.newCountry;
-        const newPostalZipcode = req.body.newProvinceState;
+        const newPostalZipcode = req.body.newPostalZipcode;
         const authority = req.body.authority;
 
         if ((await db.isEmployeeAdmin(authority, contactEmail)) !== true) {
