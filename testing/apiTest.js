@@ -224,11 +224,11 @@ describe('API Tests', function () {
                     "licensePlate": "LIGMA",
                     "properties": {
                         "values": [
-                            'distance',
-                            'fuelUsed',
-                            'licensePlate',
-                            'cO2Consumed',
-                            'date'
+                            "distance",
+                            "fuelUsed",
+                            "licensePlate",
+                            "cO2Consumed",
+                            "date"
                         ],
                         "upperTimeBound": 0,
                         "lowerTimeBound": 0
@@ -464,10 +464,11 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     const nameQuery = {
-                        query: "SELECT c.companyName FROM Company c Where c.companyName = 'pancakes'"
+                        query: "SELECT c.companyName, c.id FROM Company c Where c.contactEmail = 'new@donk2.com'"
                     };
                     var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
-                    assert.equal(companyList[0].contactEmail, "new@donk2.com");
+
+                    assert.equal(companyList[0].companyName, "pancakes");
                     done();
                 });
 
@@ -489,10 +490,10 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     const nameQuery = {
-                        query: "SELECT c.companyAddress FROM Company c Where c.companyName = 'pancakes'"
+                        query: "SELECT c.companyAddress FROM Company c Where c.contactEmail = 'new@donk2.com'"
                     };
                     var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
-                    assert.equal(companyList[0].contactAddress.city, "Old Donk City");
+                    assert.equal(companyList[0].companyAddress.postalZipcode, "K3T8B8");
                     done();
                 });
 
@@ -530,10 +531,10 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     const addedItemQuery = {
-                        query: "SELECT o.trips FROM Company c Join o in c.ownedEquipment Where c.contactEmail = 'new@donk2.com'"
+                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk2.com'"
                     };
                     var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    assert.equal(equipmentList[0].trips.length, 0);
+                    assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 0);
                     done();
                 });
 
