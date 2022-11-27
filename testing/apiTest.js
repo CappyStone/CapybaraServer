@@ -408,6 +408,7 @@ describe('API Tests', function () {
         });
 
         it('/addTripToVehicle', (done) => {
+            this.timeout = 8000;
             chai.request(app)
                 .post('/addTripToVehicle')
                 .send({
@@ -418,14 +419,28 @@ describe('API Tests', function () {
                     "currentUser": "admin@donk.com"
                 })
                 .end(async (err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    const addedItemQuery = {
-                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
-                    };
-                    var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    ts = equipmentList[0].ownedEquipment[0].date;
-                    assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 1);
+                    try {
+                        setTimeout(async function () {
+                            res.should.have.status(200);
+                            res.body.should.be.a('object');
+                            const addedItemQuery = {
+                                query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
+                            };
+                            var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                            ts = equipmentList[0].ownedEquipment[0].date;
+                            assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 1);
+                        }, 4000);
+                    }
+                    catch {
+                        res.should.have.status(200);
+                        res.body.should.be.a('object');
+                        const addedItemQuery = {
+                            query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk.com'"
+                        };
+                        var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                        ts = equipmentList[0].ownedEquipment[0].date;
+                        assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 1);
+                    }
                     done();
                 });
 
@@ -520,6 +535,7 @@ describe('API Tests', function () {
 
     describe('Delete Methods', function () {
         it('/removeTripFromCompany', (done) => {
+            this.timeout = 8000;
             chai.request(app)
                 .post('/removeTripFromCompany')
                 .send({
@@ -528,13 +544,25 @@ describe('API Tests', function () {
                     "timestamp": ts
                 })
                 .end(async (err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    const addedItemQuery = {
-                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk2.com'"
-                    };
-                    var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
-                    assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 0);
+                    try {
+                        setTimeout(async function () {
+                            res.should.have.status(200);
+                            res.body.should.be.a('object');
+                            const addedItemQuery = {
+                                query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk2.com'"
+                            };
+                            var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                            assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 0);
+                        }, 4000);
+                    } catch {
+                        res.should.have.status(200);
+                        res.body.should.be.a('object');
+                        const addedItemQuery = {
+                            query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk2.com'"
+                        };
+                        var { resources: equipmentList } = await companyContainer.items.query(addedItemQuery).fetchAll();
+                        assert.equal(equipmentList[0].ownedEquipment[0].trips.length, 0);
+                    }
                     done();
                 });
 
