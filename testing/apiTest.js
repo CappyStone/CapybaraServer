@@ -464,7 +464,7 @@ describe('API Tests', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     const nameQuery = {
-                        query: "SELECT c.companyName, c.id FROM Company c Where c.contactEmail = 'new@donk2.com'"
+                        query: "SELECT c.companyName FROM Company c Where c.contactEmail = 'new@donk2.com'"
                     };
                     var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
 
