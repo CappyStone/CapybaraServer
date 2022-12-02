@@ -69,7 +69,7 @@ module.exports = function (app) {
             return;
         } else {
             //change this to info from the db
-            var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail,  newEmployeeEmail, newEmployeeName, isAdmin)); // combine the result with an empty object to ensure items is not undefined
+            var items = Object.assign({}, await db.addEmployeeToCompany(companyEmail, newEmployeeEmail, newEmployeeName, isAdmin)); // combine the result with an empty object to ensure items is not undefined
             var size = Object.keys(items).length; // get the number of keys in the object
 
             //send the response
@@ -217,8 +217,8 @@ module.exports = function (app) {
 
     app.post('/getVehicleConfig', async (req, res) => {
         const year = req.body.searchYear;
-         const make = req.body.searchMake;
-         const model = req.body.searchModel;
+        const make = req.body.searchMake;
+        const model = req.body.searchModel;
 
         res.contentType('application/json');
 
