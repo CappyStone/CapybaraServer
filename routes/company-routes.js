@@ -444,7 +444,7 @@ module.exports = function (app) {
     });
 
     app.post('/removeEquipmentFromCompany', async (req, res) => {
-        const equipmentIdentifier = req.body.equipmentId;
+        const licensePlate = req.body.licensePlate;
         const companyEmail = req.body.companyEmail;
         const authority = req.body.authority;
 
@@ -456,7 +456,7 @@ module.exports = function (app) {
             res.contentType('application/json');
 
             //change this to info from the db
-            var items = Object.assign({}, await db.removeEquipmentFromCompany(equipmentIdentifier, companyEmail)); // combine the result with an empty object to ensure items is not undefined
+            var items = Object.assign({}, await db.removeEquipmentFromCompany(licensePlate, companyEmail)); // combine the result with an empty object to ensure items is not undefined
             // var size = Object.keys(items).length; // get the number of keys in the object
 
             //send the response

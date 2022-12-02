@@ -147,7 +147,7 @@ async function addEmployeeToCompany(companyEmail, newEmployeeEmail, newEmployeeN
             from: 'noreply.greenstorm@gmail.com',
             to: newEmployeeEmail,
             subject: 'You have been invited to join Greenstorm',
-            html: '<body style="background:#b3be9dff;font-family:verdana, sans-serif; padding:20px;"><h1 style="color:#054a29ff; font-family: Arial; text-align:center;">Welcome to Greenstorm</h1><p style="color:black">The Admin for your organization has invited you to use Greenstorm to collaborate with them. Click on the button below to set up your account and get started:</p><button style="background:#d5d5d7ff; color:#054a29ff; border-radius: 2px; font-size: 20px; padding: 15px 32px; border: 2px solid #054a29ff; margin:auto; display:block;"><a href="https://www.greenstorm.xyz" style="background:#d5d5d7ff; color:#054a29ff;">Setup account</a></button><p style="color:black">If you have any questions please reach out to the Admin of your organization. Our customer success team is also on standby.</p><p style="color:black">Welcome aboard,</p><p style="color:black">The Greenstorm team</p></body>'
+            html: '<body style="background:#b3be9dff;font-family:verdana, sans-serif; padding:20px;"><h1 style="color:#054a29ff; font-family: Arial; text-align:center;">Welcome to Greenstorm</h1><p style="color:black">The Admin for your organization has invited you to use Greenstorm to collaborate with them. Click on the button below to set up your account and get started or visit www.greenstorm.xyz:</p><button style="background:#d5d5d7ff; color:#054a29ff; border-radius: 2px; font-size: 20px; padding: 15px 32px; border: 2px solid #054a29ff; margin:auto; display:block;"><a href="https://www.greenstorm.xyz" style="background:#d5d5d7ff; color:#054a29ff;">Setup account</a></button><p style="color:black">If you have any questions please reach out to the Admin of your organization. Our customer success team is also on standby.</p><p style="color:black">Welcome aboard,</p><p style="color:black">The Greenstorm team</p></body>'
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
@@ -499,7 +499,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
         return { error: 'Could not find equipment or company' };
     }
 
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, trips: [] }
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, active: true, trips: [] }
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -777,19 +777,20 @@ async function removeTripFromCompany(companyEmail, currentUser, timestamp) {
 }
 
 
-async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
+async function removeEquipmentFromCompany(licensePlate, contactEmail) {
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
-    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
+    
+    ownedEquipment = companyUpdating.ownedEquipment;
 
-    if (companyUpdating == null || equipmentAdding == null) {
-        return { error: 'Could not find equipment or company' };
+    for(var i in ownedEquipment){
+        if(ownedEquipment[i].licensePlate === licensePlate){
+            ownedEquipment[i].active = false;
+        }
     }
 
-    var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentId !== equipmentIdentifier);
-
-    companyUpdating.ownedEquipment = newEquipmentHolder;
+    companyUpdating.ownedEquipment = ownedEquipment;
 
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer

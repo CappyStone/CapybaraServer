@@ -24,16 +24,16 @@ const equipmentContainer = database.container(equipmentContainerId);
 const timeout = 4000; //time in ms, arbitrarily chosen as default 2000 was not enough for github actions...
 
 const newEquipmentEntry = {
-    "id": "1",
-    "equipmentId": 1,
-    "year": "2018",
-    "productName": "LEAF",
+    "id": "test",
+    "equipmentId": "test",
+    "year": "2022",
+    "productName": "Model 3",
     "vehicleClass": "Mid-size",
-    "manufacturer": "NissanTest",
-    "price": "35998",
-    "cityFuelConsumption": "16.9",
-    "hwyFuelConsumption": "21.1",
-    "combFuelConsumption": "18.8",
+    "manufacturer": "TeslaTest",
+    "price": "59990",
+    "cityFuelConsumption": "17.8",
+    "hwyFuelConsumption": "19.5",
+    "combFuelConsumption": "18.6",
     "cO2Emissions": "0",
     "cO2Rating": "10",
     "smogRating": "10",
@@ -149,16 +149,16 @@ describe('DB Connections', function () {
 
         it('Update item in Equipment Container', async function () {
             const querySpec = {
-                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'NissanTest'"
+                query: "SELECT e.id, e.equipmentId, e.year, e.productName, e.vechicleClass, e.manufacturer, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.cO2Emissions, e.cO2Rating, e.smogRating, e.fuelType FROM Equipment e Where e.manufacturer = 'TeslaTest'"
             };
     
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
             assert.equal(items[0].productName, newEquipmentEntry.productName);
-            items[0].productName = "Leaf";
+            items[0].productName = "BigMac";
             //send to database
             await equipmentContainer.item(items[0].id, items[0].equipmentId).replace(items[0]);
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
-            assert.equal(items[0].productName, "Leaf");
+            assert.equal(items[0].productName, "BigMac");
         });
 
         it('Delete item in Equipment Container', async function () {
@@ -171,7 +171,7 @@ describe('DB Connections', function () {
             var oldLength = items.length;
             
             const addedItemQuery = {
-                query: "SELECT e.id, e.equipmentId, e.year, e.productName, e.vehicleClass, e.manufacturer, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.cO2Emissions, e.cO2Rating, e.smogRating, e.fuelType FROM Equipment e Where e.manufacturer = 'NissanTest' AND e.productName = 'Leaf'"
+                query: "SELECT e.id, e.equipmentId FROM Equipment e Where e.manufacturer = 'TeslaTest' AND e.productName = 'BigMac'"
             };
             var { resources: addedItem } = await equipmentContainer.items.query(addedItemQuery).fetchAll();
             await equipmentContainer.item(addedItem[0].id, addedItem[0].equipmentId).delete()
