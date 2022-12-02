@@ -4,16 +4,16 @@ var nodemailer = require('nodemailer');
 const axios = require("axios");
 const crypto = require("crypto");
 
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
-const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
+//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 
-//const config = require("./config");
-//const endpoint = config.endpoint;
-//const key = config.key;
-//const mapQuestKey = config.mapQuestKey;
-//const emailpass = config.emailpass;
+const config = require("./config");
+const endpoint = config.endpoint;
+const key = config.key;
+const mapQuestKey = config.mapQuestKey;
+const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 
@@ -499,7 +499,7 @@ async function addEquipmentToCompany(equipmentIdentifier, contactEmail, licenseP
         return { error: 'Could not find equipment or company' };
     }
 
-    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, trips: [] }
+    const newEquipmentItem = { equipmentId: equipmentIdentifier, licensePlate: licensePlate, active: true, trips: [] }
 
 
     companyUpdating.ownedEquipment.push(newEquipmentItem);
@@ -777,19 +777,20 @@ async function removeTripFromCompany(companyEmail, currentUser, timestamp) {
 }
 
 
-async function removeEquipmentFromCompany(equipmentIdentifier, contactEmail) {
+async function removeEquipmentFromCompany(licensePlate, contactEmail) {
 
     // query to return all items
     const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
-    const equipmentAdding = await this.getEquipmentData(equipmentIdentifier)
+    
+    ownedEquipment = companyUpdating.ownedEquipment;
 
-    if (companyUpdating == null || equipmentAdding == null) {
-        return { error: 'Could not find equipment or company' };
+    for(var i in ownedEquipment){
+        if(ownedEquipment[i].licensePlate === licensePlate){
+            ownedEquipment[i].active = false;
+        }
     }
 
-    var newEquipmentHolder = companyUpdating.ownedEquipment.filter((item) => item.equipmentId !== equipmentIdentifier);
-
-    companyUpdating.ownedEquipment = newEquipmentHolder;
+    companyUpdating.ownedEquipment = ownedEquipment;
 
     // read all items in the Items container
     const { resources: updatedItem } = await companyContainer

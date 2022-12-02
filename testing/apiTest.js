@@ -6,11 +6,11 @@ const app = require('../index.js');
 const should = chai.should();
 const _ = require("lodash");
 
-//const config = require("../config");
-//const endpoint = config.endpoint;
-//const key = config.key;
-const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const config = require("../config");
+const endpoint = config.endpoint;
+const key = config.key;
+//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 
 const databaseConfig = {
@@ -576,7 +576,7 @@ describe('API Tests', function () {
                     chai.request(app)
                         .post('/removeEquipmentFromCompany')
                         .send({
-                            "equipmentId": 6,
+                            "licensePlate": "JOEMAMA",
                             "companyEmail": "new@donk2.com",
                             "authority": "admin@donk.com"
                         })
@@ -588,8 +588,9 @@ describe('API Tests', function () {
                             var { resources: companyEquipment } = await companyContainer.items.query(addedItemQuery).fetchAll();
                             var equipmentFound = false;
                             for (var i = 0; i < companyEquipment[0].ownedEquipment.length; i++) {
-                                if (companyEquipment[0].ownedEquipment[i].equipmentId === 6) {
-                                    equipmentFound = true;
+                                if (companyEquipment[0].ownedEquipment[i].licensePlate === "JOEMAMA") {
+                                    
+                                    equipmentFound = companyEquipment[0].ownedEquipment[i].active;
                                 }
                             }
                             assert.equal(equipmentFound, false);
