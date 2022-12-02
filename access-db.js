@@ -430,6 +430,24 @@ async function updateCompanyAddress(contactEmail, newStreet, newCity, newProvinc
     }
 } */
 
+async function getVehicleData() {
+    try {
+        // query to return all items
+        const querySpec = {
+            query: "SELECT e.productName, e.manufacturer, e.equipmentId, e.year FROM Equipment e"
+        };
+
+        // read all items in the Items container
+        const { resources: items } = await equipmentContainer.items
+            .query(querySpec)
+            .fetchAll();
+        return items;
+
+    } catch (err) {
+        return { error: "Error occured while finding equipment, check connection" }
+    }
+}
+
 async function getFilteredVehicles(year, make, model) {
     try {
         // query to return all items
@@ -996,6 +1014,6 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail, getCompanyTimeStamp }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getVehicleData, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail, getCompanyTimeStamp }; // Add any new database access functions to the export or they won't be usable
 
 

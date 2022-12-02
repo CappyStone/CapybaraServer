@@ -201,14 +201,10 @@ module.exports = function (app) {
     }) */
 
     app.post('/getModels', async (req, res) => {
-        const year = req.body.searchYear;
-        const make = req.body.searchMake;
-        const model = req.body.searchModel;
-
         res.contentType('application/json');
 
         //change this to info from the db
-        var items = Object.assign({}, await db.getFilteredVehicles(year, make, model)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.getVehicleData()); // combine the result with an empty object to ensure items is not undefined
         var size = Object.keys(items).length // get the number of keys in the object
 
         //send the response
