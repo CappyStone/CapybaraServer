@@ -4,16 +4,16 @@ var nodemailer = require('nodemailer');
 const axios = require("axios");
 const crypto = require("crypto");
 
-//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
-//const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
-//const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const mapQuestKey = process.env.CUSTOMCONNSTR_MapQuestKey;
+const emailpass = process.env.CUSTOMCONNSTR_EmailPass;
 
-const config = require("./config");
-const endpoint = config.endpoint;
-const key = config.key;
-const mapQuestKey = config.mapQuestKey;
-const emailpass = config.emailpass;
+//const config = require("./config");
+//const endpoint = config.endpoint;
+//const key = config.key;
+//const mapQuestKey = config.mapQuestKey;
+//const emailpass = config.emailpass;
 
 //Cosmos connection for the company container
 

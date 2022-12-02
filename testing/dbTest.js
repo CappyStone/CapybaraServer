@@ -1,12 +1,12 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const assert = require('assert');
 
-const config = require("../config");
-const endpoint = config.endpoint;
-const key = config.key;
+//const config = require("../config");
+//const endpoint = config.endpoint;
+//const key = config.key;
 
-//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 const databaseConfig = {
     databaseId: "greenStormTestDB",
@@ -149,7 +149,7 @@ describe('DB Connections', function () {
 
         it('Update item in Equipment Container', async function () {
             const querySpec = {
-                query: "SELECT e.id, e.equipmentId, e.category, e.productName, e.description, e.manufacturer, e.serialNumber, e.greenScore, e.efficiencyRating, e.verified FROM Equipment e Where e.manufacturer = 'TeslaTest'"
+                query: "SELECT e.id, e.equipmentId, e.year, e.productName, e.vechicleClass, e.manufacturer, e.price, e.cityFuelConsumption, e.hwyFuelConsumption, e.combFuelConsumption, e.cO2Emissions, e.cO2Rating, e.smogRating, e.fuelType FROM Equipment e Where e.manufacturer = 'TeslaTest'"
             };
     
             var { resources: items } = await equipmentContainer.items.query(querySpec).fetchAll();
@@ -171,7 +171,7 @@ describe('DB Connections', function () {
             var oldLength = items.length;
             
             const addedItemQuery = {
-                query: "SELECT e.id, e.equipmentId FROM Equipment e Where e.manufacturer = 'TeslaTest' AND e.productName = 'Model 3'"
+                query: "SELECT e.id, e.equipmentId FROM Equipment e Where e.manufacturer = 'TeslaTest' AND e.productName = 'BigMac'"
             };
             var { resources: addedItem } = await equipmentContainer.items.query(addedItemQuery).fetchAll();
             await equipmentContainer.item(addedItem[0].id, addedItem[0].equipmentId).delete()

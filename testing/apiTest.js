@@ -6,11 +6,11 @@ const app = require('../index.js');
 const should = chai.should();
 const _ = require("lodash");
 
-const config = require("../config");
-const endpoint = config.endpoint;
-const key = config.key;
-//const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
-//const key = process.env.CUSTOMCONNSTR_CosmosDBString;
+//const config = require("../config");
+//const endpoint = config.endpoint;
+//const key = config.key;
+const endpoint = process.env.CUSTOMCONNSTR_CosmosAddress;
+const key = process.env.CUSTOMCONNSTR_CosmosDBString;
 
 
 const databaseConfig = {
