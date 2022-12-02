@@ -119,9 +119,9 @@ describe('API Tests', function () {
                 });
         });
 
-        it('/getModels', (done) => { //tests getFilteredVehicles
+        it('/getVehicleConfig', (done) => { //tests getFilteredVehicles
             chai.request(app)
-                .post('/getModels')
+                .post('/getVehicleConfig')
                 .send({ 
                     "searchYear": 2018,
                     "searchMake": "Acura",

@@ -73,9 +73,9 @@ describe('API Negative Tests', function () {
                 });
         });
 
-        it('/getModels', (done) => {
+        it('/getVehicleConfig', (done) => {
             chai.request(app)
-                .post('/getModels')
+                .post('/getVehicleConfig')
                 .send("Random Text")
                 .end((err, res) => {
                     res.should.have.status(200);
