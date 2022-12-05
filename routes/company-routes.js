@@ -409,12 +409,13 @@ module.exports = function (app) {
         const startAddress = req.body.startAddress;
         const endAddress = req.body.endAddress;
         const currentUser = req.body.currentUser;
+        const tripDate = req.body.tripDate;
 
         //response type
         res.contentType('application/json');
 
         //change this to info from the db
-        var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, currentUser, startAddress, endAddress)); // combine the result with an empty object to ensure items is not undefined
+        var items = Object.assign({}, await db.addTripToVehicle(companyEmail, licencePlate, currentUser, startAddress, endAddress, tripDate)); // combine the result with an empty object to ensure items is not undefined
 
         //send the response
         if (items['error']) {

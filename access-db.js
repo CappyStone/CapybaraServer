@@ -656,7 +656,7 @@ async function getTripData(contactEmail, licensePlate, properties) {
 
 }
 
-async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress) {
+async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAddress, endAddress, tripDate) {
     try {
         
         if((companyEmail !==null||companyEmail!=="") && (licensePlate!==null||licensePlate!=="")&&(currentUser
@@ -714,7 +714,7 @@ async function addTripToVehicle(companyEmail, licensePlate, currentUser, startAd
             var newTrip = {
                 "startLocation": mapResult.route.locations[0].latLng,
                 "endLocation": mapResult.route.locations[(mapResult.route.locations.length - 1)].latLng,
-                "date": Date.now(),
+                "date": tripDate == null ? Date.now() : tripDate,
                 "distance": mapResult.route.distance,
                 "fuelUsed": mapResult.route.fuelUsed ? mapResult.route.fuelUsed : (mapResult.route.distance ? Math.round(mapResult.route.distance / hwyEfficiencyGal, 2) : 0),
                 "fuelEstimate": mapResult.route.fuelUsed ? "MapQuest" : mapResult.route.distance ? "Estimate" : "None",
