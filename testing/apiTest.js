@@ -514,6 +514,28 @@ describe('API Tests', function () {
 
         });
 
+        it('/updateLicensePlate', (done) => {
+            chai.request(app)
+                .post('/updateLicensePlate')
+                .send({
+                    "licensePlate": "JOEMAMA",
+                    "companyEmail": "new@donk2.com",
+                    "newLicensePlate": "JOEDADA",
+                    "authority": "admin@donk.com"
+                })
+                .end(async (err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    const nameQuery = {
+                        query: "SELECT c.ownedEquipment FROM Company c Where c.contactEmail = 'new@donk2.com'"
+                    };
+                    var { resources: companyList } = await companyContainer.items.query(nameQuery).fetchAll();
+                    assert.equal(companyList[0].ownedEquipment[0].licensePlate, "JOEDADA");
+                    done();
+                });
+
+        });
+
         it('/updateDashboardConfig', (done) => {
             chai.request(app)
                 .post('/updateDashboardConfig')

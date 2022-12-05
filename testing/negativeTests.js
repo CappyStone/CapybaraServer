@@ -329,6 +329,19 @@ describe('API Negative Tests', function () {
                 });
         });
 
+        it('/updateLicensePlate', (done) => {
+            chai.request(app)
+                .post('/updateLicensePlate')
+                .send("Random Text")
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('error');
+                    assert.equal(res.body.error, "Unable to verify permissions.");
+                    done();
+                });
+        });
+
         it('/updateDashboardConfig', (done) => {
             chai.request(app)
                 .post('/updateDashboardConfig')
