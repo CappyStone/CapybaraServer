@@ -469,6 +469,32 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/updateLicensePlate', async (req, res) => {
+        const licensePlate = req.body.licensePlate;
+        const companyEmail = req.body.companyEmail;
+        const newLicensePlate = req.body.newLicensePlate;
+        const authority = req.body.authority;
+
+        if ((await db.isEmployeeAdmin(authority, companyEmail)) !== true) {
+            res.json({ error: "Unable to verify permissions." });
+            return;
+        } else {
+            //response type
+            res.contentType('application/json');
+
+            //change this to info from the db
+            var items = Object.assign({}, await db.updateLicensePlate(licensePlate, companyEmail, newLicensePlate)); // combine the result with an empty object to ensure items is not undefined
+            // var size = Object.keys(items).length; // get the number of keys in the object
+
+            //send the response
+            if (items['error']) {
+                res.json({ error: items['error'] });
+            } else {
+                res.json(items);
+            }
+        }
+    })
+
     app.post('/getEmissionsPerVehicle', async (req, res) => {
         const licensePlate = req.body.licensePlate;
         const companyEmail = req.body.companyEmail;

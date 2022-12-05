@@ -801,6 +801,30 @@ async function removeEquipmentFromCompany(licensePlate, contactEmail) {
     return updatedItem;
 }
 
+async function updateLicensePlate(licensePlate, contactEmail, newLicensePlate) {
+
+    // query to return all items
+    const companyUpdating = await this.getCompanyByContactEmail(contactEmail);
+
+    ownedEquipment = companyUpdating.ownedEquipment;
+
+    for (var i in ownedEquipment) {
+        if (ownedEquipment[i].licensePlate === licensePlate) {
+            ownedEquipment[i].licensePlate = newLicensePlate;
+        }
+    }
+
+    companyUpdating.ownedEquipment = ownedEquipment;
+
+    // read all items in the Items container
+    const { resources: updatedItem } = await companyContainer
+        .item(companyUpdating.id, companyUpdating.id)
+        // new json object to replace the one in the database
+        .replace(companyUpdating);
+
+    return updatedItem;
+}
+
 async function updateDashboardConfig(config, companyEmail) {
     try {
         if (config == null || companyEmail == null) {
@@ -1015,6 +1039,6 @@ async function getTestData() {
 }
 
 
-module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getVehicleData, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail, getCompanyTimeStamp }; // Add any new database access functions to the export or they won't be usable
+module.exports = { getCompanyData, getCompanyByContactEmail, getAssociatedCompanies, getEquipmentData, getTestData, createNewCompany, /* createNewEquipment, */ getVehicleData, getFilteredVehicles, addEmployeeToCompany, isEmployeeAdmin, giveAdminPriviledge, takeAdminPriviledge, addEquipmentToCompany, removeEquipmentFromCompany, updateLicensePlate, removeEmployeeFromCompany, deleteCompany, /* deleteEquipment, */ addTripToVehicle, getTripsForCompany, removeTripFromCompany, getEmissionsPerVehicle, getTripData, updateDashboardConfig, getDashboardConfig, updateCompanyAddress, updateCompanyName, updateCompanyEmail, getCompanyTimeStamp }; // Add any new database access functions to the export or they won't be usable
 
 
